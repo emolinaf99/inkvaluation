@@ -4,6 +4,7 @@
   import HeaderPartial from './components/Header.vue'
   import HeaderHome from './components/HeaderHome.vue'
   import FooterPartial from './components/Footer.vue'
+  import SkeletonDevPanel from './components/SkeletonDevPanel.vue'
 
   const route = useRoute()
   
@@ -27,6 +28,9 @@
       
     />
   </footer>
+
+  <!-- Panel de Desarrollo de Skeleton (solo en desarrollo) -->
+  <SkeletonDevPanel />
 </template>
 
 

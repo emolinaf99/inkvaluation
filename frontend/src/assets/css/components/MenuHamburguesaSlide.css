@@ -4,8 +4,8 @@
     background-color: #f5f5f5;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, .16);
     width: 250px;
-    min-height: 100%;
-    max-height: 100%;
+    min-height: 100vh;
+    
     overflow-y:scroll;
     position: fixed;
     display: flex;
@@ -106,18 +106,23 @@
 }
 
 .opacity {
-    transition: all .5s ease;
-    bottom: 0;
-    position: fixed;
-    background-color: #101010a8;
-    z-index:11;
+    transition: none !important;
+    position: fixed !important;
+    background-color: #101010a8 !important;
+    z-index: 9998 !important;
     display: none;
-    overflow-y: hidden;
-    left: 0%;
-    animation-name: tiempoAparicion;
-    animation-duration: .5s;
-    height: 100%;
-    width: 100%;
+    overflow: hidden;
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    width: 100vw !important;
+    animation: tiempoAparicion 0.5s ease forwards;
+}
+
+.opacity[style*="display: flex"] {
+    display: block !important;
 }
 
 .opacityVentanas {

@@ -109,19 +109,19 @@
         <!-- <i class="fa-solid fa-bars" id="burgerMenuIcon"></i> -->
         <RouterLink to="/"><img class="logoApp" src="/img/InkValuationLogo.png" alt=""></RouterLink>
         <div class="navbarMenu">
-            <!-- <RouterLink to="/prices" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">Precios</RouterLink>
-            <RouterLink to="/login" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">Login</RouterLink> -->
+            <RouterLink to="/prices" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">Precios</RouterLink>
+            <RouterLink to="/login" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">Login</RouterLink>
             
         </div>
     </div>
     
     
     <div class="btnRegistroBlock">
-        <!-- <RouterLink to="/register" :class="{ 'btnRegistro': true, 'btnRegistroScroll': route.name === 'Prices' }">Registro</RouterLink> -->
+        <RouterLink to="/register" :class="{ 'btnRegistro': true, 'btnRegistroScroll': route.name === 'Prices' }">Registro</RouterLink>
     </div>
 
     <div class="notificacionContainer">
-        <p>Hola cabron</p>
+        <p></p>
     </div>
 </template>
 

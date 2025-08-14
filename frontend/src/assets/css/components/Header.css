@@ -14,30 +14,33 @@ header {
 
 .headerScroll {
     /* Animation */
-    animation-duration: 0.1s;
+    animation-duration: 0.3s;
     animation-name: headerScrollAnimation;
     animation-delay: 0s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
-    animation-timing-function: linear;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, .16);
+    animation-timing-function: ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
 }
 
 @keyframes headerScrollAnimation {
     from {
         background-color: transparent;
+        backdrop-filter: blur(0px);
     }
 
     to {
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
     }
 }
 
 .notificacionContainer {
     width: fit-content;
-    padding: 0.5rem 1rem;
-    height: 2.5rem;
-    background-color: white ;
+    padding: 0.75rem 1.5rem;
+    min-height: 2.5rem;
+    background-color: white;
     position: fixed;
     z-index: 13;
     bottom: 3rem;
@@ -46,7 +49,23 @@ header {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    box-shadow: 5px 5px 5px rgba(0, 2, 0, .20);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    border-left: 4px solid #039BE5;
+    animation: slideInUp 0.3s ease-out;
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 
@@ -70,12 +89,26 @@ header {
     display: flex;
     color: white;
     font-size: 25px;
-    width: 30px;
+    width: 35px;
+    height: 35px;
     cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+#burgerMenuIcon:hover {
+    background-color: rgba(3, 155, 229, 0.2);
+    transform: scale(1.05);
+    color: #039BE5;
 }
  
 .navbarMenu {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     width: 100vw;
     display: flex;
     flex-direction: column;
@@ -84,36 +117,45 @@ header {
     position: absolute;
     top: -4rem;
     left: 0;
+    border-bottom: 1px solid rgba(3, 155, 229, 0.1);
 }
 
 .activeNavbar {
     display: flex;
     top: 4rem;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, .16);
-    animation-duration: 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation-duration: 0.3s;
     animation-name: aparicionNavbar;
     animation-delay: 0s;
     animation-iteration-count:1;
     animation-fill-mode: forwards;
-    animation-timing-function: linear;
+    animation-timing-function: ease-out;
 }
 
 @keyframes aparicionNavbar {
     from {
         top: -4rem;
+        opacity: 0;
+        transform: translateY(-10px);
     }
 
     to {
         top: 4rem;
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
 .redirectNavbar {
-    padding: 0.5rem;
+    padding: 0.75rem 1rem;
     width: 100%;
     text-align: center;
     color: white;
-    font-size: 14px;
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0.25rem 0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
 
     /* Para animación de linea abajo al escuchar hover*/
     text-decoration: none;
@@ -121,7 +163,6 @@ header {
     background-position: 0% 100%;
     background-repeat: no-repeat;
     background-size: 0% 2px;
-    transition: background-size .4s;
 }
 
 .redirectNavbarGrey {
@@ -131,21 +172,46 @@ header {
 .redirectNavbar:hover, .redirectNavbar:focus { /* Al escuchar hover */
     background-size: 100% 2px;
     color: #039BE5;
+    background-color: rgba(3, 155, 229, 0.1);
+    transform: translateX(4px);
+}
+
+.redirectNavbar:active {
+    transform: translateX(2px);
 }
 
 .btnRegistro {
     border: 1px solid white;
-    border-radius: 20px;
+    border-radius: 25px;
     padding: 0.8rem 2rem;
     color: #039BE5;
     font-weight: 600;
     background-color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.btnRegistro:hover {
+    background: linear-gradient(135deg, #039BE5 0%, #114B7A 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(3, 155, 229, 0.3);
 }
 
 .btnRegistroScroll {
     border: 1px solid #039BE5;
     color: #039BE5;
     background-color: transparent;
+    box-shadow: 0 2px 4px rgba(3, 155, 229, 0.1);
+}
+
+.btnRegistroScroll:hover {
+    background: linear-gradient(135deg, #039BE5 0%, #114B7A 100%);
+    color: white;
+    border-color: #039BE5;
 }
 
 @media screen and (min-width:768px) { 

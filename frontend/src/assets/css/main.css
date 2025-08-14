@@ -10,6 +10,7 @@
 @import url(./views/Request.css);
 @import url(./components/MenuHamburguesaSlide.css);
 @import url(./components/Paginacion.css);
+@import url(./components/SkeletonLoader.css);
 @import url(./views/Account.css);
 @import url(./views/Mailbox.css);
 @import url(./views/ConfigAssistant.css);
@@ -54,8 +55,35 @@ ul li {
 }
 
 .error {
-  color: tomato;
+  color: #e74c3c;
+  font-size: 0.85em;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: errorShake 0.3s ease-in-out;
+}
+
+.error::before {
+  content: '⚠';
   font-size: 0.9em;
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+.inputForm.error {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.blockInput.error .blockIcon {
+  background-color: #e74c3c;
+  color: white;
+  border-color: #e74c3c;
 }
 
 /* Para darle nombre a una fuente dentro del proyecto no existente en el sistema */
@@ -113,15 +141,46 @@ select:focus {
 
 textarea {
   border: 1px solid #D0D3D8;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-top-left-radius: 5px;
-  padding: 0.5rem;
+  border-radius: 10px;
+  padding: 0.75rem;
+  background-color: #fbfbfb;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  resize: vertical;
+  min-height: 80px;
 }
 
 textarea:focus {
   outline: none;
+  border-color: #039BE5;
+  box-shadow: 0 0 0 3px rgba(3, 155, 229, 0.1);
+  background-color: white;
+}
+
+textarea:hover {
+  border-color: #039BE5;
+}
+
+/* Select config mejorado */
+select {
+  border: 1px solid #D0D3D8;
+  border-radius: 10px;
+  padding: 0.75rem;
+  background-color: #fbfbfb;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #039BE5;
+  box-shadow: 0 0 0 3px rgba(3, 155, 229, 0.1);
+  background-color: white;
+}
+
+select:hover {
+  border-color: #039BE5;
 }
 
 .BGWhite {
@@ -155,8 +214,91 @@ textarea:focus {
 }
 
 button,a, i, div { /* Eliminar enfoque azul al dar click */
- 
   outline: none;
   -webkit-tap-highlight-color: transparent; /* Eliminar el efecto azul en navegadores WebKit */
+}
+
+/* Estados de carga mejorados */
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+  position: relative;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #039BE5;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Estados hover mejorados para elementos interactivos */
+button:not(.btnSubmit):not(.btnRegistro), 
+.interactive-element {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+button:not(.btnSubmit):not(.btnRegistro):hover,
+.interactive-element:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estados de enfoque mejorados para accesibilidad */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid #039BE5;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Transiciones suaves para cambios de estado */
+*:not(.opacity):not(.opacityVentanas):not(.site-home) {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Mejoras en selección de texto */
+::selection {
+  background-color: rgba(3, 155, 229, 0.2);
+  color: #114B7A;
+}
+
+/* Estados de éxito */
+.success {
+  color: #90d387;
+  animation: successPulse 0.5s ease-in-out;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Estados de advertencia */
+.warning {
+  color: #F6CA75;
+  animation: warningShake 0.3s ease-in-out;
+}
+
+@keyframes warningShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
 }
 

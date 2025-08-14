@@ -12,12 +12,13 @@
     import {useApi} from '/src/js/useFetch.js'
     import {mostrarFileEnImgPreview} from '/src/js/previewFile.js'
     import {validateForm} from '/src/js/validateForm.js'
+    import AccountSkeleton from '../components/skeletons/AccountSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('account', 1800)
 
     // const userStore = useUserStore(); // cuando haya sesión
     // const userLogged = computed(() => userStore.userLogged);
-
-    // Configurar el valor inicial para seleccionar el país del usuario en sesión
-    const selectedCountry = ref(userLogged.Pais_Residencia); // sera null cuando haya db
 
     const countries = ref(null) // valor de paises inicialmente
 
@@ -94,7 +95,7 @@
         async function obtenerPaises(){ // para el select pais residencia
             
             try {
-                const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all', 'GET');
+                const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all?fields=name,ccn3', 'GET');
                 
                 // Esperar hasta que los datos estén listos
                 if (!error.value && data.value) { 
@@ -115,7 +116,13 @@
 </script>
 
 <template>
-    <section class="sectionAccount">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <AccountSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionAccount">
         <h1>Mi cuenta</h1>
         <div class="containerAccount">
             
@@ -154,7 +161,7 @@
                         <label for="">País de residencia</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-globe"></i>
-                            <select v-model="selectedCountry"  name="" id="" class="inputSelectWoBorderOLeft">
+                            <select v-model="formPersonalData.paisResidencia"  name="" id="" class="inputSelectWoBorderOLeft">
                                 <option 
                                     v-for="country in countries"
                                     :key="country.ccn3" 
@@ -257,7 +264,7 @@
             
             
         </div>
-   </section>
+    </section>
 </template>
 
 

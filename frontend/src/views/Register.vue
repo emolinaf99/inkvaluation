@@ -1,6 +1,10 @@
 <script setup>
     import {reactive,ref,onMounted} from 'vue'
     import { RouterLink, RouterView } from 'vue-router'
+    import RegisterSkeleton from '../components/skeletons/RegisterSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('register', 1200)
 
     const formData = ref({
         nombre: '',
@@ -79,7 +83,13 @@
 </script>
 
 <template>
-    <section class="sectionLoginAndRegister">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <RegisterSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionLoginAndRegister">
         <div class="contenedorForm" id="contenedorFormRegister">
             <div class="contenedorLogoForm">
                 <RouterLink to="/"><img class="logoApp" src="/img/InkValuationLogo.png" alt=""></RouterLink>

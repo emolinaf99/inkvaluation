@@ -130,7 +130,7 @@
 @media screen and (min-width:1280px) {
     .contenedorDescripcionYVideo {
         margin-top: 3rem;
-        padding: 3rem 3rem;
+        /* padding: 3rem 3rem; */
         flex-direction: row;
         gap: 2rem;
     }

@@ -3,6 +3,10 @@
     import { RouterLink, RouterView } from 'vue-router'
     import {validateForm} from '/src/js/validateForm.js'
     import { inputFromPasswordToText } from '@/js/inputFromPasswordToText';
+    import LoginSkeleton from '../components/skeletons/LoginSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('login', 1200)
 
     const loginForm = reactive({
         email: '',
@@ -38,7 +42,13 @@
 </script>
 
 <template>
-    <section class="sectionLoginAndRegister">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <LoginSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionLoginAndRegister">
         <div class="contenedorForm" id="contenedorFormLogin">
             <div class="contenedorLogoForm" id="contLogoLogin">
                 <RouterLink to="/"><img class="logoApp" src="/img/InkValuationLogo.png" alt=""></RouterLink>
