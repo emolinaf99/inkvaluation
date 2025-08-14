@@ -78,7 +78,6 @@
         <div class="view-selector">
           <select v-model="selectedView" @change="onViewChange">
             <option value="all">🌍 Todas las vistas</option>
-            <option value="landing">🏠 Landing Page</option>
             <option value="login">🔐 Login</option>
             <option value="register">📝 Register</option>
             <option value="account">👤 Account</option>

@@ -56,18 +56,18 @@
     </div>
 
     <!-- Contenido Real -->
-    <section v-else class="sectionSolicitudes">
-        <h1>Solicitudes de cotización</h1>
-        <div class="contenedorGeneralSolicitudes">
+    <section v-else class="sectionSolicitudes ux-container">
+        <h1 class="ux-header">Solicitudes de cotización</h1>
+        <div class="contenedorGeneralSolicitudes ux-content">
             <div class="introBlock">
                 
-                <div class="searchCont">
+                <div class="searchCont ux-fade-in ux-stagger-1">
                     <input class="inputSearchRequest" type="search" name="" id="" placeholder="Buscar">
-                    <button class="btnDownloadRequests" type="button">Descargar Cotizaciones</button>
+                    <button class="btnDownloadRequests ux-button ux-hover-lift" type="button">Descargar Cotizaciones</button>
                 </div>
 
-                <div class="contenedorSolicitudes">
-                    <div class="bloqueSolicitud">
+                <div class="contenedorSolicitudes ux-content ux-stagger-2">
+                    <div class="bloqueSolicitud ux-list-item ux-stagger-1">
                         <div class="previewRequest">
                             <img src="/img/tatuajeMano.png" alt="">
                             <div class="prevMiddle">
@@ -190,7 +190,7 @@
                         </div>
                         
                     </div>
-                    <div class="bloqueSolicitud">
+                    <div class="bloqueSolicitud ux-list-item ux-stagger-2">
                         <div class="previewRequest">
                             <img src="/img/noImg.jpg" alt="">
                             <div class="prevMiddle">
@@ -321,7 +321,7 @@
             
             
             <!-- Paginación de consulta -->
-            <div class="contenedorPaginacion">
+            <div class="contenedorPaginacion ux-fade-in ux-stagger-3">
                 <div class="paginacionBlock">
                     <a class="flechaAnterior">
                         <i class="fa-solid fa-chevron-left"></i>

@@ -79,14 +79,14 @@
     </div>
 
     <!-- Contenido Real -->
-    <section v-else class="sectionGeneralConfAssistant">
-        <h1>Formularios</h1>
+    <section v-else class="sectionGeneralConfAssistant ux-container">
+        <h1 class="ux-header">Formularios</h1>
 
-        <div class="contenedorSecConfAssistant">
+        <div class="contenedorSecConfAssistant ux-content">
             <!-- <RouterLink to="/newForm" class="btnNewForm">Nuevo formulario</RouterLink> -->
             
-            <div class="accountBlock">
-                <div v-for="service in services" :key="service.id"class="containerServiceForms">
+            <div class="accountBlock ux-card">
+                <div v-for="(service, index) in services" :key="service.id" class="containerServiceForms ux-list-item" :style="`animation-delay: ${0.1 * (index + 1)}s`">
                     <button type="button" class="btnNewForm">{{ service.description }}</button>
                     
                     <div class="newFormIcon">
@@ -105,15 +105,17 @@
                      <!-- Se obtiene la lista de formularios filtrados -->
                     <div v-if="filterFormsByService(service.id).length > 0" style="width: 100%;">
                         <Formulario
-                            v-for="formulario in filterFormsByService(service.id)"
+                            v-for="(formulario, formIndex) in filterFormsByService(service.id)"
                             :key="formulario.id"
                             v-bind:formulario="formulario"
                             @delete-form="deleteForm"
+                            class="ux-table-row"
+                            :style="`animation-delay: ${0.1 * (formIndex + 3)}s`"
                         />
                     </div>
 
                     <!-- Si no hay formularios, se muestra el mensaje -->
-                    <p v-else class="noFormsMessage">No hay formularios asociados aún.</p>
+                    <p v-else class="noFormsMessage ux-fade-in ux-delay-medium">No hay formularios asociados aún.</p>
                 </div>
                 
             </div>

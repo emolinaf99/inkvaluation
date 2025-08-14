@@ -122,13 +122,13 @@
     </div>
 
     <!-- Contenido Real -->
-    <section v-else class="sectionAccount">
-        <h1>Mi cuenta</h1>
-        <div class="containerAccount">
+    <section v-else class="sectionAccount ux-container">
+        <h1 class="ux-header">Mi cuenta</h1>
+        <div class="containerAccount ux-content">
             
-            <div class="blocksContainer">
+            <div class="blocksContainer ux-slide-in-left">
                 
-                <form class="accountBlock" @submit.prevent="submitForm('personalData')" >
+                <form class="accountBlock ux-card ux-stagger-1" @submit.prevent="submitForm('personalData')" >
                     <h4>Datos Personales</h4>
                     <div class="rowSpaceBetween">
                         <img ref="imgPreview" :src="formPersonalData.imgPerfil" alt="">
@@ -161,7 +161,7 @@
                         <label for="">País de residencia</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-globe"></i>
-                            <select v-model="formPersonalData.paisResidencia"  name="" id="" class="inputSelectWoBorderOLeft">
+                            <select v-model="formPersonalData.paisResidencia" class="inputSelectWoBorderOLeft" style="padding: 0; padding-left: 0.5rem;" >
                                 <option 
                                     v-for="country in countries"
                                     :key="country.ccn3" 
@@ -193,7 +193,7 @@
                     </div>
                     <button class="btnAccountBlock BGYellow" type="submit">Actualizar</button>
                 </form>
-                <div class="accountBlock">
+                <div class="accountBlock ux-card ux-stagger-2">
                     <h4>Servicios</h4>
                     <!-- <p class="parOptForm">Activa los servicios para los que tu cliente puede solicitar presupuesto y selecciona cómo quieres recibir las solicitudes.</p>
                     <p class="parOptForm bold">Lista de servicios</p> -->
@@ -217,8 +217,8 @@
                 </div>
             </div>
 
-            <div class="blocksContainer">
-                <div class="accountBlock">
+            <div class="blocksContainer ux-slide-in-right">
+                <div class="accountBlock ux-card ux-stagger-3">
                     <h4>Suscripción de plan </h4>
                     <div class="divInput">
                         <label for="">Nombre del plan</label>
@@ -252,7 +252,7 @@
                     
                 </div>
 
-                <NewPassword> 
+                <NewPassword class="ux-card ux-stagger-4"> 
                     
                 </NewPassword>
                 

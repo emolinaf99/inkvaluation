@@ -71,9 +71,9 @@
             </div>
             
         </div>
-        <!-- <div class="contenedorVideo">
+        <div class="contenedorVideo">
             <video class="videoAplicativo" src="/videos/videoPruebaApp.mp4" controls></video>
             
-        </div> -->
+        </div>
     </div>
 </template>

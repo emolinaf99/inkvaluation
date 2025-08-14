@@ -31,34 +31,34 @@
     </div>
 
     <!-- Contenido Real -->
-    <section v-else class="sectionAccount">
-        <h1>Mi estudio</h1>
-        <div class="containerAccount">
+    <section v-else class="sectionAccount ux-container">
+        <h1 class="ux-header">Mi estudio</h1>
+        <div class="containerAccount ux-content">
             
-            <div class="blocksContainer">
-                <div class="accountBlock">
+            <div class="blocksContainer ux-slide-in-left">
+                <div class="accountBlock ux-card ux-stagger-1">
                     <h4>Datos del negocio</h4>
-                    <div class="rowSpaceBetween">
-                        <img ref="imgPreview" src="/img/sinFoto.jpg" alt="">
+                    <div class="rowSpaceBetween ux-fade-in ux-stagger-1">
+                        <img ref="imgPreview" src="/img/sinFoto.jpg" alt="" class="ux-image">
                         <div class="btnsImgPerfil">
                             <input hidden type="file" name="" id="imgPerfilStudio" @change="handleImageChange">
-                            <label class="BGDarkGray" for="imgPerfilStudio">Subir imagen</label>
-                            <button>Eliminar</button>
+                            <label class="BGDarkGray ux-button ux-hover-lift" for="imgPerfilStudio">Subir imagen</label>
+                            <button class="ux-button ux-hover-lift">Eliminar</button>
                         </div>
                     </div>
-                    <div class="divInput">
+                    <div class="divInput ux-form-field ux-stagger-2">
                         <label for="">Descripción</label>
                         <textarea rows="3" name="" id=""></textarea>
                     </div>
                     
-                    <div class="divInput">
+                    <div class="divInput ux-form-field ux-stagger-3">
                         <label for="">Nombre de tu negocio</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-shop"></i>
                             <input type="text" name="" value="InkValuation">
                         </div>
                     </div>
-                    <div class="divInput">
+                    <div class="divInput ux-form-field ux-stagger-4">
                         <label for="">Dominio</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-globe"></i>
@@ -66,13 +66,13 @@
                         </div>
                     </div>
                 
-                    <button class="btnAccountBlock BGYellow" type="button">Actualizar</button>
+                    <button class="btnAccountBlock BGYellow ux-button ux-stagger-5" type="button">Actualizar</button>
                 </div>
-                <div class="accountBlock">
+                <div class="accountBlock ux-card ux-stagger-2">
                     <h4>Sedes del Negocio</h4>
-                    <div class="rowContain">
+                    <div class="rowContain ux-fade-in ux-stagger-1">
                         <div class="inputsContain">
-                            <div class="divInput">
+                            <div class="divInput ux-form-field ux-stagger-1">
                                 <label for="">Ciudad</label>
                                 <div class="inputIcon inpIconCity">
                             
@@ -83,7 +83,7 @@
                                     
                                 </div>
                             </div>
-                            <div class="divInput">
+                            <div class="divInput ux-form-field ux-stagger-2">
                                 <label for="">Dirección</label>
                                 <div class="inputIcon inpIconCity">
                                     
@@ -92,18 +92,18 @@
                             </div>
 
                         </div>
-                        <i class="fa-solid fa-circle-plus addCity"></i>
+                        <i class="fa-solid fa-circle-plus addCity ux-scale-in ux-stagger-3 ux-hover-scale"></i>
                         
                     </div> 
                    
-                    <div class="sectionCities">
-                        <div class="itemCity">
+                    <div class="sectionCities ux-content ux-stagger-2">
+                        <div class="itemCity ux-list-item ux-stagger-1">
                             <i class="fa-regular fa-circle-xmark"></i>
                             <p>Medellín</p>
                             <span>|</span>
                             <p>Calle 26 D 26 02</p>
                         </div>
-                        <div class="itemCity">
+                        <div class="itemCity ux-list-item ux-stagger-2">
                             <i class="fa-regular fa-circle-xmark"></i>
                             <p>Bogota</p>
                             <span>|</span>
@@ -111,28 +111,28 @@
                         </div>
                     </div>
                 
-                    <button class="btnAccountBlock BGYellow" type="button">Actualizar</button>
+                    <button class="btnAccountBlock BGYellow ux-button ux-stagger-3" type="button">Actualizar</button>
                 </div>
                  
             </div>
 
-            <div class="blocksContainer">
-                <div class="accountBlock">
+            <div class="blocksContainer ux-slide-in-right">
+                <div class="accountBlock ux-card ux-stagger-3">
                     <h4>Artistas</h4>
-                    <p class="parOptForm">Gestiona los artistas que trabajan contigo.</p>
+                    <p class="parOptForm ux-fade-in ux-stagger-1">Gestiona los artistas que trabajan contigo.</p>
                     
                     <div class="contOpts">
                         
-                        <div class="rowContain">
+                        <div class="rowContain ux-fade-in ux-stagger-2">
                             <div class="inputsContain">
-                                <div class="divInput">
+                                <div class="divInput ux-form-field ux-stagger-1">
                                     <label for="">Correo Electrónico</label>
                                     <div class="inputIcon inpIconCity">
                                         
                                         <input type="text">
                                     </div>
                                 </div>
-                                <div class="divInput">
+                                <div class="divInput ux-form-field ux-stagger-2">
                                     <label for="">Sede</label>
                                     <div class="inputIcon inpIconCity">
                                 
@@ -146,12 +146,12 @@
                                 
                                 
                             </div>
-                            <i class="fa-solid fa-circle-plus addCity"></i>
+                            <i class="fa-solid fa-circle-plus addCity ux-scale-in ux-stagger-3 ux-hover-scale"></i>
                             
                         </div>
                     
-                        <div class="sectionCities">
-                            <div class="itemArtist">
+                        <div class="sectionCities ux-content ux-stagger-3">
+                            <div class="itemArtist ux-list-item ux-stagger-1">
                                 <div class="itemCity noBorderBottom">
                                     <i class="fa-regular fa-circle-xmark"></i>
                                     <p>Artista 1</p>
@@ -160,11 +160,11 @@
                                 </div>
                                 <div class="itemCity itemRedes noBorderBottom">
                                     
-                                    <img src="/img/noImg.jpg" alt="">
+                                    <img src="/img/noImg.jpg" alt="" class="ux-image">
                                 </div>
                             </div>
                             
-                            <div class="itemArtist">
+                            <div class="itemArtist ux-list-item ux-stagger-2">
                                 <div class="itemCity noBorderBottom">
                                     <i class="fa-regular fa-circle-xmark"></i>
                                     <p>Artista 2</p>
@@ -173,21 +173,21 @@
                                 </div>
                                 <div class="itemCity itemRedes noBorderBottom">
                                     
-                                    <img src="/img/noImg.jpg" alt="">
+                                    <img src="/img/noImg.jpg" alt="" class="ux-image">
                                 </div>
                             </div>
                         </div>
                         
                     </div>
                 </div>
-                <div class="accountBlock">
+                <div class="accountBlock ux-card ux-stagger-4">
                     <h4>Servicios</h4>
-                    <p class="parOptForm">Activa los servicios para los que tu cliente puede solicitar presupuesto y selecciona cómo quieres recibir las solicitudes.</p>
-                    <p class="parOptForm bold">Lista de servicios</p>
-                    <div class="contOpts">
-                        <div v-for="service in services" class="btnDescInfo">
+                    <p class="parOptForm ux-fade-in ux-stagger-1">Activa los servicios para los que tu cliente puede solicitar presupuesto y selecciona cómo quieres recibir las solicitudes.</p>
+                    <p class="parOptForm bold ux-fade-in ux-stagger-2">Lista de servicios</p>
+                    <div class="contOpts ux-content ux-stagger-3">
+                        <div v-for="(service, index) in services" :key="service.Service_Id" class="btnDescInfo ux-list-item" :style="`animation-delay: ${0.1 * (index + 4)}s`">
                             <div  class="btnYDesc">
-                                <div class="simBtnWithAnimation" @click="checkOptAssistant($event.currentTarget)">
+                                <div class="simBtnWithAnimation ux-scale-in ux-hover-scale" @click="checkOptAssistant($event.currentTarget)">
                                     <div class="circleMove"></div>
                                     <input class="inputCheck" type="checkbox" name="" id="">
                                 </div>
@@ -197,7 +197,7 @@
                             
                         </div>
                         
-                        <button class="btnAccountBlock BGYellow" type="button">Guardar</button>
+                        <button class="btnAccountBlock BGYellow ux-button ux-stagger-final" type="button">Guardar</button>
                         
                         
                     </div>

@@ -6,24 +6,14 @@
   import SeccionBeneficios from '../components/SeccionBeneficios.vue'
   import PasoAPaso from '../components/PasoAPaso.vue'
   import Clients from '../components/Clientes.vue'
-  import LandingPageSkeleton from '../components/skeletons/LandingPageSkeleton.vue'
-  import { useSkeletonDev } from '../js/useSkeletonDev.js'
-
-  const { isLoading, isFading } = useSkeletonDev('landing', 2000)
 
 </script>
 
 <template>
-  <!-- Skeleton Loader -->
-  <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
-    <LandingPageSkeleton />
-  </div>
-
-  <!-- Contenido Real -->
-  <div v-else>
-    <DescripcionYVideo/>
-    <SeccionBeneficios/>
-    <PasoAPaso/>
+  <div class="ux-container">
+    <DescripcionYVideo class="ux-content ux-stagger-1"/>
+    <SeccionBeneficios class="ux-content ux-stagger-2"/>
+    <PasoAPaso class="ux-content ux-stagger-3"/>
     <!-- <Clients/> -->
   </div>
 </template>

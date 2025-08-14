@@ -1,0 +1,250 @@
+/* ==== ANIMACIONES UX ELEGANTES ==== */
+
+/* Keyframes base */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Clases de animación principales */
+.ux-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.ux-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.ux-slide-in-left {
+  animation: slideInLeft 0.7s ease-out forwards;
+}
+
+.ux-slide-in-right {
+  animation: slideInRight 0.7s ease-out forwards;
+}
+
+.ux-scale-in {
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+/* Animaciones con delay para efectos escalonados */
+.ux-stagger-1 { animation-delay: 0.1s; }
+.ux-stagger-2 { animation-delay: 0.2s; }
+.ux-stagger-3 { animation-delay: 0.3s; }
+.ux-stagger-4 { animation-delay: 0.4s; }
+.ux-stagger-5 { animation-delay: 0.5s; }
+.ux-stagger-6 { animation-delay: 0.6s; }
+
+/* Estado inicial para evitar flash */
+.ux-animate {
+  opacity: 0;
+}
+
+/* Animaciones específicas para contenedores */
+.ux-container {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.ux-header {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out 0.1s forwards;
+}
+
+.ux-content {
+  opacity: 0;
+  animation: fadeInUp 0.7s ease-out 0.3s forwards;
+}
+
+.ux-card {
+  opacity: 0;
+  animation: scaleIn 0.6s ease-out forwards;
+}
+
+.ux-button {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ux-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Animaciones para formularios */
+.ux-form-field {
+  opacity: 0;
+  animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.ux-form-field:nth-child(odd) {
+  animation: slideInLeft 0.6s ease-out forwards;
+}
+
+.ux-form-field:nth-child(even) {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+/* Animaciones para listas */
+.ux-list-item {
+  opacity: 0;
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.ux-list-item:nth-child(1) { animation-delay: 0.1s; }
+.ux-list-item:nth-child(2) { animation-delay: 0.2s; }
+.ux-list-item:nth-child(3) { animation-delay: 0.3s; }
+.ux-list-item:nth-child(4) { animation-delay: 0.4s; }
+.ux-list-item:nth-child(5) { animation-delay: 0.5s; }
+.ux-list-item:nth-child(6) { animation-delay: 0.6s; }
+.ux-list-item:nth-child(7) { animation-delay: 0.7s; }
+.ux-list-item:nth-child(8) { animation-delay: 0.8s; }
+
+/* Animaciones para tablas */
+.ux-table-row {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Animaciones para imágenes */
+.ux-image {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Animaciones de hover sutiles */
+.ux-hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ux-hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.ux-hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.ux-hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Animaciones específicas para loading states */
+.ux-loading-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.ux-loading-exit {
+  opacity: 1;
+  transform: translateY(0);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Animaciones para modales y overlays */
+.ux-modal-backdrop {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.ux-modal-content {
+  animation: scaleIn 0.4s ease-out 0.1s forwards;
+}
+
+/* Responsive: Reducir animaciones en pantallas pequeñas */
+@media (max-width: 768px) {
+  .ux-fade-in-up,
+  .ux-slide-in-left,
+  .ux-slide-in-right,
+  .ux-scale-in,
+  .ux-container,
+  .ux-header,
+  .ux-content,
+  .ux-card,
+  .ux-form-field,
+  .ux-list-item,
+  .ux-table-row {
+    animation-duration: 0.4s;
+  }
+}
+
+/* Respeto a las preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .ux-fade-in-up,
+  .ux-slide-in-left,
+  .ux-slide-in-right,
+  .ux-scale-in,
+  .ux-container,
+  .ux-header,
+  .ux-content,
+  .ux-card,
+  .ux-form-field,
+  .ux-list-item,
+  .ux-table-row,
+  .ux-button,
+  .ux-hover-lift,
+  .ux-hover-scale {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Utilidades para control fino */
+.ux-delay-short { animation-delay: 0.1s; }
+.ux-delay-medium { animation-delay: 0.3s; }
+.ux-delay-long { animation-delay: 0.5s; }
+
+.ux-duration-fast { animation-duration: 0.4s; }
+.ux-duration-normal { animation-duration: 0.6s; }
+.ux-duration-slow { animation-duration: 0.8s; }
