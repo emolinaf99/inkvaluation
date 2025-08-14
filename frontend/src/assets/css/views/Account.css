@@ -1,0 +1,150 @@
+.sectionAccount {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 4rem;
+    padding: 1rem 1rem;
+    padding-bottom: 2rem;
+}
+
+.sectionAccount h1 {
+    font-family: 'Nexa Bold';
+    font-size: 24px;
+    color: white;
+}
+
+.inputSelectWoBorderOLeft{
+    border: 0 !important;
+    border-left: 1px solid #d9d9d9 !important;
+    border-top-left-radius:0 !important ;
+    border-bottom-left-radius: 0 !important;
+}
+
+.containerAccount {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.blocksContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.accountBlock {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    gap: 1rem;
+    color: black;
+    padding-bottom: 2rem;
+    padding-top: 2rem;
+}
+
+.accountBlock h4 {
+    font-size: 18px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.accountBlock p {
+    color: grey;
+    margin-bottom: 1rem;
+}
+
+.accountBlock a {
+    width: 100%;
+}
+
+.divInput {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0.3rem;
+    
+}
+
+.divInput input {
+    width: 100%;
+    height: 2rem;
+    border-radius: 5px;
+    padding-left: 0.5rem;
+    color: grey;
+}
+
+.divInput label {
+    font-weight: 400;
+}
+
+.inputIcon {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+}
+
+.inputIcon i {
+    color: #039BE5;
+    padding: 0 0.5rem;
+    font-size: 20px;
+    width: 2.5rem;
+    text-align: center;
+}
+
+.btnAccountBlock {
+    height: 2.5rem; 
+    width: 100%;
+    margin-top: 1rem;
+    color: black;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.eye {
+    color: #c2bdbd !important;
+    cursor: pointer;
+}
+
+@media screen and (min-width:768px) {
+    .blocksContainer {
+        width: 80%;
+    }
+}
+
+
+@media screen and (min-width:1280px) {
+    .blocksContainer {
+        width: 40%;
+    }
+
+    .containerAccount {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .accountBlock p {
+        margin-bottom: 0;
+        height: 3.5rem;
+    }
+}
+

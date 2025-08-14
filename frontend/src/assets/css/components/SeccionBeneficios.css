@@ -1,0 +1,78 @@
+.contenedorBeneficios {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    
+    margin-bottom: 2rem;
+}
+
+.contenedorTitleBeneficios {
+    display: flex;
+    flex-direction: column;
+    padding: 0 3rem;
+}
+
+.cajasBeneficios {
+    display: grid;
+    grid-template-columns: 100%;
+    padding: 30px;
+    border: 1px solid #e5e5e5;
+    background-color: white;
+    
+}
+
+.beneficioBlock {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 24px 16px;;
+}
+
+.iconBeneficios {
+    font-size: 30px;
+    color: #039BE5;
+    margin-bottom:1rem;
+}
+
+.titleBeneficio {
+    color: #444F60;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.descripcionBeneficio {
+    color: #999;
+    font-family: 'Roboto';
+}
+
+#lastBeneficioBlock {
+    border-bottom: 0;
+}
+
+
+@media screen and (min-width:768px) {
+    .cajasBeneficios {
+        display: grid;
+        grid-template-columns: 25% 25% 25% 25%;
+        
+    }
+
+    .beneficioBlock {
+        border: 1px solid #e5e5e5;
+        padding: 24px 16px;;
+    }
+
+    .sinBordeDerecho {
+        border-right: 0;
+    }
+    
+    .sinBordeIzquierdo {
+        border-left: 0;
+    }
+
+    .sinBordeAbajo {
+        border-bottom: 0;
+    }
+
+    .sinBordeArriba {
+        border-top: 0;
+    }
+}

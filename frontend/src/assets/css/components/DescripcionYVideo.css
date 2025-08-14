@@ -1,0 +1,147 @@
+.contenedorDescripcionYVideo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding:3rem 1.5rem;
+}
+
+.contenedorDescripcion {
+    text-align: center;
+    width: 100%;
+    padding: 0.75rem;
+}
+
+.titleMain {
+    font-size: 40px;
+    font-family: 'Nexa Bold';
+    color: white;
+    margin-bottom: 0;
+}
+
+.descripcion {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 17.5px;
+    color: white !important; /* es una declaración que se utiliza para darle a una regla específica una mayor prioridad sobre cualquier otra regla de estilo que coincida con el mismo elemento*/
+    font-weight: 400;
+}
+
+.suscribirseBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: unset;
+}
+
+.formSuscribirse {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.inputMain {
+    height: 50px;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 20px;
+    border: 1px solid #DEE2E6;
+    color: #878787;
+}
+
+.buttonSuscribirseMain {
+    height: 50px;
+    width: 100%;
+    padding: 1rem;
+    border-radius: 20px;
+    background-color: #039BE5;
+    color: white;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    cursor: pointer;
+}
+
+.contenedorVideo {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.videoAplicativo {
+    width: 100%;
+}
+
+@media screen and (min-width:768px) {
+    .contenedorDescripcionYVideo {
+        margin-top: 3rem;
+        padding:0rem 10%;
+    }
+
+    .suscribirseBlock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        /* position: relative; */
+    }
+
+    .formSuscribirse {
+        width: 100%;
+        /* border: 1px solid #DEE2E6; */
+        border-radius: 20px;
+        /* background-color: white; */
+        align-items: flex-start;
+        justify-content: center;
+        overflow: hidden;
+        gap: 0.3rem;
+    }
+
+    .inputMain {
+        height: 50px;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 20px;
+        color: #878787;
+    }
+
+    .buttonSuscribirseMain {
+        height: 40px;
+        width: 100%;
+        padding: 3px 13px 6px 13px;
+        border-radius: 20px;
+        background-color: #039BE5;
+        color: white;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        /* position: absolute; */
+        /* right: 5px;
+        bottom: 5px; */
+    }
+
+}
+
+@media screen and (min-width:1280px) {
+    .contenedorDescripcionYVideo {
+        margin-top: 3rem;
+        padding: 3rem 3rem;
+        flex-direction: row;
+        gap: 2rem;
+    }
+    .contenedorDescripcion{
+        text-align: left;
+        width: 40%;
+    }
+
+    .contenedorVideo {
+        width: 50%;
+        margin-left: 10%;
+    }
+
+}

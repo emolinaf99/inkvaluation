@@ -1,0 +1,96 @@
+.contenedorPaginacion {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.paginacionBlock {
+    min-width: 15rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #D0D3D8;
+    gap: 1rem;
+    padding: 0.5rem;
+    height: 2.5rem;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: white;
+}
+
+.flechaAnterior {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 400;
+    color: black;
+}
+
+.flechaAnterior:hover {
+    color: black;
+}
+
+.flechaSiguiente {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 400;
+    color: black;
+    
+}
+
+.flechaSiguiente:hover {
+    color: black;
+}
+
+.numberPage {
+    color: black;
+    cursor: pointer;
+}
+
+.numberPage:hover {
+    color: black;
+}
+
+.totalPaginas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: auto;
+}
+
+.totalPaginas a {
+    text-align: center;
+    padding: 0.5rem;
+    width: 2rem;
+    color: black;
+    display: block;
+}
+
+.totalPaginas a:hover {
+    background-color: #e0e5ee;
+    cursor: pointer;
+    color: black;
+}
+
+.pageHere {
+    border: 1.5px solid black;
+}
+
+.np {
+    display: block;
+}

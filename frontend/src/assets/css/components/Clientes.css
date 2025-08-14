@@ -1,0 +1,58 @@
+.contenedorTotalClientes {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    gap: 1rem;
+    background-color: #fbfbfb;
+}
+
+.contentSlide {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    width: calc(500px * 10 + 1rem * 9); /* Ancho de los elementos y los gaps */
+}
+
+#contentSlideRight {
+    animation: scrollRight 15s linear infinite;
+}
+
+#contentSlideLeft {
+    animation: scrollLeft 15s linear infinite;
+}
+
+
+.itemSlide {
+    width: 500px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.itemSlide img {
+    width: 100%;
+}
+
+/* Keyframes for infinite scrolling */
+@keyframes scrollLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(-500px * 4 - 1rem * 4)); /* Desplaza la mitad de los elementos */
+    }
+}
+
+@keyframes scrollRight {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(500px * 4 - 1rem * 4)); /* Desplaza la mitad de los elementos */
+    }
+}
+

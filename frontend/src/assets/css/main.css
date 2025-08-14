@@ -1,0 +1,162 @@
+@import url(./normalize.css);
+@import url(./Forms.css);
+@import url(./components/Header.css);
+@import url(./components/Footer.css);
+@import url(./components/DescripcionYVideo.css);
+@import url(./components/SeccionBeneficios.css);
+@import url(./components/PasoAPaso.css);
+@import url(./components/Clientes.css);
+@import url(./views/Prices.css);
+@import url(./views/Request.css);
+@import url(./components/MenuHamburguesaSlide.css);
+@import url(./components/Paginacion.css);
+@import url(./views/Account.css);
+@import url(./views/Mailbox.css);
+@import url(./views/ConfigAssistant.css);
+@import url(./views/AssistantChat.css);
+@import url(./views/Forms.css);
+@import url(./views/ResetPassword.css);
+*{
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  border: none;
+}
+
+body{
+  width: 100vw;
+  background-color: #666666 ;
+  overflow-x: hidden;
+  font-weight: 300;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.none {
+  display: none !important;
+}
+
+.flex {
+  display: flex !important;
+}
+
+ul li {
+  list-style: none;
+}
+
+.mgLeft1 {
+  margin-left: 1rem;
+}
+
+.error {
+  color: tomato;
+  font-size: 0.9em;
+}
+
+/* Para darle nombre a una fuente dentro del proyecto no existente en el sistema */
+@font-face {
+  font-family: "Nexa Bold";
+  src: url(../fonts/NexaBold.ttf);
+}
+
+
+/* Inputs config */
+
+input[type="search"] {
+  -webkit-appearance: none; /* Deshabilitar el estilo predeterminado de Safari */
+  appearance: none; /* Deshabilitar el estilo predeterminado de otros navegadores */
+  border-radius: 0; /* Aplicar bordes rectangulares */
+}
+
+input:focus {
+  outline: none;
+}
+
+/* CSS estándar para navegadores modernos */
+::placeholder {
+  color: #b9b9b9;
+}
+
+/* Internet Explorer 10 */
+input::-ms-input-placeholder {
+  color: #b9b9b9;
+}
+
+ /* Microsoft Edge and Internet Explorer 10-11 */
+ input:-ms-input-placeholder {
+  color: #b9b9b9;
+}
+
+/* Mozilla Firefox */
+input::-moz-placeholder {
+  color: #b9b9b9;
+}
+
+/* WebKit browsers (Chrome, Safari, Opera) */
+input::-webkit-input-placeholder {
+  color: #b9b9b9;
+}
+
+
+/* Selects config */
+
+select:focus {
+  outline: none;
+}
+
+/* Textarea config */
+
+textarea {
+  border: 1px solid #D0D3D8;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 5px;
+  padding: 0.5rem;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.BGWhite {
+  background-color: white !important;
+}
+
+.BGDarkGray {
+  background-color: rgb(92, 88, 88) ;
+  color: white;
+}
+
+.BGYellow {
+  background-color: #F6CA75;
+}
+
+.BGBlue {
+  background-color: #114B7A;
+  color: white;
+}
+.BGLightBlue {
+  background-color: #039BE5;
+  color: white;
+}
+
+.BGGreen {
+  background-color: #90d387;
+}
+
+.colorWhite {
+  color: white;
+}
+
+button,a, i, div { /* Eliminar enfoque azul al dar click */
+ 
+  outline: none;
+  -webkit-tap-highlight-color: transparent; /* Eliminar el efecto azul en navegadores WebKit */
+}
+

@@ -1,0 +1,204 @@
+header {
+    background-color: transparent;
+    width: 100vw;
+    position: fixed;
+    height: 4rem;
+    display: flex;
+    padding: 1rem 1rem;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Roboto';
+    z-index: 100;
+}
+
+.headerScroll {
+    /* Animation */
+    animation-duration: 0.1s;
+    animation-name: headerScrollAnimation;
+    animation-delay: 0s;
+    animation-iteration-count:1;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, .16);
+}
+
+@keyframes headerScrollAnimation {
+    from {
+        background-color: transparent;
+    }
+
+    to {
+        background-color: white;
+    }
+}
+
+.notificacionContainer {
+    width: fit-content;
+    padding: 0.5rem 1rem;
+    height: 2.5rem;
+    background-color: white ;
+    position: fixed;
+    z-index: 13;
+    bottom: 3rem;
+    left: 2rem;
+    display: none;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 5px 5px 5px rgba(0, 2, 0, .20);
+}
+
+
+.bloque_logo_burgerMenu {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.logoApp {
+    width: 160px;
+}
+
+.menuHamburguesaScroll {
+    color: #666666 !important;
+}
+
+#burgerMenuIcon {
+    display: flex;
+    color: white;
+    font-size: 25px;
+    width: 30px;
+    cursor: pointer;
+}
+ 
+.navbarMenu {
+    background-color: white;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: -4rem;
+    left: 0;
+}
+
+.activeNavbar {
+    display: flex;
+    top: 4rem;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, .16);
+    animation-duration: 0.2s;
+    animation-name: aparicionNavbar;
+    animation-delay: 0s;
+    animation-iteration-count:1;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+}
+
+@keyframes aparicionNavbar {
+    from {
+        top: -4rem;
+    }
+
+    to {
+        top: 4rem;
+    }
+}
+
+.redirectNavbar {
+    padding: 0.5rem;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 14px;
+
+    /* Para animación de linea abajo al escuchar hover*/
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 2px;
+    transition: background-size .4s;
+}
+
+.redirectNavbarGrey {
+    color: #4A4A4A !important;
+}
+
+.redirectNavbar:hover, .redirectNavbar:focus { /* Al escuchar hover */
+    background-size: 100% 2px;
+    color: #039BE5;
+}
+
+.btnRegistro {
+    border: 1px solid white;
+    border-radius: 20px;
+    padding: 0.8rem 2rem;
+    color: #039BE5;
+    font-weight: 600;
+    background-color: white;
+}
+
+.btnRegistroScroll {
+    border: 1px solid #039BE5;
+    color: #039BE5;
+    background-color: transparent;
+}
+
+@media screen and (min-width:768px) { 
+
+    
+    header {
+        padding: 1rem 2rem;
+    }
+
+    .notificacionContainer {
+        width: fit-content;
+        top:auto;
+        bottom: 2rem;
+        left: 3rem;
+    }
+
+    .btnRegistro {
+        padding: 0.8rem 3rem;
+    }
+}
+
+
+@media screen and (min-width:1280px) {
+
+    header {
+        width: 100vw;
+        height: 4rem;
+        display: flex;
+        padding: 1rem 2rem;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Roboto';
+    }
+
+    .bloque_logo_burgerMenu {
+        gap: 2rem;
+    }
+
+    #burgerMenuIcon {
+        display: none;
+    }
+
+    .navbarMenu {
+        background-color: transparent;
+        width:fit-content;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        position: initial;
+        top: 0rem;
+        left: 0;
+    
+    }
+}

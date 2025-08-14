@@ -1,0 +1,70 @@
+<script setup>
+    import {reactive,ref,onMounted} from 'vue'
+    import {useApi} from '/src/js/useFetch.js'
+    import {validateForm} from '/src/js/validateForm.js'
+    import {mostrarNotificacion} from '/src/js/notificationsRequest.js'
+
+    const mailBoxForm = reactive({
+        asunto: '',
+        texto: ''
+    })
+
+    const errorsMailBox = ref({})
+
+    // Enviar formulario
+    const submitForm = () => {
+
+        // Definir las reglas de validación
+        const validationRules = {
+            asunto: { required: true },
+            texto: { required: true, maxLength: 200 },
+        };
+
+        // Validar el formulario
+        const errors = validateForm(mailBoxForm, validationRules);
+        errorsMailBox.value = errors; // Guardar los errores para mostrarlos en la vista
+
+        // Si hay errores, detener el envío
+        if (Object.keys(errors).length > 0) {
+            console.log("Errores en el formulario:", errors);
+            return;
+        }
+
+        // Si todo es válido, enviar los datos
+        mostrarNotificacion("Sugerencia enviada con éxito ",1);
+        console.log("Datos enviados:", mailBoxForm);
+        mailBoxForm.asunto = ''
+        mailBoxForm.texto = ''
+        
+
+    };
+
+</script>
+
+<template>
+    <section class="sectionSolicitudes">
+        <h1>Buzón de sugerencias</h1>
+        <div class="contenedorGeneralMailbox">
+            
+            
+            <form class="contenedorMailbox" @submit.prevent=submitForm()>
+                <i class="fa-solid fa-pen-nib"></i>
+                <p>En InkValuation, tu opinión es esencial para mejorar nuestro servicio. Queremos saber cómo podemos seguir transformando tu experiencia y hacer que cada detalle de tu proceso creativo sea más fluido y eficiente. Comparte con nosotros tus sugerencias para que podamos seguir impulsando la innovación en la plataforma y ofrecerte las herramientas que necesitas.
+                </p>
+                <div class="mailboxBlock">
+                    <label for="">Asunto</label>
+                    <input type="text" v-model="mailBoxForm.asunto" placeholder="Escriba un asunto">
+                    <div class="error" v-if="errorsMailBox.asunto">{{errorsMailBox.asunto}}</div>
+                </div>
+                <div class="mailboxBlock">
+                    <textarea v-model="mailBoxForm.texto" rows="5" placeholder="Escriba su sugerencia (máximo 200 caracteres)"></textarea>
+                    <div class="error" v-if="errorsMailBox.texto">{{errorsMailBox.texto}}</div>
+                </div>
+                <button class="btnEnviarSugerencia" type="submit">Enviar</button>
+            </form>
+            
+        </div>
+    </section>
+</template>
+
+

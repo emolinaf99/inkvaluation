@@ -1,0 +1,41 @@
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    ports:
+      - "7777:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - inkvaluation-net
+
+  backend:
+    build:
+      context: .  # Ruta al Dockerfile (directorio donde está tu Dockerfile)
+      dockerfile: Dockerfile  # (opcional si el archivo se llama "Dockerfile")
+    container_name: inkvaluation-backend
+    restart: always
+    ports:
+      - "2000:2000"
+    env_file:
+      - .env
+    networks:
+      - inkvaluation-net
+    working_dir: /app
+    command: node src/app.js
+    depends_on:
+      - mysql
+
+volumes:
+  db_data:
+
+networks:
+  inkvaluation-net:
+    driver: bridge
