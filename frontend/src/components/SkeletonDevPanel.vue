@@ -82,6 +82,8 @@
             <option value="login">🔐 Login</option>
             <option value="register">📝 Register</option>
             <option value="account">👤 Account</option>
+            <option value="business">🏢 Business</option>
+            <option value="requests">📋 Requests</option>
             <option value="forms">📋 Forms</option>
             <option value="chat">💬 Chat</option>
             <option value="config">⚙️ Config</option>

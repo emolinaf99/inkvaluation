@@ -6,21 +6,34 @@
     import Formulario from '../components/ItemForm.vue'
     import {useApi} from '/src/js/useFetch.js'
     import { mostrarNotificacion } from '@/js/notificationsRequest';
+    import FormsSkeleton from '../components/skeletons/FormsSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('forms', 1800)
 
     const state = reactive({
-        formularios:[]
+        formularios: []
     })
 
     const loading = ref(false)
 
     async function getForms() {
         loading.value = true // Indica que la carga ha comenzado
-        let {data,error} = await useApi(`/api/forms`)
+        
+        try {
+            let {data, error} = await useApi(`/api/forms`)
 
-        if(!error.value) {
-            state.formularios = data.value
-        } else {
+            if(!error.value && data.value) {
+                state.formularios = Array.isArray(data.value) ? data.value : []
+            } else {
+                console.warn('Error cargando formularios:', error.value)
+                mostrarNotificacion('Error cargando formularios')
+                state.formularios = [] // Asegurar que sea un array vacío
+            }
+        } catch (err) {
+            console.error('Error en getForms:', err)
             mostrarNotificacion('Error cargando formularios')
+            state.formularios = []
         }
         
         loading.value = false // Indica que la carga ha terminado
@@ -49,7 +62,7 @@
     }
 
     function filterFormsByService(serviceId) {
-        return state.formularios.filter(formulario => formulario.serviceId === serviceId);
+        return state.formularios?.filter(formulario => formulario.serviceId === serviceId) || [];
     }
 
     onMounted(() => {
@@ -60,7 +73,13 @@
 </script>
  
 <template>
-    <section class="sectionGeneralConfAssistant">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <FormsSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionGeneralConfAssistant">
         <h1>Formularios</h1>
 
         <div class="contenedorSecConfAssistant">
@@ -100,8 +119,6 @@
             </div>
 
         </div>
-        
-
     </section>
 </template>
 

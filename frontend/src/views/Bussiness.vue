@@ -5,6 +5,10 @@
     import {checkOptAssistant} from '/src/js/checkOpt.js'
     import {services} from '/src/data/services.js'
     import {mostrarFileEnImgPreview} from '/src/js/previewFile.js'
+    import BussinessSkeleton from '../components/skeletons/BussinessSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('business', 1700)
 
     const imgPreview = ref(null); // Referencia a la imagen
 
@@ -21,7 +25,13 @@
 </script>
 
 <template>
-   <section class="sectionAccount">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <BussinessSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionAccount">
         <h1>Mi estudio</h1>
         <div class="containerAccount">
             
@@ -200,8 +210,7 @@
             
             
         </div>
-        
-   </section>
+    </section>
 </template>
 
 

@@ -1,6 +1,10 @@
 <script setup>
     import {onMounted,reactive,ref} from 'vue'
     import {scrollearConClick} from '/src/js/scrollWithClick'
+    import RequestSkeleton from '../components/skeletons/RequestSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('requests', 1800)
 
     function scrollForAll(flecha,izqODer) {
         let contenedorScroll = flecha.parentNode.parentNode.querySelector('.vitrinaSlide')
@@ -46,8 +50,13 @@
 </script>
 
 <template>
-    
-    <section class="sectionSolicitudes">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <RequestSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionSolicitudes">
         <h1>Solicitudes de cotización</h1>
         <div class="contenedorGeneralSolicitudes">
             <div class="introBlock">
