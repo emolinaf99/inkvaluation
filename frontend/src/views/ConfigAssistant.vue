@@ -2,6 +2,10 @@
     import {reactive, ref, onMounted} from 'vue'
     import {services} from '/src/data/services.js'
     import {formularios} from '/src/data/forms.js'
+    import ConfigAssistantSkeleton from '../components/skeletons/ConfigAssistantSkeleton.vue'
+    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+
+    const { isLoading, isFading } = useSkeletonDev('config', 1600)
 
     const state = reactive({
         services: services
@@ -25,7 +29,13 @@
 </script>
 
 <template>
-    <section class="sectionGeneralConfAssistant">
+    <!-- Skeleton Loader -->
+    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
+        <ConfigAssistantSkeleton />
+    </div>
+
+    <!-- Contenido Real -->
+    <section v-else class="sectionGeneralConfAssistant">
         <h1>Configuración de asistente</h1>
 
         <div class="contenedorSecConfAssistant">
@@ -168,8 +178,6 @@
             
             
         </div>
-        
-
     </section>
 </template>
 
