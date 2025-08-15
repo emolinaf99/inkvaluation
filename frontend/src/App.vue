@@ -30,7 +30,7 @@
   </footer>
 
   <!-- Panel de Desarrollo de Skeleton (solo en desarrollo) -->
-  <SkeletonDevPanel />
+  <!-- <SkeletonDevPanel /> -->
 </template>
 
 

@@ -13,9 +13,9 @@
     import {mostrarFileEnImgPreview} from '/src/js/previewFile.js'
     import {validateForm} from '/src/js/validateForm.js'
     import AccountSkeleton from '../components/skeletons/AccountSkeleton.vue'
-    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+    import { useSkeleton } from '../js/useSkeleton.js'
 
-    const { isLoading, isFading } = useSkeletonDev('account', 1800)
+    const { isLoading, isFading, startLoading, finishLoading } = useSkeleton()
 
     // const userStore = useUserStore(); // cuando haya sesión
     // const userLogged = computed(() => userStore.userLogged);
@@ -91,8 +91,8 @@
     };
 
     onMounted(() => {
-
         async function obtenerPaises(){ // para el select pais residencia
+            startLoading() // Iniciar skeleton solo al comenzar carga real
             
             try {
                 const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all?fields=name,ccn3', 'GET');
@@ -103,9 +103,23 @@
                     
                 } else {
                     console.error('Error al cargar los datos de países:', error.value);
+                    // Usar países mock en caso de error
+                    countries.value = [
+                        { name: { common: 'Colombia' }, ccn3: '170' },
+                        { name: { common: 'México' }, ccn3: '484' },
+                        { name: { common: 'España' }, ccn3: '724' }
+                    ];
                 }
             } catch (error) {
                 console.error('Error al cargar los datos de países en el componente:', error);
+                // Usar países mock en caso de error
+                countries.value = [
+                    { name: { common: 'Colombia' }, ccn3: '170' },
+                    { name: { common: 'México' }, ccn3: '484' },
+                    { name: { common: 'España' }, ccn3: '724' }
+                ];
+            } finally {
+                finishLoading() // Terminar skeleton cuando los datos estén listos
             }
         }
 

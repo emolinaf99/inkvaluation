@@ -427,7 +427,7 @@
 /* ==== LOADING STATES ==== */
 .skeleton-container {
   opacity: 1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.15s ease;
 }
 
 .skeleton-container.skeleton-fade-out {

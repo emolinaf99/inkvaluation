@@ -3,16 +3,15 @@
     import {services} from '/src/data/services.js'
     import {formularios} from '/src/data/forms.js'
     import ConfigAssistantSkeleton from '../components/skeletons/ConfigAssistantSkeleton.vue'
-    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+    import { useSkeleton } from '../js/useSkeleton.js'
 
-    const { isLoading, isFading } = useSkeletonDev('config', 1600)
+    const { isLoading, isFading, startLoading, finishLoading } = useSkeleton()
 
     const state = reactive({
         services: services
     })
 
 
-    
     function mostrarInfoOpt(btnInfo,aparecerODesaparecer) {
         // 0 para aparecer 1 para desaparecer
 
@@ -25,6 +24,11 @@
         }
         
     }
+
+    onMounted(() => {
+        // No hay carga de datos real en esta vista por ahora
+        // El skeleton se mostraría solo si hubiera llamadas a API reales
+    })
     
 </script>
 

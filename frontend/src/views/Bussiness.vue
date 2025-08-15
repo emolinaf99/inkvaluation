@@ -6,9 +6,9 @@
     import {services} from '/src/data/services.js'
     import {mostrarFileEnImgPreview} from '/src/js/previewFile.js'
     import BussinessSkeleton from '../components/skeletons/BussinessSkeleton.vue'
-    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+    import { useSkeleton } from '../js/useSkeleton.js'
 
-    const { isLoading, isFading } = useSkeletonDev('business', 1700)
+    const { isLoading, isFading, startLoading, finishLoading } = useSkeleton()
 
     const imgPreview = ref(null); // Referencia a la imagen
 
@@ -19,7 +19,8 @@
     };
 
     onMounted(()=>{
-
+        // No hay carga de datos real en esta vista por ahora
+        // El skeleton se mostraría solo si hubiera llamadas a API reales
     })
 
 </script>

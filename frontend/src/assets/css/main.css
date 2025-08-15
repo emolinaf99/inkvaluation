@@ -166,7 +166,8 @@ textarea:hover {
 select {
   border: 1px solid #D0D3D8;
   border-radius: 10px;
-  padding: 0.75rem;
+  padding: 0;
+  padding-left: 0.3rem;
   background-color: #fbfbfb;
   font-family: inherit;
   transition: all 0.3s ease;

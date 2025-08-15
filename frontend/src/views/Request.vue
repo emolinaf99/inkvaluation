@@ -2,9 +2,9 @@
     import {onMounted,reactive,ref} from 'vue'
     import {scrollearConClick} from '/src/js/scrollWithClick'
     import RequestSkeleton from '../components/skeletons/RequestSkeleton.vue'
-    import { useSkeletonDev } from '../js/useSkeletonDev.js'
+    import { useSkeleton } from '../js/useSkeleton.js'
 
-    const { isLoading, isFading } = useSkeletonDev('requests', 1800)
+    const { isLoading, isFading, startLoading, finishLoading } = useSkeleton()
 
     function scrollForAll(flecha,izqODer) {
         let contenedorScroll = flecha.parentNode.parentNode.querySelector('.vitrinaSlide')
@@ -42,9 +42,8 @@
     }
 
     onMounted(() => {
-
-        
-
+        // No hay carga de datos real en esta vista por ahora
+        // El skeleton se mostraría solo si hubiera llamadas a API reales
     })
     
 </script>

@@ -2,7 +2,7 @@ import { ref, onMounted, computed } from 'vue'
 
 // Estado global para controlar skeletons desde cualquier parte
 const globalSkeletonState = ref({
-  isDevMode: true, // Activar modo desarrollo
+  isDevMode: false, // Desactivar modo desarrollo por defecto
   forceShow: false, // Forzar mostrar skeleton
   currentDuration: 2000, // Duración actual
   isPaused: false, // Pausar en skeleton
