@@ -400,12 +400,39 @@ export function useChatbot() {
     }
   }
 
+  // Función para retroceder en el flujo (para edición)
+  const retrocederEtapa = () => {
+    switch (chatState.etapaActual) {
+      case 'servicio':
+        chatState.etapaActual = 'nombre'
+        break
+      case 'formulario':
+        // Si es la primera pregunta del formulario, volver a servicio
+        if (chatState.preguntaActual === 0) {
+          chatState.etapaActual = 'servicio'
+          chatState.formularioActual = null
+        } else {
+          // Retroceder una pregunta en el formulario
+          chatState.preguntaActual--
+        }
+        break
+      case 'completado':
+        // Si completó, volver a la última pregunta del formulario
+        if (chatState.formularioActual && chatState.formularioActual.preguntas.length > 0) {
+          chatState.etapaActual = 'formulario'
+          chatState.preguntaActual = chatState.formularioActual.preguntas.length - 1
+        }
+        break
+    }
+  }
+
   return {
     chatState,
     iniciarConversacion,
     procesarRespuesta,
     manejarCambioInput,
     enviarSolicitud,
-    agregarMensajeConCallback
+    agregarMensajeConCallback,
+    retrocederEtapa
   }
 }

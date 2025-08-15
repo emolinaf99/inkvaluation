@@ -281,17 +281,55 @@
     line-height: 1.4;
     word-wrap: break-word; /* Romper palabras largas */
     overflow-wrap: break-word; /* Compatibilidad */
+    position: relative;
+}
+
+/* Estilos para mensajes editables */
+.editable-message {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.editable-message:hover {
+    background-color: #0f4169;
+    transform: scale(1.02);
+    border: 2px solid #ffffff40;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.edit-icon {
+    position: absolute;
+    top: 50%;
+    right: -25px;
+    transform: translateY(-50%);
+    font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 4px;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editable-message:hover .edit-icon {
+    opacity: 1;
 }
 
 /* Container para textarea */
 .textareaContainer {
+    width: 50%;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     background-color: white;
     padding: 1rem;
     border-radius: 12px;
-    max-width: 70%;
+    max-width: 85%;
     margin-right: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid #e1e5e9;
@@ -431,7 +469,7 @@
 /* Responsive para móviles */
 @media (max-width: 768px) {
     .msgUser, .textareaContainer {
-        max-width: 85%;
+        max-width: 90%;
     }
     
     .msgChat {
@@ -455,5 +493,17 @@
     .btnEnviarSolicitud {
         padding: 0.75rem 2rem;
         font-size: 14px;
+    }
+    
+    /* Ajustes para mensajes editables en móvil */
+    .edit-icon {
+        right: -20px;
+        font-size: 10px;
+        width: 18px;
+        height: 18px;
+    }
+    
+    .editable-message:hover {
+        transform: scale(1.01); /* Menos zoom en móvil */
     }
 }

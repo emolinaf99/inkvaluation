@@ -1,8 +1,9 @@
 <script setup>
     import { onMounted, ref, nextTick, watch } from 'vue'
     import { useChatbot } from '../js/useChatbot.js'
+    import { services } from '../data/services.js'
 
-    const { chatState, iniciarConversacion, procesarRespuesta, manejarCambioInput, enviarSolicitud } = useChatbot()
+    const { chatState, iniciarConversacion, procesarRespuesta, manejarCambioInput, enviarSolicitud, retrocederEtapa } = useChatbot()
     
     // Referencia para el input actual
     const inputRef = ref(null)
@@ -33,6 +34,88 @@
                 behavior: 'smooth'
             })
         }
+    }
+
+    // Función para editar mensaje del usuario
+    const editarMensaje = (mensaje) => {
+        console.log('editarMensaje called with:', mensaje)
+        console.log('chatState actual:', chatState)
+        
+        // Verificar que es un mensaje del usuario
+        if (mensaje.esBot) {
+            console.log('No se puede editar mensaje del bot')
+            return
+        }
+
+        console.log('Iniciando edición...')
+
+        // Encontrar el índice del mensaje a editar
+        const indexMensaje = chatState.mensajes.findIndex(m => m.id === mensaje.id)
+        console.log('Índice del mensaje:', indexMensaje)
+
+        // Remover todos los mensajes desde este mensaje en adelante
+        if (indexMensaje !== -1) {
+            chatState.mensajes.splice(indexMensaje)
+            console.log('Mensajes removidos desde el índice:', indexMensaje)
+        }
+
+        // Determinar la etapa correcta basándose en el contenido del mensaje
+        let etapaParaEditar = 'nombre'
+        let tipoInput = 'text'
+        let opciones = []
+
+        // Si el mensaje es el nombre (primer mensaje del usuario)
+        const mensajesUsuario = chatState.mensajes.filter(m => !m.esBot)
+        if (mensajesUsuario.length === 0) {
+            etapaParaEditar = 'nombre'
+            tipoInput = 'text'
+        }
+        // Si es el servicio (segundo mensaje del usuario)
+        else if (mensajesUsuario.length === 1) {
+            etapaParaEditar = 'servicio'
+            tipoInput = 'radio'
+            opciones = services.map(service => service.services_name)
+        }
+        // Si es una pregunta del formulario
+        else {
+            etapaParaEditar = 'formulario'
+            // Calcular qué pregunta del formulario es
+            const numPregunta = mensajesUsuario.length - 2 // Restamos nombre y servicio
+            if (chatState.formularioActual && chatState.formularioActual.preguntas[numPregunta]) {
+                const pregunta = chatState.formularioActual.preguntas[numPregunta]
+                tipoInput = pregunta.tipo
+                chatState.preguntaActual = numPregunta
+                if (pregunta.tipo === 'radio') {
+                    opciones = pregunta.opciones
+                }
+            }
+        }
+
+        // Configurar el estado del chat
+        chatState.etapaActual = etapaParaEditar
+        chatState.esperandoInput = true
+        chatState.inputValue = mensaje.contenido
+        chatState.tipoInputActual = tipoInput
+        chatState.opciones = opciones
+
+        console.log('Configuración para edición:', {
+            etapa: etapaParaEditar,
+            tipoInput: tipoInput,
+            inputValue: mensaje.contenido,
+            opciones: opciones
+        })
+
+        console.log('Estado final del chat:', {
+            esperandoInput: chatState.esperandoInput,
+            tipoInputActual: chatState.tipoInputActual,
+            inputValue: chatState.inputValue,
+            opciones: chatState.opciones
+        })
+
+        // Enfocar el input
+        nextTick(() => {
+            enfocarInput()
+        })
     }
 
     // Enfocar input cuando aparece
@@ -92,8 +175,9 @@
                     <i class="fa-solid fa-play fa-flip-horizontal ux-scale-in"></i>
                     <p v-html="mensaje.contenido"></p>
                 </div>
-                <div v-else class="msgUser">
+                <div v-else class="msgUser editable-message" @click.stop="editarMensaje(mensaje)">
                     <p>{{ mensaje.contenido }}</p>
+                    <i class="fa-solid fa-pencil edit-icon"></i>
                 </div>
             </div>
 
