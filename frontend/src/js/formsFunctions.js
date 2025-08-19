@@ -18,8 +18,8 @@ const generarOpcionesSelect = async (select) => {
     let questionTypes = await cargarTiposDePregunta()
     
     if (Array.isArray(questionTypes)) {
+        console.log(`Generando ${questionTypes.length} opciones para select`);
         questionTypes.forEach(tipo => {
-            console.log(tipo);
             let option = document.createElement('option');
             option.value = tipo.id;
             option.textContent = tipo.description;
@@ -38,8 +38,10 @@ function seleccionarOpcionDePregunta(select, valorASeleccionar) {
 }
 
 let formatoPregunta = `
-    <div class="accountBlock padding1 draggable" draggable="true">
+    <div class="w100">
+        <div class="accountBlock padding1 draggable" draggable="true">
         
+        </div>
     </div>
 `
 
@@ -113,7 +115,7 @@ let formatoPreguntaCasillasVerificacion = `
 `
 
 let formatoPreguntaOpcionMultiple = `
-
+    
     <div class="questionNumberBlock">
         <div class="w33">.</div>
         <i class="fa-solid fa-grip grab w33"></i>
@@ -286,20 +288,24 @@ function ScrollAlFinal() {
 
 function moverAlFinalBtnAgregarPregunta() {
     let btnAgregarPregunta = document.querySelector('.adminBarFormsContainer')
-    let contador = document.querySelectorAll('.questionNumber').length + 1
-
-    btnAgregarPregunta.style.order = contador
+    const preguntasExistentes = window.preguntasExistentes || 0;
+    const totalPreguntas = document.querySelectorAll('.draggable').length;
+    
+    btnAgregarPregunta.style.order = totalPreguntas + 1;
 
     ScrollAlFinal()
 }
 
 // Asignar orden y numero de pregunta
 function asignarNumeroPregunta(contenedor,bloqueNumero) {
-    let contador = contenedor ? document.querySelectorAll('.questionNumber').length - 1 : 0
+    // Obtener el número total de preguntas (existentes + nuevas ya renderizadas)
+    const totalPreguntas = document.querySelectorAll('.draggable').length;
+    
+    // El nuevo número será el total de preguntas (incluyendo la que se está agregando)
+    const nuevoNumero = totalPreguntas;
 
-    contenedor.style.order =  contador + 1; 
-    bloqueNumero.innerText = contador + 1
-   
+    contenedor.style.order = nuevoNumero; 
+    bloqueNumero.innerText = nuevoNumero;
 }
 
 // Ajustar orden y numero de pregunta
@@ -318,8 +324,14 @@ function ajustarNumeroPreguntas(enumeracionPregunta) {
 }
 
 async function agregarPregunta(contenedorReceptor) {
+    console.log('Ejecutando agregarPregunta...');
+    console.log('Contenedor receptor:', contenedorReceptor);
+    console.log('Preguntas antes de insertar:', contenedorReceptor.querySelectorAll('.draggable').length);
+    
     // Contenedor receptor es el contenedor que va a recibir el formato
     contenedorReceptor.insertAdjacentHTML('beforeend', formatoPregunta);
+    
+    console.log('Preguntas después de insertar:', contenedorReceptor.querySelectorAll('.draggable').length);
 
     // Ventajas de insertAdjacentHTML 
     // Mantiene el rendimiento porque solo inserta el nuevo contenido sin reconstruir todo el DOM.
@@ -367,24 +379,49 @@ async function agregarPregunta(contenedorReceptor) {
 
 async function enviarPregunta(formData,ultimaPregunta,contenedorReceptor) {
 
-    bloquearCamposPregunta(ultimaPregunta)
+    const url = 'http://217.196.61.73:8082/api/questions';
+    const method = 'POST'; 
+    const contentType = 'multipart/form-data';
 
-    // const url = 'http://217.196.61.73:8082/api/questions';
-    // const method = 'POST'; 
-    // const contentType = 'multipart/form-data';
+    // Debug del FormData
+    console.log('Enviando pregunta con FormData:', formData);
+    console.log('Contenido del FormData:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, ':', value);
+    }
 
-    // // Asegurar que esperas la respuesta de useApi
-    // const { data, error, loading } = await useApi(url, method, formData, contentType);
+    try {
+        // Asegurar que esperas la respuesta de useApi
+        const { data, error, loading } = await useApi(url, method, formData, contentType);
 
-    // if (error.value) {
-    //     console.error('Error en la solicitud:', error.value);
-    //     mostrarNotificacion('Error creando pregunta',0)
-    // } else {
+        console.log('Respuesta de la API:', { data: data.value, error: error.value });
 
-    //     mostrarNotificacion('Pregunta creada exitosamente',1)
-    //     bloquearCamposPregunta(ultimaPregunta)
-    //     agregarPregunta(contenedorReceptor)
-    // }
+        if (error.value) {
+            console.error('Error en la solicitud:', error.value);
+            const errorMsg = error.value.message || JSON.stringify(error.value) || 'Error desconocido';
+            mostrarNotificacion('Error creando pregunta: ' + errorMsg, 0)
+        } else if (data.value && typeof data.value === 'object') {
+            console.log('Pregunta creada exitosamente:', data.value);
+            mostrarNotificacion('Pregunta creada exitosamente', 1)
+            bloquearCamposPregunta(ultimaPregunta)
+            
+            // Agregar icono de editar después de guardar exitosamente
+            agregarIconoEditar(ultimaPregunta)
+            
+            // Agregar una nueva pregunta vacía después de guardar exitosamente
+            const contenedorPadre = ultimaPregunta.parentNode
+            if (contenedorPadre) {
+                agregarPregunta(contenedorPadre)
+            }
+        } else {
+            console.error('Respuesta inesperada del servidor:', data.value);
+            mostrarNotificacion('Error: Respuesta inesperada del servidor', 0);
+        }
+
+    } catch (err) {
+        console.error('Error inesperado:', err);
+        mostrarNotificacion('Error inesperado al crear pregunta', 0);
+    }
 }
 
 function activarCamposPregunta(contenedorPregunta) {
@@ -457,7 +494,9 @@ function bloquearCamposPregunta(contenedorPregunta) {
     });
 
     // Eliminar eventos del botón "agregar opción" y ocultar
+    
     if (agregarOpcion) {
+        
         let nuevoAgregarOpcion = agregarOpcion.cloneNode(true);
         agregarOpcion.replaceWith(nuevoAgregarOpcion);
         nuevoAgregarOpcion.parentNode.parentNode.classList.add('none')
@@ -469,26 +508,37 @@ function bloquearCamposPregunta(contenedorPregunta) {
     equises.forEach(equis => equis.classList.add('none'));
 
 
-    // Eliminar icono guardar si existe y adicionar icono editar 
+    // Eliminar icono guardar si existe
     let iconoGuardar = contenedorPregunta.querySelector('.questionSave')
     if(iconoGuardar) iconoGuardar.remove()
 
-    let formatoIconoEditar = `<i class="fa-solid fa-pen-to-square questionEdit"></i>`
-    contenedorIconos.innerHTML += formatoIconoEditar;
-    let iconosEditar = document.querySelectorAll('.questionEdit')
-    let ultimoIconoEditar = iconosEditar[iconosEditar.length - 1]
+    // Solo agregar icono editar si no existe ya uno
+    let iconoEditarExistente = contenedorPregunta.querySelector('.questionEdit')
+    if (!iconoEditarExistente) {
+        let formatoIconoEditar = `<i class="fa-solid fa-pen-to-square questionEdit"></i>`
+        contenedorIconos.innerHTML += formatoIconoEditar;
+        let iconosEditar = document.querySelectorAll('.questionEdit')
+        let ultimoIconoEditar = iconosEditar[iconosEditar.length - 1]
 
-    ultimoIconoEditar.addEventListener('click',() => {
-        activarCamposPregunta(contenedorPregunta)
-    })
+        ultimoIconoEditar.addEventListener('click',() => {
+            activarCamposPregunta(contenedorPregunta)
+        })
+    }
 
 }
 
 export function validarPreguntaAnterior(contenedorReceptor, formId) {
     let preguntas = contenedorReceptor.querySelectorAll('.draggable');
     
-    if (preguntas.length > 0) {
-        const ultimaPregunta = preguntas[preguntas.length -1];
+    // Filtrar solo preguntas nuevas (no guardadas)
+    let preguntasNuevas = Array.from(preguntas).filter(pregunta => !pregunta.hasAttribute('data-saved'));
+    
+    console.log('Total preguntas:', preguntas.length);
+    console.log('Preguntas nuevas (sin data-saved):', preguntasNuevas.length);
+    console.log('Preguntas con data-saved:', Array.from(preguntas).filter(p => p.hasAttribute('data-saved')).length);
+    
+    if (preguntasNuevas.length > 0) {
+        const ultimaPregunta = preguntasNuevas[preguntasNuevas.length - 1];
         const inputPregunta = ultimaPregunta.querySelector('.questionAndType input');
         const selectTipoPregunta = ultimaPregunta.querySelector('.questionSelect');
         const contenedoresOpciones = ultimaPregunta.querySelectorAll('.containerOption');
@@ -496,8 +546,8 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
         const btnArchivosEspecificos = ultimaPregunta.querySelector('.btnSpecificFile')
 
         // Resetear estilos antes de validar errores
-        inputPregunta.style.border = '1px solid #d9d9d9';
-        selectTipoPregunta.style.border = '1px solid #d9d9d9';
+        if (inputPregunta) inputPregunta.style.border = '1px solid #d9d9d9';
+        if (selectTipoPregunta) selectTipoPregunta.style.border = '1px solid #d9d9d9';
 
         let arrayErrores = [];
         let formData = new FormData();
@@ -505,8 +555,19 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
         let arrayFiles = [];
 
         // Validaciones básicas
-        if (inputPregunta.value.length === 0) arrayErrores.push(inputPregunta);
-        if (selectTipoPregunta.value === "0") arrayErrores.push(selectTipoPregunta);
+        if (!inputPregunta || inputPregunta.value.length === 0) {
+            if (inputPregunta) arrayErrores.push(inputPregunta);
+        }
+        if (!selectTipoPregunta || selectTipoPregunta.value === "0") {
+            if (selectTipoPregunta) arrayErrores.push(selectTipoPregunta);
+        }
+
+        console.log('Validación inicial:', {
+            inputPregunta: inputPregunta?.value,
+            selectTipoPregunta: selectTipoPregunta?.value,
+            contenedoresOpciones: contenedoresOpciones.length,
+            formId
+        });
 
         if (contenedoresOpciones.length > 0) {
             contenedoresOpciones.forEach((contenedorOpcion, index) => {
@@ -518,50 +579,48 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
                 const inputImgOption = contenedorOpcion.querySelector('.inputImgOption');
 
                 // Resetear estilos antes de validar errores
-                if(itemOption.classList.contains('simulationPointListItem')) {
+                if(itemOption && itemOption.classList.contains('simulationPointListItem')) {
                     itemOption.style.backgroundColor = 'black';
-                } else {
+                } else if (itemOption) {
                     itemOption.style.border = '1px solid #d9d9d9';
                 }
                 
-                inputNumeroSalto.style.border = '1px solid #d9d9d9';
+                if (inputNumeroSalto) inputNumeroSalto.style.border = '1px solid #d9d9d9';
 
-                if (inputOpcion.value.length === 0) arrayErrores.push(itemOption);
+                if (!inputOpcion || inputOpcion.value.length === 0) {
+                    if (itemOption) arrayErrores.push(itemOption);
+                }
 
-                if (inputCheckSalto.checked && inputNumeroSalto.value.length === 0) {
-                    seccionSalto.classList.add('flex');
-                    arrayErrores.push(inputNumeroSalto);
-                } else {
+                if (inputCheckSalto && inputCheckSalto.checked && (!inputNumeroSalto || inputNumeroSalto.value.length === 0)) {
+                    if (seccionSalto) seccionSalto.classList.add('flex');
+                    if (inputNumeroSalto) arrayErrores.push(inputNumeroSalto);
+                } else if (seccionSalto) {
                     seccionSalto.classList.remove('flex');
                 }
 
-                // Construir objeto `option`
-                let optionData = {
-                    optionText: inputOpcion.value
-                };
+                // Construir objeto `option` solo si inputOpcion existe
+                if (inputOpcion) {
+                    let optionData = {
+                        optionText: inputOpcion.value || ''
+                    };
 
-                function obtenerIdPreguntaSegunOrdenPregunta(numeroOrdenPregunta){
-                    
-                }
-
-                // Agregar salto si está presente
-                if (inputCheckSalto.checked && inputNumeroSalto.value.length !== 0) {
-
-                    let idPregunta = obtenerIdPreguntaSegunOrdenPregunta(inputNumeroSalto.value)
-
-                    if(idPregunta != null) {
-                        optionData.jump = { nextQuestionId: idPregunta };
+                    // Agregar salto si está presente
+                    if (inputCheckSalto && inputCheckSalto.checked && inputNumeroSalto && inputNumeroSalto.value.length !== 0) {
+                        // Por ahora usamos el valor directamente, en el futuro se puede mapear a IDs reales
+                        let idPregunta = inputNumeroSalto.value;
+                        if(idPregunta != null) {
+                            optionData.jump = { nextQuestionId: idPregunta };
+                        }
                     }
-                    
-                }
 
-                // Agregar imagen si está presente
-                if (inputImgOption.files.length > 0) {
-                    optionData.image = { fileIndex: arrayFiles.length };
-                    arrayFiles.push(inputImgOption.files[0])
-                }
+                    // Agregar imagen si está presente
+                    if (inputImgOption && inputImgOption.files && inputImgOption.files.length > 0) {
+                        optionData.image = { fileIndex: arrayFiles.length };
+                        arrayFiles.push(inputImgOption.files[0]);
+                    }
 
-                optionsArray.push(optionData);
+                    optionsArray.push(optionData);
+                }
             });
         }
 
@@ -594,11 +653,23 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
                 mostrarNotificacion('Los campos son obligatorios');
             });
         } else {
-            formData.append("formId", formId);
-            formData.append("questionTypeId", selectTipoPregunta.value);
-            formData.append("questionText", inputPregunta.value);
-            formData.append("questionOrder", ordenPregunta.innerText);
-            formData.append("options", JSON.stringify(optionsArray)); // Convertir `optionsArray` a JSON
+            // Estructurar datos según DTO real (solo 5 campos válidos)
+            const questionData = {
+                formId: parseInt(formId),
+                questionText: inputPregunta.value,
+                questionOrder: parseInt(ordenPregunta.innerText),
+                questionTypeId: parseInt(selectTipoPregunta.value),
+                options: optionsArray.map((option, index) => ({
+                    optionText: option.optionText,
+                    image: option.image || null,
+                    jump: option.jump || null
+                }))
+            };
+
+            console.log('Datos a enviar según esquema API:', questionData);
+            console.log('Archivos adjuntos:', arrayFiles);
+
+            formData.append("question", JSON.stringify(questionData));
             
             // Agregar archivos correctamente
             arrayFiles.forEach((file) => {
@@ -609,7 +680,16 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
             enviarPregunta(formData,ultimaPregunta,contenedorReceptor);
         }
     } else {
-        agregarPregunta(contenedorReceptor);
+        // No hay preguntas nuevas pendientes de validar, agregar nueva pregunta directamente
+        console.log('No hay preguntas nuevas pendientes, agregando nueva pregunta...');
+        
+        // Usar la función de Vue para agregar la pregunta al array reactivo
+        if (window.agregarNuevaPreguntaVue) {
+            window.agregarNuevaPreguntaVue();
+        } else {
+            // Fallback al método original si no está disponible
+            agregarPregunta(contenedorReceptor);
+        }
     }
 }
 
@@ -673,6 +753,13 @@ async function cambiarTipoDePregunta(tipoDePregunta,elementoDOM) {
         agregarOpcion(elementoDOM);
     } 
     
+    // Marcar la pregunta como modificada para que sea validada
+    // Buscar el contenedor padre de la pregunta (.draggable)
+    let contenedorPregunta = elementoDOM.closest('.draggable');
+    if (contenedorPregunta && contenedorPregunta.hasAttribute('data-saved')) {
+        console.log('Marcando pregunta como modificada (removiendo data-saved)');
+        contenedorPregunta.removeAttribute('data-saved');
+    }
 }
 
 function permitirArchivosEspecificos(btnPermitirArchivosEspecificos,checkboxesBlock) {
@@ -775,9 +862,17 @@ function agregarOpcion(contenedorGeneral) {
 
     let ultimaOpcion = contenedorGeneral.querySelector('.containerOption:last-child');
     
-
+    // Seleccionar la nueva opción
     opcionSeleccionada(ultimaOpcion);
-    agregarEventosOpcion(ultimaOpcion);
+    
+    // Re-asignar eventos a TODAS las opciones para evitar pérdida de eventos
+    let todasLasOpciones = contenedorGeneral.querySelectorAll('.containerOption');
+    console.log(`Re-asignando eventos a ${todasLasOpciones.length} opciones`);
+    
+    todasLasOpciones.forEach((opcion, index) => {
+        console.log(`Asignando eventos a opción ${index + 1}`);
+        agregarEventosOpcion(opcion);
+    });
 
 }
 
@@ -861,14 +956,17 @@ function retirarPrevisualizacionOpcion(contenedorOpcion) {
     let inputOption = contenedorOpcion.querySelector('.inputOption')
     let jumpOption = contenedorOpcion.querySelector('.jumps')
 
-    if(document.activeElement != inputOption) {
-        addImgOption.classList.remove('flex')
-        jumpOption.classList.remove('flex')
-        inputOption.classList.remove('borderBottomInputActiveGrey')
-        inputOption.classList.remove('borderBottomInputActive')
-    }
-
-    
+    // Agregar un pequeño delay para evitar conflictos con el evento click
+    setTimeout(() => {
+        if(document.activeElement != inputOption) {
+            // Verificar si el input tiene la clase de selección activa antes de ocultar
+            if (!inputOption.classList.contains('borderBottomInputActive')) {
+                if (addImgOption) addImgOption.classList.remove('flex')
+                if (jumpOption) jumpOption.classList.remove('flex')
+                inputOption.classList.remove('borderBottomInputActiveGrey')
+            }
+        }
+    }, 100);
 }
 
 function previsualizacionOpcion(contenedorOpcion) {
@@ -901,6 +999,11 @@ document.addEventListener('click', (event) => {
 
 function agregarEventosOpcion(contenedorOpcion) {
     
+    // Verificar si ya se asignaron eventos para evitar duplicados
+    if (contenedorOpcion.hasAttribute('data-events-assigned')) {
+        return;
+    }
+    
     let opcionTarget = contenedorOpcion.querySelector('.optionTarget')
     let bloqueOpcion = contenedorOpcion.querySelector('.bloqueOpcion')
     let inputOption = contenedorOpcion.querySelector('.inputOption')
@@ -909,45 +1012,346 @@ function agregarEventosOpcion(contenedorOpcion) {
     let numeroPreguntaSalto = contenedorOpcion.querySelector('.questionNumberJump')
     let imagenUltimaOpcionAgregada = contenedorOpcion.querySelector('.rowOpt img');
 
-    imagenUltimaOpcionAgregada.addEventListener('click', () => {
-        activarInputFileConImg(imagenUltimaOpcionAgregada, contenedorOpcion);
-    });
+    // Solo agregar evento si el elemento existe
+    if (imagenUltimaOpcionAgregada) {
+        imagenUltimaOpcionAgregada.addEventListener('click', () => {
+            activarInputFileConImg(imagenUltimaOpcionAgregada, contenedorOpcion);
+        });
+    }
 
-    btnSaltoOption.addEventListener('click',() => {
+    // Solo agregar evento si el elemento existe
+    if (btnSaltoOption) {
+        btnSaltoOption.addEventListener('click',() => {
         checkOptAssistant(btnSaltoOption)
 
         let circulo = btnSaltoOption.querySelector('.circleMove')
 
-        if(circulo.classList.contains('moveRight')) {
-            numeroPreguntaSalto.classList.add('flex')
-        } else {
-            numeroPreguntaSalto.classList.remove('flex')
-        }
-    })
-
-    opcionTarget.addEventListener('click',() => {
-        opcionSeleccionada(contenedorOpcion) 
-    })
-
-    bloqueOpcion.addEventListener('mouseover',() => {
-        previsualizacionOpcion(contenedorOpcion) 
-    })
-
-    bloqueOpcion.addEventListener('mouseleave',() => {
-
-        retirarPrevisualizacionOpcion(contenedorOpcion)
-    })
-
-    inputOption.addEventListener('blur',() => {
-        
-        retirarSeleccionOpcion(contenedorOpcion)
-    
-    })
-    
-    equisOption.forEach(equis => {
-        equis.addEventListener('click',() => {
-            eliminarOpcion(contenedorOpcion)
+            if(circulo && numeroPreguntaSalto) {
+                if(circulo.classList.contains('moveRight')) {
+                    numeroPreguntaSalto.classList.add('flex')
+                } else {
+                    numeroPreguntaSalto.classList.remove('flex')
+                }
+            }
         })
-    })
+    }
 
+    // Solo agregar eventos si los elementos existen
+    if (opcionTarget) {
+        opcionTarget.addEventListener('click',() => {
+            opcionSeleccionada(contenedorOpcion) 
+        })
+    }
+
+    if (bloqueOpcion) {
+        bloqueOpcion.addEventListener('mouseover',() => {
+            previsualizacionOpcion(contenedorOpcion) 
+        })
+
+        bloqueOpcion.addEventListener('mouseleave',() => {
+            retirarPrevisualizacionOpcion(contenedorOpcion)
+        })
+    }
+
+    if (inputOption) {
+        inputOption.addEventListener('blur',() => {
+            retirarSeleccionOpcion(contenedorOpcion)
+        })
+    }
+    
+    if (equisOption.length > 0) {
+        equisOption.forEach(equis => {
+            equis.addEventListener('click',() => {
+                eliminarOpcion(contenedorOpcion)
+            })
+        })
+    }
+    
+    // Marcar que los eventos ya fueron asignados
+    contenedorOpcion.setAttribute('data-events-assigned', 'true');
 }
+
+function agregarIconoEditar(contenedorPregunta) {
+    const sectionDeleteQuestion = contenedorPregunta.querySelector('.sectionDeleteQuestion')
+    
+    if (sectionDeleteQuestion && !sectionDeleteQuestion.querySelector('.questionEdit')) {
+        // Crear y agregar el icono de editar
+        const iconoEditar = document.createElement('i')
+        iconoEditar.className = 'fa-solid fa-pen-to-square iconoEliminar questionEdit'
+        sectionDeleteQuestion.appendChild(iconoEditar)
+        
+        // Asignar evento al icono de editar
+        asignarEventoClickEditarPregunta(iconoEditar)
+        
+        console.log('Icono de editar agregado exitosamente')
+    }
+}
+
+function asignarEventoClickEditarPregunta(iconoEditar) {
+    // Añade el listener del evento click al icono editar
+    iconoEditar.addEventListener('click', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        let contenedorPregunta = event.currentTarget.parentNode.parentNode;
+        let formId = obtenerFormId(); // Necesitamos obtener el formId del contexto
+        
+        console.log('Click en editar pregunta');
+        
+        // Validar la pregunta y enviar datos
+        validarYEnviarPregunta(contenedorPregunta, formId);
+    });
+}
+
+function obtenerFormId() {
+    // Obtener el formId desde la URL o contexto global
+    const url = window.location.href;
+    const formIdMatch = url.match(/\/forms\/(\d+)/);
+    return formIdMatch ? formIdMatch[1] : null;
+}
+
+function validarYEnviarPregunta(contenedorPregunta, formId) {
+    console.log('Validando y enviando pregunta...', { contenedorPregunta, formId });
+    
+    const inputPregunta = contenedorPregunta.querySelector('.questionAndType input');
+    const selectTipoPregunta = contenedorPregunta.querySelector('.questionSelect');
+    const contenedoresOpciones = contenedorPregunta.querySelectorAll('.containerOption');
+    const ordenPregunta = contenedorPregunta.querySelector('.questionNumber');
+    const btnArchivosEspecificos = contenedorPregunta.querySelector('.btnSpecificFile');
+
+    // Resetear estilos antes de validar errores
+    if (inputPregunta) inputPregunta.style.border = '1px solid #d9d9d9';
+    if (selectTipoPregunta) selectTipoPregunta.style.border = '1px solid #d9d9d9';
+
+    let arrayErrores = [];
+    let formData = new FormData();
+    let optionsArray = [];
+    let arrayFiles = [];
+
+    // Validaciones básicas
+    if (!inputPregunta || inputPregunta.value.length === 0) {
+        if (inputPregunta) arrayErrores.push(inputPregunta);
+    }
+    if (!selectTipoPregunta || selectTipoPregunta.value === "0") {
+        if (selectTipoPregunta) arrayErrores.push(selectTipoPregunta);
+    }
+
+    // Validar opciones si existen
+    if (contenedoresOpciones.length > 0) {
+        contenedoresOpciones.forEach((contenedorOpcion, index) => {
+            const inputOpcion = contenedorOpcion.querySelector('.optionTarget input');
+            const inputCheckSalto = contenedorOpcion.querySelector('.inputCheck');
+            const inputNumeroSalto = contenedorOpcion.querySelector('.questionNumberJump');
+            const itemOption = contenedorOpcion.querySelector('.typeOption');
+            const seccionSalto = contenedorOpcion.querySelector('.jumps');
+            const inputImgOption = contenedorOpcion.querySelector('.inputImgOption');
+
+            // Resetear estilos antes de validar errores
+            if (itemOption && itemOption.classList.contains('simulationPointListItem')) {
+                itemOption.style.backgroundColor = 'black';
+            } else if (itemOption) {
+                itemOption.style.border = '1px solid #d9d9d9';
+            }
+            
+            if (inputNumeroSalto) inputNumeroSalto.style.border = '1px solid #d9d9d9';
+
+            if (!inputOpcion || inputOpcion.value.length === 0) {
+                if (itemOption) arrayErrores.push(itemOption);
+            }
+
+            if (inputCheckSalto && inputCheckSalto.checked && (!inputNumeroSalto || inputNumeroSalto.value.length === 0)) {
+                if (seccionSalto) seccionSalto.classList.add('flex');
+                if (inputNumeroSalto) arrayErrores.push(inputNumeroSalto);
+            } else if (seccionSalto) {
+                seccionSalto.classList.remove('flex');
+            }
+
+            // Construir objeto `option`
+            let optionData = {
+                optionText: inputOpcion ? inputOpcion.value : ''
+            };
+
+            // Agregar salto si está presente
+            if (inputCheckSalto && inputCheckSalto.checked && inputNumeroSalto && inputNumeroSalto.value.length !== 0) {
+                // Aquí podrías implementar la lógica para obtener el ID real de la pregunta
+                let idPregunta = inputNumeroSalto.value; // Simplificado por ahora
+                if (idPregunta != null) {
+                    optionData.jump = { nextQuestionId: idPregunta };
+                }
+            }
+
+            // Agregar imagen si está presente
+            if (inputImgOption && inputImgOption.files.length > 0) {
+                optionData.image = { fileIndex: arrayFiles.length };
+                arrayFiles.push(inputImgOption.files[0]);
+            }
+
+            optionsArray.push(optionData);
+        });
+    }
+
+    // Validaciones para tipo carga de archivos
+    if (btnArchivosEspecificos) {
+        const inputCheckboxSpecificFiles = btnArchivosEspecificos.querySelector('input');
+        const checkboxesBlock = contenedorPregunta.querySelectorAll('.checkboxReal');
+
+        // Resetear estilos
+        checkboxesBlock.forEach(checkbox => {
+            checkbox.style.border = '#d9d9d9 1px solid';
+        });
+
+        if (inputCheckboxSpecificFiles && inputCheckboxSpecificFiles.checked && 
+            !Array.from(checkboxesBlock).some(checkbox => checkbox.checked)) {
+            checkboxesBlock.forEach(checkbox => {
+                arrayErrores.push(checkbox);
+            });
+        }
+    }
+
+    if (arrayErrores.length > 0) {
+        arrayErrores.forEach(elementoError => {
+            if (elementoError.classList && elementoError.classList.contains('simulationPointListItem')) {
+                elementoError.style.backgroundColor = 'tomato';
+            } else {
+                elementoError.style.border = 'tomato 1px solid';
+            }
+        });
+        mostrarNotificacion('Los campos son obligatorios', 0);
+    } else {
+        // Preparar FormData para envío
+        if (formId) formData.append("formId", formId);
+        if (selectTipoPregunta) formData.append("questionTypeId", selectTipoPregunta.value);
+        if (inputPregunta) formData.append("questionText", inputPregunta.value);
+        if (ordenPregunta) formData.append("questionOrder", ordenPregunta.innerText);
+        formData.append("options", JSON.stringify(optionsArray));
+        
+        // Agregar archivos correctamente
+        arrayFiles.forEach((file) => {
+            formData.append("files", file);
+        });
+
+        console.log("Enviando FormData...", {
+            formId,
+            questionTypeId: selectTipoPregunta ? selectTipoPregunta.value : null,
+            questionText: inputPregunta ? inputPregunta.value : null,
+            questionOrder: ordenPregunta ? ordenPregunta.innerText : null,
+            optionsCount: optionsArray.length,
+            filesCount: arrayFiles.length
+        });
+        
+        enviarPregunta(formData, contenedorPregunta, null);
+    }
+}
+
+// Función para cargar preguntas existentes del formulario
+async function cargarPreguntasExistentes(formId) {
+    try {
+        const { data, error } = await useApi(`http://217.196.61.73:8082/api/questions/form/${formId}`);
+        
+        if (error.value) {
+            console.error('Error cargando preguntas:', error.value);
+            return [];
+        }
+        
+        if (data.value && Array.isArray(data.value)) {
+            console.log('Preguntas cargadas:', data.value);
+            return data.value;
+        }
+        
+        return [];
+    } catch (err) {
+        console.error('Error inesperado cargando preguntas:', err);
+        return [];
+    }
+}
+
+// Función para mostrar una pregunta existente en el DOM
+function mostrarPreguntaExistente(pregunta, contenedorPadre) {
+    
+    console.log(JSON.stringify(pregunta,null,2));
+    // Obtener la última pregunta agregada
+    const contenedorPregunta = contenedorPadre.querySelector('.draggable:last-child');
+    
+    if (contenedorPregunta) {
+        // Rellenar datos de la pregunta
+        const inputPregunta = contenedorPregunta.querySelector('.questionAndType input');
+        const selectTipoPregunta = contenedorPregunta.querySelector('.questionSelect');
+        const numeroOrden = contenedorPregunta.querySelector('.questionNumber');
+        
+        console.log('Rellenando pregunta:', {
+            texto: pregunta.text,
+            tipo: pregunta.questionType?.id,
+            orden: pregunta.questionOrder,
+            inputEncontrado: !!inputPregunta,
+            selectEncontrado: !!selectTipoPregunta
+        });
+        
+        if (inputPregunta) {
+            inputPregunta.value = pregunta.text;
+            inputPregunta.setAttribute('value', pregunta.text);
+            inputPregunta.placeholder = '';
+            console.log('Texto asignado al input:', inputPregunta.value);
+        }
+        if (selectTipoPregunta) {
+            // Asegurar que las opciones del select estén cargadas antes de asignar
+            if (selectTipoPregunta.options.length === 0) {
+                console.log('Select sin opciones, esperando carga...');
+                // Esperar a que se carguen las opciones
+                setTimeout(() => {
+                    selectTipoPregunta.value = pregunta.questionType?.id;
+                    console.log('Tipo asignado al select (delayed):', selectTipoPregunta.value);
+                }, 200);
+            } else {
+                selectTipoPregunta.value = pregunta.questionType?.id;
+                console.log('Tipo asignado al select:', selectTipoPregunta.value);
+            }
+        }
+        if (numeroOrden) {
+            numeroOrden.textContent = pregunta.questionOrder;
+            console.log('Orden asignado:', numeroOrden.textContent);
+        }
+        
+        // Cambiar tipo de pregunta si es necesario
+        if (selectTipoPregunta && pregunta.questionType?.id) {
+            cambiarTipoDePregunta(pregunta.questionType.id, contenedorPregunta);
+            
+            // Esperar un poco para que se renderice el cambio de tipo
+            setTimeout(() => {
+                // Agregar opciones si existen (después del cambio de tipo)
+                if (pregunta.options && pregunta.options.length > 0) {
+                    console.log('Procesando opciones después del cambio de tipo:', pregunta.options);
+                    
+                    // Remover TODAS las opciones existentes
+                    const opcionesExistentes = contenedorPregunta.querySelectorAll('.containerOption');
+                    console.log(`Removiendo ${opcionesExistentes.length} opciones existentes`);
+                    opcionesExistentes.forEach(opcion => opcion.remove());
+                    
+                    // Agregar cada opción desde cero
+                    pregunta.options.forEach((opcion, index) => {
+                        console.log(`Agregando opción ${index + 1}:`, opcion.text);
+                        agregarOpcion(contenedorPregunta);
+                        const ultimaOpcion = contenedorPregunta.querySelector('.containerOption:last-child');
+                        const inputOpcion = ultimaOpcion?.querySelector('.typeOption input, .inputOption');
+                        if (inputOpcion) {
+                            inputOpcion.value = opcion.text;
+                            console.log(`Opción ${index + 1} asignada:`, inputOpcion.value);
+                        } else {
+                            console.log(`No se encontró input para opción ${index + 1}`);
+                        }
+                    });
+                }
+                
+                // Bloquear campos y agregar ícono de editar después de procesar opciones
+                bloquearCamposPregunta(contenedorPregunta);
+                agregarIconoEditar(contenedorPregunta);
+            }, 100);
+        } else {
+            // Si no hay tipo de pregunta, solo bloquear campos
+            bloquearCamposPregunta(contenedorPregunta);
+            agregarIconoEditar(contenedorPregunta);
+        }
+    }
+}
+
+// Exportar las nuevas funciones
+export { cargarPreguntasExistentes, mostrarPreguntaExistente, bloquearCamposPregunta, activarCamposPregunta, agregarOpcion, asignarEventoClickAgregarOpcion, asignarEventoChangeSelectTipoPregunta, eliminarPregunta, asignarEventoClickEliminarPregunta };

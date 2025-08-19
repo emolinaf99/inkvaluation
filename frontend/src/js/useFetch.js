@@ -34,8 +34,25 @@ export async function useApi(url, method = 'GET', body = null, contentType = 'ap
 
       if (!response.ok) {
         const errorObj = new Error(`HTTP error! status: ${response.status}`);
-        errorObj.status = response.status; // ✅ guardar status
-        errorObj.body = await response.json().catch(() => null); // ✅ intentar leer el mensaje
+        errorObj.status = response.status;
+        
+        // Intentar leer el cuerpo del error
+        try {
+          const errorText = await response.text();
+          errorObj.body = errorText ? JSON.parse(errorText) : { message: `Error ${response.status}` };
+        } catch (parseError) {
+          // Si no se puede parsear, usar el texto raw o mensaje genérico
+          errorObj.body = { message: `Error ${response.status}: ${response.statusText}` };
+        }
+        
+        // Solo mostrar error en consola si no es un 404 esperado (preguntas no encontradas)
+        const isExpected404 = errorObj.status === 404 && 
+                              (errorObj.body?.message?.includes('Questions not found') || 
+                               url.includes('/api/questions/form/'));
+        
+        if (!isExpected404) {
+            console.error('API Error:', errorObj.status, errorObj.body);
+        }
         throw errorObj;
       }
 
@@ -43,8 +60,16 @@ export async function useApi(url, method = 'GET', body = null, contentType = 'ap
       data.value = text ? JSON.parse(text) : null; // Si el cuerpo está vacío, asigna null
       
     } catch (err) {
+      // Solo mostrar error en consola si no es un 404 esperado (preguntas no encontradas)
+      const isExpected404 = err.status === 404 && 
+                            (err.body?.message?.includes('Questions not found') || 
+                             url.includes('/api/questions/form/'));
+      
+      if (!isExpected404) {
+          console.error('Fetch error:', err);
+      }
       // Ahora error.value será un objeto con .status y .message
-      error.value = err.body; 
+      error.value = err.body || { message: err.message || 'Error desconocido' };
     } finally {
       loading.value = false; // Indica que la solicitud ha finalizado
     }

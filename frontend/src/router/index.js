@@ -87,7 +87,7 @@ const router = createRouter({
     {
       path: '/detailForm/:formId',
       name: 'DetailForm',
-      component: () => import('../views/DetailForm.vue'),
+      component: () => import('../views/detailForm.vue'),
       // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
       props: true // Pasar el parámetro 'id' como prop al componente
     },

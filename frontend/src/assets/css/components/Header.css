@@ -1,3 +1,5 @@
+/* ===== BASE STYLES (MOBILE FIRST) ===== */
+
 header {
     background-color: transparent;
     width: 100vw;
@@ -13,11 +15,10 @@ header {
 }
 
 .headerScroll {
-    /* Animation */
     animation-duration: 0.3s;
     animation-name: headerScrollAnimation;
     animation-delay: 0s;
-    animation-iteration-count:1;
+    animation-iteration-count: 1;
     animation-fill-mode: forwards;
     animation-timing-function: ease-out;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -29,7 +30,6 @@ header {
         background-color: transparent;
         backdrop-filter: blur(0px);
     }
-
     to {
         background-color: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -40,7 +40,7 @@ header {
     width: fit-content;
     padding: 0.75rem 1.5rem;
     min-height: 2.5rem;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.95);
     position: fixed;
     z-index: 13;
     bottom: 3rem;
@@ -54,7 +54,6 @@ header {
     border-left: 4px solid #039BE5;
     animation: slideInUp 0.3s ease-out;
     backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.95);
 }
 
 @keyframes slideInUp {
@@ -67,7 +66,6 @@ header {
         opacity: 1;
     }
 }
-
 
 .bloque_logo_burgerMenu {
     display: flex;
@@ -105,7 +103,7 @@ header {
     transform: scale(1.05);
     color: #039BE5;
 }
- 
+
 .navbarMenu {
     background-color: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
@@ -127,7 +125,7 @@ header {
     animation-duration: 0.3s;
     animation-name: aparicionNavbar;
     animation-delay: 0s;
-    animation-iteration-count:1;
+    animation-iteration-count: 1;
     animation-fill-mode: forwards;
     animation-timing-function: ease-out;
 }
@@ -138,7 +136,6 @@ header {
         opacity: 0;
         transform: translateY(-10px);
     }
-
     to {
         top: 4rem;
         opacity: 1;
@@ -156,8 +153,6 @@ header {
     margin: 0.25rem 0;
     border-radius: 8px;
     transition: all 0.3s ease;
-
-    /* Para animación de linea abajo al escuchar hover*/
     text-decoration: none;
     background-image: linear-gradient(currentColor, currentColor);
     background-position: 0% 100%;
@@ -169,7 +164,7 @@ header {
     color: #4A4A4A !important;
 }
 
-.redirectNavbar:hover, .redirectNavbar:focus { /* Al escuchar hover */
+.redirectNavbar:hover, .redirectNavbar:focus {
     background-size: 100% 2px;
     color: #039BE5;
     background-color: rgba(3, 155, 229, 0.1);
@@ -214,16 +209,14 @@ header {
     border-color: #039BE5;
 }
 
-@media screen and (min-width:768px) { 
-
-    
+/* ===== TABLET STYLES (768px and up) ===== */
+@media (min-width: 768px) {
     header {
         padding: 1rem 2rem;
     }
 
     .notificacionContainer {
-        width: fit-content;
-        top:auto;
+        top: auto;
         bottom: 2rem;
         left: 3rem;
     }
@@ -233,20 +226,8 @@ header {
     }
 }
 
-
-@media screen and (min-width:1280px) {
-
-    header {
-        width: 100vw;
-        height: 4rem;
-        display: flex;
-        padding: 1rem 2rem;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        font-family: 'Roboto';
-    }
-
+/* ===== DESKTOP STYLES (1280px and up) ===== */
+@media (min-width: 1280px) {
     .bloque_logo_burgerMenu {
         gap: 2rem;
     }
@@ -257,14 +238,10 @@ header {
 
     .navbarMenu {
         background-color: transparent;
-        width:fit-content;
-        display: flex;
+        width: fit-content;
         flex-direction: row;
-        justify-content: center;
-        align-items: center;
         position: initial;
         top: 0rem;
         left: 0;
-    
     }
 }

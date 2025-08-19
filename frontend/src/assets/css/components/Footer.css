@@ -1,3 +1,5 @@
+/* ===== BASE STYLES (MOBILE FIRST) ===== */
+
 footer {
     min-height: 10rem;
     width: 100vw;
@@ -65,7 +67,6 @@ footer {
     color: white;
 }
 
-
 .copyright {
     font-size: 14px;
     width: 100%;
@@ -98,17 +99,11 @@ footer {
     color: white;
 }
 
-
-@media screen and (min-width:768px) {
+/* ===== TABLET STYLES (768px and up) ===== */
+@media (min-width: 768px) {
     .tyc-Pv {
         font-size: 14px;
-        display: flex;
         flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        width: 100%;
-        color: white;
     }
 
     .tyc-Pv > p {
@@ -116,85 +111,17 @@ footer {
     }
 }
 
-
-
-@media screen and (min-width:1280px) {
+/* ===== DESKTOP STYLES (1280px and up) ===== */
+@media (min-width: 1280px) {
     .imgFooter {
-        width: 100%;
         height: 20rem;
-        display: block;
-        margin: 0;
-        padding: 0;
-        position: relative;
-        overflow: hidden;
-        background: #fbfbfb;
     }
 
     .containerFooter {
-        width: 100vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
         padding: 1rem 2rem;
-        gap: 1rem;
-    }
-    
-    .contenedorRedes {
-        display: flex;
-        flex-direction: row;
-        width:100%;
-        justify-content: space-between;
-        align-items: center;
     }
     
     .bloqueVacio {
-        border-bottom: 1px solid #D0D3D8;
         width: 40%;
-    }
-    
-    .redes {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        position: relative;
-    }
-    
-    .redes i {
-        font-size: 30px;
-        color: white;
-    }
-    
-    .copyright {
-        font-size: 14px;
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        color: #D9D9D9;
-        font-weight: 300;
-        gap: 2px;
-    }
-    
-    .tyc-Pv {
-        font-size: 14px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        width: 100%;
-        color: white;
-    }
-
-    .tyc-Pv > p {
-        display: block;
-    }
-    
-    .tyc-Pv a {
-        color: white;
     }
 }

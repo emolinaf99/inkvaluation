@@ -1,9 +1,20 @@
 <script setup>
     import { onMounted, ref, nextTick, watch } from 'vue'
-    import { useChatbot } from '../js/useChatbot.js'
+    import { useChatbotForms } from '../js/useChatbotForms.js'
     import { services } from '../data/services.js'
 
-    const { chatState, iniciarConversacion, procesarRespuesta, manejarCambioInput, enviarSolicitud, retrocederEtapa } = useChatbot()
+    const { 
+        chatState, 
+        iniciarConversacion, 
+        procesarRespuesta, 
+        procesarOpcionImagen,
+        manejarCambioInput, 
+        enviarSolicitud, 
+        retrocederEtapa,
+        hayErrorAPI,
+        estaCargando,
+        formsAPI
+    } = useChatbotForms()
     
     // Referencia para el input actual
     const inputRef = ref(null)
@@ -12,7 +23,12 @@
     // Manejar selección de opción
     const seleccionarOpcion = (opcion) => {
         procesarRespuesta(opcion)
-        // El scroll automático se maneja desde useChatbot.js después de ocultar inputs
+        // El scroll automático se maneja desde useChatbotForms.js después de ocultar inputs
+    }
+
+    // Manejar selección de opción con imagen
+    const seleccionarOpcionImagen = (opcion) => {
+        procesarOpcionImagen(opcion)
     }
 
     // Manejar envío manual (Enter en textarea)
@@ -242,6 +258,69 @@
                         <label :for="`option-${index}`">{{ opcion }}</label>
                     </li>
                 </ul>
+            </div>
+
+            <!-- Opciones con Imágenes -->
+            <div 
+                v-if="chatState.esperandoInput && chatState.tipoInputActual === 'opciones-imagenes'"
+                class="msgContainer jcFlexEnd ux-slide-in-right"
+            >
+                <div class="opcionesImagenesContainer">
+                    <div 
+                        v-for="(opcion, index) in chatState.opcionesConImagenes" 
+                        :key="index"
+                        class="opcionImagen ux-hover-lift"
+                        @click="seleccionarOpcionImagen(opcion)"
+                    >
+                        <div class="imagenOpcion" v-if="opcion.image_url">
+                            <img :src="opcion.image_url" :alt="opcion.text || opcion.label" />
+                        </div>
+                        <div class="textoOpcion">
+                            <p>{{ opcion.text || opcion.label }}</p>
+                            <small v-if="opcion.description">{{ opcion.description }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicador de progreso del formulario -->
+            <div 
+                v-if="chatState.formularioActivo && chatState.progreso.total > 0"
+                class="msgContainer jcFlexStart"
+            >
+                <div class="progresoFormulario">
+                    <div class="progresoTexto">
+                        <small>Pregunta {{ chatState.progreso.current }} de {{ chatState.progreso.total }}</small>
+                    </div>
+                    <div class="progresoBarra">
+                        <div 
+                            class="progresoFill" 
+                            :style="{ width: chatState.progreso.percentage + '%' }"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Indicador de error de API -->
+            <div 
+                v-if="hayErrorAPI"
+                class="msgContainer jcFlexStart"
+            >
+                <div class="msgChat error-api">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <p>{{ formsAPI.error.value }}</p>
+                </div>
+            </div>
+
+            <!-- Indicador de carga -->
+            <div 
+                v-if="estaCargando"
+                class="msgContainer jcFlexStart"
+            >
+                <div class="msgChat cargando">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <p>Cargando...</p>
+                </div>
             </div>
 
             <!-- Indicador de "escribiendo..." del bot -->

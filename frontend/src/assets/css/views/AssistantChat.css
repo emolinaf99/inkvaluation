@@ -1,3 +1,5 @@
+/* ===== BASE STYLES (MOBILE FIRST) ===== */
+
 /* Prevenir scroll horizontal en toda la sección de chat */
 .sectionGeneralChat {
     width: 100%;
@@ -5,11 +7,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow-x: hidden; /* Prevenir scroll horizontal */
+    overflow-x: hidden;
 }
 
 .sectionGeneralChat * {
-    box-sizing: border-box; /* Asegurar que padding no cause desbordamiento */
+    box-sizing: border-box;
 }
 
 .headerChat {
@@ -25,7 +27,6 @@
     color: white;
 }
 
-
 .perfilChat {
     width: 100%;
     display: flex;
@@ -36,7 +37,7 @@
 }
 
 .perfilChat img {
-    width:70px;
+    width: 70px;
     height: 70px;
     border-radius: 50%;
 }
@@ -53,16 +54,16 @@
 
 .sectionMessages {
     width: 100%;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 180px);
     overflow-y: auto;
-    overflow-x: hidden; /* Prevenir scroll horizontal solo aquí */
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
     gap: 0.25rem;
-    padding: 1rem;
-    padding-bottom: 80px; /* Espacio para el botón fijo */
+    padding: 1rem 0.5rem;
+    padding-bottom: 80px;
     color: #444;
     scroll-behavior: smooth;
     background-color: #f8f9fa;
@@ -89,19 +90,19 @@
     background-color: #e5e5ea;
     padding: 0.75rem 1rem;
     position: relative;
-    max-width: 70%;
+    max-width: 85%;
     border-radius: 18px;
     border-bottom-left-radius: 6px;
     margin-left: 0.5rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     font-size: 14px;
     line-height: 1.4;
-    word-wrap: break-word; /* Romper palabras largas */
-    overflow-wrap: break-word; /* Compatibilidad */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .msgChat i {
-    display: none; /* Ocultar el icono de play para apariencia más limpia */
+    display: none;
 }
 
 .inputNameChat {
@@ -130,7 +131,7 @@
 
 .listChat {
     background-color: white;
-    max-width: 70%;
+    max-width: 85%;
     border-radius: 12px;
     margin-right: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -153,12 +154,208 @@
     gap: 0.75rem;
     color: #333;
     font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.listChat li:hover {
+    background-color: #f8f9fa;
 }
 
 .noBorder {
     border: 0 !important;
 }
 
+/* Mensaje del usuario */
+.msgUser {
+    background-color: #114B7A;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    border-bottom-right-radius: 6px;
+    max-width: 90%;
+    margin-right: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    position: relative;
+}
+
+/* Estilos para mensajes editables */
+.editable-message {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.editable-message:hover {
+    background-color: #0f4169;
+    transform: scale(1.01);
+    border: 2px solid #ffffff40;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.edit-icon {
+    position: absolute;
+    top: 50%;
+    right: -20px;
+    transform: translateY(-50%);
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 4px;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.editable-message:hover .edit-icon {
+    opacity: 1;
+}
+
+/* Container para textarea */
+.textareaContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    max-width: 90%;
+    margin-right: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e1e5e9;
+}
+
+.textareaChat {
+    background-color: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #333;
+    resize: vertical;
+    min-height: 80px;
+    font-size: 14px;
+    outline: none;
+}
+
+.textareaChat::placeholder {
+    color: #8e8e93;
+}
+
+.textareaChat:focus {
+    border-color: #007AFF;
+    background-color: white;
+}
+
+.btnEnviarTexto {
+    align-self: flex-end;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btnEnviarTexto:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Indicador de escritura */
+.escribiendo {
+    opacity: 0.7;
+}
+
+.typing-indicator {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.typing-indicator span {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+    background-color: #666;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Acciones del chat */
+.chatActions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0.75rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e1e5e9;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
+.btnEnviarSolicitud {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(144, 211, 135, 0.3);
+}
+
+.btnEnviarSolicitud:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(144, 211, 135, 0.4);
+}
+
+/* Scroll personalizado */
+.sectionMessages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sectionMessages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.sectionMessages::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.sectionMessages::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Elementos de slide (conservados para compatibilidad) */
 .contenedorGeneralSlideChat {
     width: 100%;
     display: flex;
@@ -185,7 +382,7 @@
     font-size: 35px;
 }
 
-.botonesSlideOutsideChat i{
+.botonesSlideOutsideChat i {
     padding: 0.5rem;
 }
 
@@ -252,258 +449,306 @@
     justify-content: space-between;
     padding: 0.5rem;
     color: white;
-    border-bottom-left-radius:10px;
+    border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-
-/* .infoOptionSlide p {
-    font-size: 14px;
-} */
-
 
 .infoOptionSlide img {
     width: 35px;
 }
 
-/* ===== ESTILOS PARA CHATBOT DINÁMICO ===== */
+/* ===== TABLET STYLES (768px and up) ===== */
+@media (min-width: 768px) {
+    .sectionMessages {
+        height: calc(100vh - 200px);
+        padding: 1rem;
+        padding-bottom: 80px;
+    }
 
-/* Mensaje del usuario */
-.msgUser {
-    background-color: #114B7A;
-    color: white;
-    padding: 0.75rem 1rem;
-    border-radius: 18px;
-    border-bottom-right-radius: 6px;
-    max-width: 70%;
-    margin-right: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    font-size: 14px;
-    line-height: 1.4;
-    word-wrap: break-word; /* Romper palabras largas */
-    overflow-wrap: break-word; /* Compatibilidad */
-    position: relative;
+    .msgChat {
+        max-width: 70%;
+    }
+
+    .msgUser {
+        max-width: 70%;
+    }
+
+    .listChat {
+        max-width: 70%;
+    }
+
+    .textareaContainer {
+        max-width: 85%;
+    }
+
+    .chatActions {
+        padding: 1rem;
+    }
+
+    .btnEnviarSolicitud {
+        padding: 1rem 2.5rem;
+        font-size: 16px;
+    }
+
+    .edit-icon {
+        right: -25px;
+        font-size: 12px;
+        width: 20px;
+        height: 20px;
+    }
+
+    .editable-message:hover {
+        transform: scale(1.02);
+    }
 }
 
-/* Estilos para mensajes editables */
-.editable-message {
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: 2px solid transparent;
-}
-
-.editable-message:hover {
-    background-color: #0f4169;
-    transform: scale(1.02);
-    border: 2px solid #ffffff40;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-.edit-icon {
-    position: absolute;
-    top: 50%;
-    right: -25px;
-    transform: translateY(-50%);
-    font-size: 12px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 4px;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.editable-message:hover .edit-icon {
-    opacity: 1;
-}
-
-/* Container para textarea */
-.textareaContainer {
-    width: 50%;
+/* Opciones con imágenes */
+.opcionesImagenesContainer {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    background-color: white;
-    padding: 1rem;
-    border-radius: 12px;
-    max-width: 85%;
+    gap: 0.75rem;
+    max-width: 90%;
     margin-right: 0.5rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e1e5e9;
 }
 
-.textareaChat {
-    background-color: #f8f9fa;
-    border: 1px solid #e1e5e9;
-    border-radius: 8px;
-    padding: 0.75rem;
-    color: #333;
-    resize: vertical;
-    min-height: 80px;
-    font-size: 14px;
-    outline: none;
-}
-
-.textareaChat::placeholder {
-    color: #8e8e93;
-}
-
-.textareaChat:focus {
-    border-color: #007AFF;
-    background-color: white;
-}
-
-.btnEnviarTexto {
-    align-self: flex-end;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.btnEnviarTexto:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Opciones clickeables */
-.listChat li {
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.listChat li:hover {
-    background-color: #f8f9fa;
-}
-
-/* Indicador de escritura */
-.escribiendo {
-    opacity: 0.7;
-}
-
-.typing-indicator {
-    display: inline-flex;
-    gap: 4px;
-}
-
-.typing-indicator span {
-    height: 8px;
-    width: 8px;
-    border-radius: 50%;
-    background-color: #666;
-    animation: typing 1.4s infinite ease-in-out;
-}
-
-.typing-indicator span:nth-child(1) {
-    animation-delay: -0.32s;
-}
-
-.typing-indicator span:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-@keyframes typing {
-    0%, 80%, 100% {
-        transform: scale(0.8);
-        opacity: 0.5;
-    }
-    40% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* Acciones del chat */
-.chatActions {
-    width: 100%;
+.opcionImagen {
     display: flex;
-    justify-content: center;
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-top: 1px solid #e1e5e9;
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-}
-
-.btnEnviarSolicitud {
-    padding: 1rem 2.5rem;
-    border: none;
+    flex-direction: row;
+    align-items: center;
+    background-color: white;
     border-radius: 12px;
-    font-weight: 600;
-    font-size: 16px;
+    padding: 0.75rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(144, 211, 135, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    gap: 1rem;
 }
 
-.btnEnviarSolicitud:hover {
+.opcionImagen:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(144, 211, 135, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #039BE5;
 }
 
-/* Scroll personalizado */
-.sectionMessages::-webkit-scrollbar {
-    width: 6px;
+.imagenOpcion {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f8f9fa;
 }
 
-.sectionMessages::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+.imagenOpcion img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.sectionMessages::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
+.textoOpcion {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
-.sectionMessages::-webkit-scrollbar-thumb:hover {
-    background: #555;
+.textoOpcion p {
+    margin: 0;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
 }
 
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .msgUser, .textareaContainer {
-        max-width: 90%;
-    }
-    
-    .msgChat {
-        max-width: 85%;
-    }
-    
-    .listChat {
-        max-width: 85%;
-    }
-    
+.textoOpcion small {
+    color: #666;
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+/* Indicador de progreso */
+.progresoFormulario {
+    background-color: rgba(3, 155, 229, 0.1);
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    margin-left: 0.5rem;
+    max-width: 70%;
+    border-left: 3px solid #039BE5;
+}
+
+.progresoTexto {
+    margin-bottom: 0.5rem;
+}
+
+.progresoTexto small {
+    color: #039BE5;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.progresoBarra {
+    width: 100%;
+    height: 6px;
+    background-color: rgba(3, 155, 229, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progresoFill {
+    height: 100%;
+    background: linear-gradient(90deg, #039BE5 0%, #114B7A 100%);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+/* Estados de error y carga */
+.error-api {
+    background-color: #fee;
+    border-left: 3px solid #e74c3c;
+    color: #c0392b;
+}
+
+.error-api i {
+    color: #e74c3c;
+    margin-right: 0.5rem;
+}
+
+.cargando {
+    background-color: #f0f8ff;
+    border-left: 3px solid #039BE5;
+    color: #039BE5;
+}
+
+.cargando i {
+    margin-right: 0.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== TABLET STYLES (768px and up) ===== */
+@media (min-width: 768px) {
     .sectionMessages {
-        height: calc(100vh - 180px);
-        padding: 1rem 0.5rem;
-        padding-bottom: 80px; /* Mantener espacio para botón en móvil */
+        height: calc(100vh - 200px);
+        padding: 1rem;
+        padding-bottom: 80px;
     }
-    
+
+    .msgChat {
+        max-width: 70%;
+    }
+
+    .msgUser {
+        max-width: 70%;
+    }
+
+    .listChat {
+        max-width: 70%;
+    }
+
+    .textareaContainer {
+        max-width: 85%;
+    }
+
     .chatActions {
-        padding: 0.75rem;
+        padding: 1rem;
     }
-    
+
     .btnEnviarSolicitud {
-        padding: 0.75rem 2rem;
-        font-size: 14px;
+        padding: 1rem 2.5rem;
+        font-size: 16px;
     }
-    
-    /* Ajustes para mensajes editables en móvil */
+
     .edit-icon {
-        right: -20px;
-        font-size: 10px;
-        width: 18px;
-        height: 18px;
+        right: -25px;
+        font-size: 12px;
+        width: 20px;
+        height: 20px;
     }
-    
+
     .editable-message:hover {
-        transform: scale(1.01); /* Menos zoom en móvil */
+        transform: scale(1.02);
+    }
+
+    .opcionesImagenesContainer {
+        max-width: 85%;
+    }
+
+    .opcionImagen {
+        flex-direction: row;
+    }
+
+    .imagenOpcion {
+        width: 100px;
+        height: 100px;
+    }
+
+    .progresoFormulario {
+        max-width: 60%;
+    }
+}
+
+/* ===== DESKTOP STYLES (1280px and up) ===== */
+@media (min-width: 1280px) {
+    .headerChat {
+        min-height: 8rem;
+    }
+
+    .sectionMessages {
+        padding: 1.5rem;
+        padding-bottom: 100px;
+    }
+
+    .msgChat {
+        font-size: 15px;
+        padding: 1rem 1.25rem;
+    }
+
+    .msgUser {
+        font-size: 15px;
+        padding: 1rem 1.25rem;
+    }
+
+    .textareaChat {
+        font-size: 15px;
+        min-height: 90px;
+    }
+
+    .chatActions {
+        padding: 1.5rem;
+    }
+
+    .btnEnviarSolicitud {
+        padding: 1.25rem 3rem;
+        font-size: 18px;
+    }
+
+    .opcionesImagenesContainer {
+        max-width: 80%;
+    }
+
+    .opcionImagen {
+        padding: 1rem;
+    }
+
+    .imagenOpcion {
+        width: 120px;
+        height: 120px;
+    }
+
+    .textoOpcion p {
+        font-size: 15px;
+    }
+
+    .textoOpcion small {
+        font-size: 13px;
+    }
+
+    .progresoFormulario {
+        max-width: 50%;
+        padding: 1rem 1.25rem;
     }
 }
