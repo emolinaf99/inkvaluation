@@ -188,29 +188,59 @@
 
     // Función para eliminar pregunta (nueva o guardada)
     async function eliminarPreguntaVue(contenedorPregunta) {
-        console.log('Eliminando pregunta...');
+        console.log('Eliminando pregunta...', contenedorPregunta);
+        console.log('Classes del contenedor recibido:', contenedorPregunta.className);
+        console.log('Es draggable?', contenedorPregunta.classList.contains('draggable'));
+        
+        // Encontrar el contenedor .draggable correcto
+        let contenedorReal = contenedorPregunta;
+        if (!contenedorPregunta.classList.contains('draggable')) {
+            // Buscar hacia arriba hasta encontrar .draggable
+            contenedorReal = contenedorPregunta.closest('.draggable');
+            console.log('Contenedor real encontrado:', contenedorReal);
+        }
+        
+        if (!contenedorReal) {
+            console.error('No se pudo encontrar el contenedor .draggable');
+            return;
+        }
+        
+        // Buscar el índice basado en la posición en el DOM
+        const todasLasPreguntas = document.querySelectorAll('.draggable');
+        const indexDOM = Array.from(todasLasPreguntas).indexOf(contenedorReal);
+        
+        console.log('Índice en DOM:', indexDOM);
+        console.log('Total preguntas en DOM:', todasLasPreguntas.length);
+        console.log('Total preguntas en array:', formQuestions.value.length);
+        console.log('Array actual de preguntas:', formQuestions.value);
         
         // Identificar si es pregunta nueva o guardada por el atributo data-saved
-        const esNueva = !contenedorPregunta.hasAttribute('data-saved');
+        const esNueva = !contenedorReal.hasAttribute('data-saved');
+        console.log('Es pregunta nueva:', esNueva);
+        
+        if (indexDOM === -1) {
+            console.error('No se pudo encontrar el índice de la pregunta en el DOM');
+            return;
+        }
         
         if (esNueva) {
-            console.log('Eliminando pregunta nueva (solo del DOM)...');
+            console.log('Eliminando pregunta nueva (solo del array reactivo)...');
             
-            // Buscar la pregunta en el array reactivo por ID temporal
-            const todasLasPreguntas = document.querySelectorAll('.draggable');
-            const indexPregunta = Array.from(todasLasPreguntas).indexOf(contenedorPregunta);
-            
-            if (indexPregunta !== -1) {
+            // Para preguntas nuevas, usar el índice del DOM directamente
+            if (indexDOM < formQuestions.value.length) {
                 // Eliminar del array reactivo
-                formQuestions.value.splice(indexPregunta, 1);
-                console.log('Pregunta nueva eliminada del array reactivo');
+                formQuestions.value.splice(indexDOM, 1);
+                console.log('Pregunta nueva eliminada del array reactivo en índice:', indexDOM);
+            } else {
+                console.warn('Índice fuera de rango en el array reactivo');
             }
         } else {
-            console.log('Eliminando pregunta guardada (API + DOM)...');
+            console.log('Eliminando pregunta guardada (API + array reactivo)...');
             
-            // Buscar el ID de la pregunta guardada
-            const indexPregunta = Array.from(document.querySelectorAll('.draggable')).indexOf(contenedorPregunta);
-            const pregunta = formQuestions.value[indexPregunta];
+            // Para preguntas guardadas, buscar la pregunta en el array por índice DOM
+            const pregunta = formQuestions.value[indexDOM];
+            
+            console.log('Pregunta encontrada por índice DOM:', pregunta);
             
             if (pregunta && pregunta.id) {
                 try {
@@ -223,8 +253,13 @@
                         console.log('Pregunta eliminada exitosamente del servidor');
                         
                         // Eliminar del array reactivo
-                        formQuestions.value.splice(indexPregunta, 1);
-                        console.log('Pregunta eliminada del array reactivo');
+                        formQuestions.value.splice(indexDOM, 1);
+                        console.log('Pregunta eliminada del array reactivo en índice:', indexDOM);
+                        
+                        // Forzar reactividadad
+                        nextTick(() => {
+                            console.log('Array después de eliminar:', formQuestions.value.length);
+                        });
                     } else {
                         console.error('Error eliminando pregunta:', error.value);
                         alert('Error al eliminar la pregunta: ' + (error.value.message || 'Error desconocido'));
@@ -233,6 +268,8 @@
                     console.error('Error inesperado eliminando pregunta:', err);
                     alert('Error inesperado al eliminar la pregunta');
                 }
+            } else {
+                console.warn('No se pudo encontrar la pregunta guardada o no tiene ID. Pregunta encontrada:', pregunta);
             }
         }
     }
@@ -426,7 +463,20 @@
                         </select>
                     </div>
                     <div class="optionsAnswer">
-
+                        <div 
+                            class="containerOption" 
+                            v-for="option in question.options" 
+                            :key="option.id"
+                        >
+                            <div class="bloqueOpcion">
+                                <div class="cajaOption">
+                                    <div class="rowOpt w100 optionTarget">
+                                        <span class="checkboxSpan typeOption"></span>
+                                        <input class="inputOption" type="text" :value="option.text" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="cajaOption">
                         <div class="rowOpt w100">
@@ -497,17 +547,29 @@
                     <div class="questionNumberBlock">
                         <div class="w33">.</div>
                         <i class="fa-solid fa-grip grab w33"></i>
-                        <div class="questionNumber w33 fe"></div>
+                        <div class="questionNumber w33 fe">{{ index + 1 }}</div>
                     </div>
                     <div class="questionAndType">
-                        <input type="text" name="" placeholder="Pregunta">
-                        <select name="" class="questionSelect">
-                        
+                        <input type="text" name="" :value="question.text" :disabled="!question.id.toString().startsWith('temp-')">
+                        <select name="" class="questionSelect" :disabled="!question.id.toString().startsWith('temp-')">
+                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id" :selected="qType.id === question.questionType.id">{{ qType.description }}</option>
                         </select>
-
                     </div>
                     <div class="optionsAnswer">
-                        
+                        <div 
+                            class="containerOption" 
+                            v-for="option in question.options" 
+                            :key="option.id"
+                        >
+                            <div class="bloqueOpcion">
+                                <div class="cajaOption">
+                                    <div class="rowOpt w100 optionTarget">
+                                        <span class="simulationPointListItem typeOption"></span>
+                                        <input class="inputOption" type="text" :value="option.text" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="cajaOption">
                         <div class="rowOpt w100">
@@ -532,14 +594,13 @@
                     <div class="questionNumberBlock">
                         <div class="w33">.</div>
                         <i class="fa-solid fa-grip grab w33"></i>
-                        <div class="questionNumber w33 fe"></div>
+                        <div class="questionNumber w33 fe">{{ index + 1 }}</div>
                     </div>
                     <div class="questionAndType noBorder">
-                        <input type="text" name="" placeholder="Pregunta">
-                        <select name="" class="questionSelect">
-                        
+                        <input type="text" name="" :value="question.text" :disabled="!question.id.toString().startsWith('temp-')">
+                        <select name="" class="questionSelect" :disabled="!question.id.toString().startsWith('temp-')">
+                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id" :selected="qType.id === question.questionType.id">{{ qType.description }}</option>
                         </select>
-
                     </div>
                     <div class="sectionDeleteQuestion">
                         <i class="fa-solid fa-trash iconoEliminar"></i>
@@ -556,14 +617,13 @@
                     <div class="questionNumberBlock">
                         <div class="w33">.</div>
                         <i class="fa-solid fa-grip grab w33"></i>
-                        <div class="questionNumber w33 fe"></div>
+                        <div class="questionNumber w33 fe">{{ index + 1 }}</div>
                     </div>
                     <div class="questionAndType noBorder">
-                        <input type="text" name="" placeholder="Pregunta">
-                        <select name="" class="questionSelect">
-                        
+                        <input type="text" name="" :value="question.text" :disabled="!question.id.toString().startsWith('temp-')">
+                        <select name="" class="questionSelect" :disabled="!question.id.toString().startsWith('temp-')">
+                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id" :selected="qType.id === question.questionType.id">{{ qType.description }}</option>
                         </select>
-
                     </div>
                     <div class="sectionDeleteQuestion">
                         <i class="fa-solid fa-trash iconoEliminar"></i>
@@ -580,14 +640,13 @@
                     <div class="questionNumberBlock">
                         <div class="w33">.</div>
                         <i class="fa-solid fa-grip grab w33"></i>
-                        <div class="questionNumber w33 fe"></div>
+                        <div class="questionNumber w33 fe">{{ index + 1 }}</div>
                     </div>
                     <div class="questionAndType noBorder">
-                        <input type="text" name="" placeholder="Pregunta">
-                        <select name="" class="questionSelect">
-                        
+                        <input type="text" name="" :value="question.text" :disabled="!question.id.toString().startsWith('temp-')">
+                        <select name="" class="questionSelect" :disabled="!question.id.toString().startsWith('temp-')">
+                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id" :selected="qType.id === question.questionType.id">{{ qType.description }}</option>
                         </select>
-
                     </div>
                     <div class="sectionDeleteQuestion">
                         <i class="fa-solid fa-trash iconoEliminar"></i>
@@ -604,14 +663,13 @@
                     <div class="questionNumberBlock">
                         <div class="w33">.</div>
                         <i class="fa-solid fa-grip grab w33"></i>
-                        <div class="questionNumber w33 fe"></div>
+                        <div class="questionNumber w33 fe">{{ index + 1 }}</div>
                     </div>
                     <div class="questionAndType">
-                        <input type="text" name="" placeholder="Pregunta">
-                        <select name="" class="questionSelect">
-                    
+                        <input type="text" name="" :value="question.text" :disabled="!question.id.toString().startsWith('temp-')">
+                        <select name="" class="questionSelect" :disabled="!question.id.toString().startsWith('temp-')">
+                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id" :selected="qType.id === question.questionType.id">{{ qType.description }}</option>
                         </select>
-
                     </div>
                     <div class="optionsAnswer">
                         <div class="cajaOption">

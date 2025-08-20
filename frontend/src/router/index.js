@@ -60,6 +60,11 @@ const router = createRouter({
       component: () => import('../views/AssistantChat.vue'),
     },
     {
+      path: '/assistantChatAI',
+      name: 'AssistantChatAI',
+      component: () => import('../views/AssistantChatAI.vue'),
+    },
+    {
       path: '/assistantBussiness',
       name: 'AssistantBussiness',
       component: () => import('../views/BussinessAssistant.vue'),

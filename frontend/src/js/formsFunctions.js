@@ -634,7 +634,9 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
                 checkbox.style.border = '#d9d9d9 1px solid';
             })
 
-            if(inputCheckboxSpecificFiles.checked && !checkboxesBlock.some(checkbox => checkbox.checked)) {
+            // Convertir NodeList a Array para usar .some()
+            const checkboxesArray = Array.from(checkboxesBlock)
+            if(inputCheckboxSpecificFiles.checked && !checkboxesArray.some(checkbox => checkbox.checked)) {
                 checkboxesBlock.forEach(checkbox => {
                     arrayErrores.push(checkbox)
                 })
@@ -1330,14 +1332,30 @@ function mostrarPreguntaExistente(pregunta, contenedorPadre) {
                     pregunta.options.forEach((opcion, index) => {
                         console.log(`Agregando opción ${index + 1}:`, opcion.text);
                         agregarOpcion(contenedorPregunta);
-                        const ultimaOpcion = contenedorPregunta.querySelector('.containerOption:last-child');
-                        const inputOpcion = ultimaOpcion?.querySelector('.typeOption input, .inputOption');
-                        if (inputOpcion) {
-                            inputOpcion.value = opcion.text;
-                            console.log(`Opción ${index + 1} asignada:`, inputOpcion.value);
-                        } else {
-                            console.log(`No se encontró input para opción ${index + 1}`);
-                        }
+                        
+                        // Esperar un poco para que se renderice la opción
+                        setTimeout(() => {
+                            const ultimaOpcion = contenedorPregunta.querySelector('.containerOption:last-child');
+                            console.log('Última opción encontrada:', ultimaOpcion);
+                            
+                            if (ultimaOpcion) {
+                                // Intentar múltiples selectores para encontrar el input
+                                const inputOpcion = ultimaOpcion.querySelector('.typeOption input') || 
+                                                   ultimaOpcion.querySelector('.inputOption') ||
+                                                   ultimaOpcion.querySelector('input[type="text"]') ||
+                                                   ultimaOpcion.querySelector('.optionTarget input');
+                                
+                                console.log('Input de opción encontrado:', inputOpcion);
+                                
+                                if (inputOpcion) {
+                                    inputOpcion.value = opcion.text;
+                                    console.log(`Opción ${index + 1} asignada:`, inputOpcion.value);
+                                } else {
+                                    console.log(`No se encontró input para opción ${index + 1}`);
+                                    console.log('HTML de la opción:', ultimaOpcion.innerHTML);
+                                }
+                            }
+                        }, 50 * (index + 1)); // Delay incremental para cada opción
                     });
                 }
                 

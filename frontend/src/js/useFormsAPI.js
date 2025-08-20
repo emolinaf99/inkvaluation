@@ -156,9 +156,21 @@ export function useFormsAPI() {
     error.value = null
     
     try {
-      const data = await apiRequest(`/forms/${formId}/questions`)
-      questions.value = data
-      return data
+      const data = await apiRequest(`/questions/form/${formId}`)
+      
+      // Ordenar por questionOrder
+      if (data && Array.isArray(data)) {
+        const sortedQuestions = data.sort((a, b) => {
+          const orderA = a.questionOrder || 999
+          const orderB = b.questionOrder || 999
+          return orderA - orderB
+        })
+        questions.value = sortedQuestions
+        return sortedQuestions
+      }
+      
+      questions.value = data || []
+      return data || []
     } catch (err) {
       handleError(err, 'obtener preguntas')
       return []
@@ -214,15 +226,33 @@ export function useFormsAPI() {
     error.value = null
     
     try {
-      const data = await apiRequest(`/forms/${formId}/questions/first`)
-      currentQuestion.value = data
-      formState.currentQuestionId = data?.id
+      // Usar el endpoint correcto para obtener todas las preguntas
+      const allQuestions = await apiRequest(`/questions/form/${formId}`)
       
-      if (data?.id && !formState.visitedQuestions.includes(data.id)) {
-        formState.visitedQuestions.push(data.id)
+      if (allQuestions && allQuestions.length > 0) {
+        // Ordenar por questionOrder de menor a mayor (empezando por 1)
+        const sortedQuestions = allQuestions.sort((a, b) => {
+          const orderA = a.questionOrder || 999
+          const orderB = b.questionOrder || 999
+          return orderA - orderB
+        })
+        
+        // Tomar la primera pregunta (questionOrder = 1)
+        const firstQuestion = sortedQuestions.find(q => q.questionOrder === 1) || sortedQuestions[0]
+        
+        currentQuestion.value = firstQuestion
+        formState.currentQuestionId = firstQuestion?.id
+        
+        if (firstQuestion?.id && !formState.visitedQuestions.includes(firstQuestion.id)) {
+          formState.visitedQuestions.push(firstQuestion.id)
+        }
+        
+        console.log('Primera pregunta obtenida (questionOrder=1):', firstQuestion)
+        return firstQuestion
+      } else {
+        throw new Error('No se encontraron preguntas en el formulario')
       }
       
-      return data
     } catch (err) {
       handleError(err, 'obtener primera pregunta')
       return null
@@ -237,24 +267,43 @@ export function useFormsAPI() {
     error.value = null
     
     try {
-      const data = await apiRequest(`/forms/${formId}/questions/${questionId}/next?optionId=${optionId}`)
+      // Obtener todas las preguntas del formulario
+      const allQuestions = await apiRequest(`/questions/form/${formId}`)
       
-      if (data) {
-        currentQuestion.value = data
-        formState.currentQuestionId = data.id
-        formState.nextQuestionId = null
+      if (allQuestions && allQuestions.length > 0) {
+        // Ordenar por questionOrder
+        const sortedQuestions = allQuestions.sort((a, b) => {
+          const orderA = a.questionOrder || 999
+          const orderB = b.questionOrder || 999
+          return orderA - orderB
+        })
         
-        // Agregar a preguntas visitadas
-        if (!formState.visitedQuestions.includes(data.id)) {
-          formState.visitedQuestions.push(data.id)
+        // Encontrar la pregunta actual
+        const currentIndex = sortedQuestions.findIndex(q => q.id === questionId)
+        
+        if (currentIndex !== -1 && currentIndex < sortedQuestions.length - 1) {
+          // Hay una siguiente pregunta
+          const nextQuestion = sortedQuestions[currentIndex + 1]
+          
+          currentQuestion.value = nextQuestion
+          formState.currentQuestionId = nextQuestion.id
+          formState.nextQuestionId = null
+          
+          // Agregar a preguntas visitadas
+          if (!formState.visitedQuestions.includes(nextQuestion.id)) {
+            formState.visitedQuestions.push(nextQuestion.id)
+          }
+          
+          return nextQuestion
+        } else {
+          // No hay más preguntas
+          formState.nextQuestionId = null
+          currentQuestion.value = null
+          return null
         }
-      } else {
-        // No hay más preguntas
-        formState.nextQuestionId = null
-        currentQuestion.value = null
       }
       
-      return data
+      return null
     } catch (err) {
       handleError(err, 'obtener siguiente pregunta')
       return null
@@ -340,7 +389,10 @@ export function useFormsAPI() {
     const firstQuestion = await getFirstQuestion(formId)
     
     if (firstQuestion) {
-      const questionOptions = await getOptions(formId, firstQuestion.id)
+      // Las opciones ya vienen incluidas en la pregunta
+      const questionOptions = firstQuestion.options || []
+      options.value = questionOptions
+      
       return {
         question: firstQuestion,
         options: questionOptions
@@ -356,13 +408,14 @@ export function useFormsAPI() {
       throw new Error('No hay formulario o pregunta activa')
     }
     
-    // Guardar respuesta
-    await saveResponse(
-      formState.currentFormId, 
-      formState.currentQuestionId, 
-      optionId, 
-      customValue
-    )
+    // Guardar respuesta localmente (sin enviar a API todavía)
+    formState.responses[formState.currentQuestionId] = {
+      optionId,
+      customValue,
+      timestamp: new Date().toISOString()
+    }
+    
+    console.log('Respuesta guardada localmente:', formState.responses)
     
     // Obtener siguiente pregunta
     const nextQuestion = await getNextQuestion(
@@ -372,7 +425,10 @@ export function useFormsAPI() {
     )
     
     if (nextQuestion) {
-      const questionOptions = await getOptions(formState.currentFormId, nextQuestion.id)
+      // Las opciones ya vienen incluidas en la pregunta
+      const questionOptions = nextQuestion.options || []
+      options.value = questionOptions
+      
       return {
         question: nextQuestion,
         options: questionOptions,
@@ -423,6 +479,11 @@ export function useFormsAPI() {
     error.value = null
   }
 
+  // Función adicional: Obtener todas las preguntas con opciones (nuevo endpoint)
+  const fetchAllForms = async () => {
+    return await getForms()
+  }
+
   return {
     // Estados reactivos
     loading,
@@ -445,6 +506,7 @@ export function useFormsAPI() {
     getNextQuestion,
     saveResponse,
     submitForm,
+    fetchAllForms,
     
     // Métodos de navegación
     startForm,
