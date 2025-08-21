@@ -377,9 +377,71 @@ async function agregarPregunta(contenedorReceptor) {
     
 }
 
+// Función para comprimir imagen
+function compressImage(file, maxSizeKB = 100, quality = 0.5) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = function() {
+            // Calcular nuevas dimensiones manteniendo aspecto
+            let { width, height } = img;
+            const maxDimension = 400; // Reducido a 400px máximo
+            
+            if (width > height) {
+                if (width > maxDimension) {
+                    height = height * (maxDimension / width);
+                    width = maxDimension;
+                }
+            } else {
+                if (height > maxDimension) {
+                    width = width * (maxDimension / height);
+                    height = maxDimension;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Dibujar imagen redimensionada
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // Función recursiva para comprimir hasta llegar al tamaño objetivo
+            const compressWithQuality = (currentQuality) => {
+                canvas.toBlob((blob) => {
+                    const compressedFile = new File([blob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    
+                    const sizeKB = compressedFile.size / 1024;
+                    
+                    console.log(`Imagen comprimida: ${file.name}`);
+                    console.log(`Tamaño original: ${(file.size / 1024).toFixed(2)} KB`);
+                    console.log(`Tamaño actual: ${sizeKB.toFixed(2)} KB con calidad ${currentQuality}`);
+                    
+                    // Si el archivo es muy grande y podemos reducir más la calidad, intentar otra vez
+                    if (sizeKB > maxSizeKB && currentQuality > 0.1) {
+                        console.log(`Archivo aún muy grande, reduciendo calidad a ${(currentQuality - 0.1).toFixed(1)}`);
+                        compressWithQuality(currentQuality - 0.1);
+                    } else {
+                        console.log(`Compresión final: ${sizeKB.toFixed(2)} KB`);
+                        resolve(compressedFile);
+                    }
+                }, 'image/jpeg', currentQuality);
+            };
+            
+            compressWithQuality(quality);
+        };
+        
+        img.src = URL.createObjectURL(file);
+    });
+}
+
 async function enviarPregunta(formData,ultimaPregunta,contenedorReceptor) {
 
-    const url = 'http://217.196.61.73:8082/api/questions';
+    const url = '/api/questions';
     const method = 'POST'; 
     const contentType = 'multipart/form-data';
 
@@ -430,14 +492,28 @@ function activarCamposPregunta(contenedorPregunta) {
     const contenedoresOpciones = contenedorPregunta.querySelectorAll('.containerOption');
     const agregarOpcion = contenedorPregunta.querySelector('.inputAddOption');
     let equises = contenedorPregunta.querySelectorAll('.equisOption');
-    const contenedorIconos = contenedorPregunta.querySelector('.sectionDeleteQuestion')
+    let equisesImg = contenedorPregunta.querySelectorAll('.equisImg');
+    const contenedorIconos = contenedorPregunta.querySelector('.sectionDeleteQuestion');
+    
+    // Campos específicos para tipo "Carga de archivos"
+    const inputCheckArchivos = contenedorPregunta.querySelector('.inputCheck');
+    const checkboxesArchivos = contenedorPregunta.querySelectorAll('.checkboxReal');
+    const inputNumeroArchivos = contenedorPregunta.querySelector('.numberInput');
 
     // Habilitar input y select
     if (inputPregunta) inputPregunta.disabled = false;
     if (selectTipoPregunta) selectTipoPregunta.disabled = false;
+    
+    // Habilitar campos específicos de "Carga de archivos"
+    if (inputCheckArchivos) inputCheckArchivos.disabled = false;
+    if (inputNumeroArchivos) inputNumeroArchivos.disabled = false;
+    checkboxesArchivos.forEach(checkbox => checkbox.disabled = false);
 
     // Mostrar las X
     equises.forEach(equis => equis.classList.remove('none'));
+    
+    // Mostrar las X de las imágenes
+    equisesImg.forEach(equisImg => equisImg.classList.remove('none'));
 
     // Asignar eventos a opciones
     contenedoresOpciones.forEach(contenedorOpcion => {
@@ -473,14 +549,28 @@ function bloquearCamposPregunta(contenedorPregunta) {
     const contenedoresOpciones = contenedorPregunta.querySelectorAll('.containerOption');
     const agregarOpcion = contenedorPregunta.querySelector('.inputAddOption');
     let equises = contenedorPregunta.querySelectorAll('.equisOption');
-    const contenedorIconos = contenedorPregunta.querySelector('.sectionDeleteQuestion')
+    let equisesImg = contenedorPregunta.querySelectorAll('.equisImg');
+    const contenedorIconos = contenedorPregunta.querySelector('.sectionDeleteQuestion');
+    
+    // Campos específicos para tipo "Carga de archivos"
+    const inputCheckArchivos = contenedorPregunta.querySelector('.inputCheck');
+    const checkboxesArchivos = contenedorPregunta.querySelectorAll('.checkboxReal');
+    const inputNumeroArchivos = contenedorPregunta.querySelector('.numberInput');
 
     // Deshabilitar input y select
     if (inputPregunta) inputPregunta.disabled = true;
     if (selectTipoPregunta) selectTipoPregunta.disabled = true;
+    
+    // Deshabilitar campos específicos de "Carga de archivos"
+    if (inputCheckArchivos) inputCheckArchivos.disabled = true;
+    if (inputNumeroArchivos) inputNumeroArchivos.disabled = true;
+    checkboxesArchivos.forEach(checkbox => checkbox.disabled = true);
 
     // Ocultar las X antes de reemplazar los contenedores
     equises.forEach(equis => equis.classList.add('none'));
+    
+    // Ocultar las X de las imágenes
+    equisesImg.forEach(equisImg => equisImg.classList.add('none'));
 
     // Clonar y reemplazar opciones
     contenedoresOpciones.forEach(contenedorOpcion => {
@@ -504,8 +594,10 @@ function bloquearCamposPregunta(contenedorPregunta) {
 
     // Volver a obtener las nuevas equis después de reemplazar los contenedores
     equises = contenedorPregunta.querySelectorAll('.equisOption');
+    equisesImg = contenedorPregunta.querySelectorAll('.equisImg');
 
     equises.forEach(equis => equis.classList.add('none'));
+    equisesImg.forEach(equisImg => equisImg.classList.add('none'));
 
 
     // Eliminar icono guardar si existe
@@ -527,7 +619,7 @@ function bloquearCamposPregunta(contenedorPregunta) {
 
 }
 
-export function validarPreguntaAnterior(contenedorReceptor, formId) {
+export async function validarPreguntaAnterior(contenedorReceptor, formId) {
     let preguntas = contenedorReceptor.querySelectorAll('.draggable');
     
     // Filtrar solo preguntas nuevas (no guardadas)
@@ -673,10 +765,22 @@ export function validarPreguntaAnterior(contenedorReceptor, formId) {
 
             formData.append("question", JSON.stringify(questionData));
             
-            // Agregar archivos correctamente
-            arrayFiles.forEach((file) => {
-                formData.append("files", file); // ✅ Agregar archivos correctamente
-            });
+            // Comprimir y agregar archivos
+            if (arrayFiles.length > 0) {
+                console.log("Comprimiendo imágenes...");
+                
+                // Comprimir todas las imágenes
+                const compressedFiles = await Promise.all(
+                    arrayFiles.map(file => compressImage(file))
+                );
+                
+                // Agregar archivos comprimidos
+                compressedFiles.forEach((file) => {
+                    formData.append("files", file);
+                });
+                
+                console.log("Imágenes comprimidas exitosamente");
+            }
 
             console.log("Enviando FormData...");
             enviarPregunta(formData,ultimaPregunta,contenedorReceptor);
@@ -892,7 +996,7 @@ function activarInputFileConImg(imagen, contenedorOpcion) {
                 <div class="contImgOption">
                     <div class="blockImgOp">
                         <img src="/img/noImg.jpg" alt="">
-                        <i class="fa-solid fa-xmark"></i>
+                        <i class="fa-solid fa-xmark equisImg"></i>
                     </div>
                 </div>
             `;
@@ -1087,6 +1191,33 @@ function agregarIconoEditar(contenedorPregunta) {
         
         console.log('Icono de editar agregado exitosamente')
     }
+    
+    // Asignar evento de eliminar al icono trash existente
+    const iconoEliminar = contenedorPregunta.querySelector('.fa-trash');
+    if (iconoEliminar) {
+        console.log('Asignando evento eliminar a pregunta guardada');
+        iconoEliminar.addEventListener('click', (event) => {
+            event.preventDefault();
+            
+            // Buscar el contenedor .draggable correcto
+            const contenedorPreguntaEliminar = event.currentTarget.closest('.draggable');
+            
+            console.log('Eliminar pregunta - Contenedor encontrado:', contenedorPreguntaEliminar);
+            console.log('Eliminar pregunta - Data-saved:', contenedorPreguntaEliminar?.hasAttribute('data-saved'));
+            
+            if (contenedorPreguntaEliminar) {
+                // Usar la función de Vue si está disponible
+                if (window.eliminarPreguntaVue) {
+                    window.eliminarPreguntaVue(contenedorPreguntaEliminar);
+                } else {
+                    // Fallback al método original
+                    eliminarPregunta(contenedorPreguntaEliminar);
+                }
+            } else {
+                console.error('No se pudo encontrar el contenedor de la pregunta a eliminar');
+            }
+        });
+    }
 }
 
 function asignarEventoClickEditarPregunta(iconoEditar) {
@@ -1248,7 +1379,7 @@ function validarYEnviarPregunta(contenedorPregunta, formId) {
 // Función para cargar preguntas existentes del formulario
 async function cargarPreguntasExistentes(formId) {
     try {
-        const { data, error } = await useApi(`http://217.196.61.73:8082/api/questions/form/${formId}`);
+        const { data, error } = await useApi(`/api/questions/form/${formId}`);
         
         if (error.value) {
             console.error('Error cargando preguntas:', error.value);

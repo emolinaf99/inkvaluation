@@ -15,7 +15,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://217.196.61.73:8082'  // redirige solicitudes /api al backend local
+      '/api': 'http://217.196.61.73:8082',  // redirige solicitudes /api al backend local
+      '/images': 'http://217.196.61.73:8082'  // redirige solicitudes /images al backend local
     }
   }
 })

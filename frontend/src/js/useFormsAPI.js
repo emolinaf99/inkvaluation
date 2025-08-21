@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 export function useFormsAPI() {
   const loading = ref(false)
   const error = ref(null)
-  const baseURL = 'http://217.196.61.73:8082/api'
+  const baseURL = '/api'
 
   // Estados para los datos
   const forms = ref([])

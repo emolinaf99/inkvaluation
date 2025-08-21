@@ -186,17 +186,33 @@
         });
     }
 
+    // Variable reactiva para controlar el estado de carga
+    const isCreatingQuestion = ref(false);
+
+    // Función para manejar la adición de nueva pregunta (wrapper para función async)
+    async function handleAddQuestion(contenedorReceptor) {
+        try {
+            isCreatingQuestion.value = true; // Mostrar loader
+            await validarPreguntaAnterior(contenedorReceptor, props.formId);
+        } catch (error) {
+            console.error('Error al agregar nueva pregunta:', error);
+        } finally {
+            isCreatingQuestion.value = false; // Ocultar loader
+        }
+    }
+
     // Función para eliminar pregunta (nueva o guardada)
     async function eliminarPreguntaVue(contenedorPregunta) {
-        console.log('Eliminando pregunta...', contenedorPregunta);
-        console.log('Classes del contenedor recibido:', contenedorPregunta.className);
-        console.log('Es draggable?', contenedorPregunta.classList.contains('draggable'));
+        console.log('=== INICIO ELIMINAR PREGUNTA ===');
+        console.log('Contenedor recibido:', contenedorPregunta);
+        console.log('Classes del contenedor:', contenedorPregunta?.className);
+        console.log('Es draggable?', contenedorPregunta?.classList.contains('draggable'));
         
         // Encontrar el contenedor .draggable correcto
         let contenedorReal = contenedorPregunta;
-        if (!contenedorPregunta.classList.contains('draggable')) {
+        if (!contenedorPregunta || !contenedorPregunta.classList.contains('draggable')) {
             // Buscar hacia arriba hasta encontrar .draggable
-            contenedorReal = contenedorPregunta.closest('.draggable');
+            contenedorReal = contenedorPregunta?.closest('.draggable');
             console.log('Contenedor real encontrado:', contenedorReal);
         }
         
@@ -204,6 +220,11 @@
             console.error('No se pudo encontrar el contenedor .draggable');
             return;
         }
+        
+        // Verificar si tiene atributo data-saved para identificar tipo
+        const esNueva = !contenedorReal.hasAttribute('data-saved');
+        console.log('Tipo de pregunta - Es nueva:', esNueva);
+        console.log('Data-saved attribute:', contenedorReal.getAttribute('data-saved'));
         
         // Buscar el índice basado en la posición en el DOM
         const todasLasPreguntas = document.querySelectorAll('.draggable');
@@ -214,13 +235,30 @@
         console.log('Total preguntas en array:', formQuestions.value.length);
         console.log('Array actual de preguntas:', formQuestions.value);
         
-        // Identificar si es pregunta nueva o guardada por el atributo data-saved
-        const esNueva = !contenedorReal.hasAttribute('data-saved');
-        console.log('Es pregunta nueva:', esNueva);
-        
         if (indexDOM === -1) {
             console.error('No se pudo encontrar el índice de la pregunta en el DOM');
             return;
+        }
+        
+        // Validar que el índice esté dentro del rango del array
+        if (indexDOM >= formQuestions.value.length) {
+            console.error('Índice fuera del rango del array reactivo. Índice:', indexDOM, 'Array length:', formQuestions.value.length);
+            return;
+        }
+        
+        // Obtener la pregunta del array para verificar
+        const preguntaDelArray = formQuestions.value[indexDOM];
+        console.log('Pregunta en el array en índice', indexDOM, ':', preguntaDelArray);
+        
+        // Verificar consistencia entre DOM y array
+        const textoPreguntaDOM = contenedorReal.querySelector('.questionAndType input')?.value || '';
+        const textoPreguntaArray = preguntaDelArray?.text || '';
+        console.log('Texto en DOM:', textoPreguntaDOM);
+        console.log('Texto en array:', textoPreguntaArray);
+        
+        if (textoPreguntaDOM !== textoPreguntaArray && textoPreguntaArray !== '') {
+            console.warn('⚠️ INCONSISTENCIA: El texto en DOM no coincide con el array');
+            console.warn('Esto puede indicar que se está eliminando la pregunta incorrecta');
         }
         
         if (esNueva) {
@@ -431,8 +469,12 @@
             </div>
 
             <section class="adminBarFormsContainer">
-                <div class="adminBarForms" @click="validarPreguntaAnterior($event.currentTarget.parentNode.parentNode,props.formId)">
-                    <i class="fa-regular fa-square-plus"></i>
+                <div class="adminBarForms" @click="handleAddQuestion($event.currentTarget.parentNode.parentNode)" :class="{ 'loading': isCreatingQuestion }">
+                    <i v-if="!isCreatingQuestion" class="fa-regular fa-square-plus"></i>
+                    <div v-else class="loader-spinner">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Validando...</span>
+                    </div>
                 </div>
             </section>
 
@@ -474,6 +516,14 @@
                                         <span class="checkboxSpan typeOption"></span>
                                         <input class="inputOption" type="text" :value="option.text" disabled>
                                     </div>
+                                </div>
+                            </div>
+                            <!-- Mostrar imagen si existe - al final del containerOption como en formsFunctions.js -->
+                            <div v-if="option.image" class="contImgOption">
+                                <div class="blockImgOp">
+                                    {{ console.log('Imagen de opción:', option.image, 'Opción completa:', option) }}
+                                    <img :src="option.image.url" :alt="option.text">
+                                    <i class="fa-solid fa-xmark equisImg none"></i>
                                 </div>
                             </div>
                         </div>
@@ -521,6 +571,15 @@
                                         <span class="radioSpan typeOption"></span>
                                         <input class="inputOption" type="text" :value="option.text" disabled>
                                     </div>
+                                    
+                                </div>
+                            </div>
+                            <!-- Mostrar imagen si existe -->
+                            <div v-if="option.image" class="contImgOption">
+                                <div class="blockImgOp">
+                                    {{ console.log('Imagen de opción:', option.image, 'Opción completa:', option) }}
+                                    <img :src="option.image.url" :alt="option.text">
+                                    <i class="fa-solid fa-xmark equisImg none"></i>
                                 </div>
                             </div>
                         </div>
@@ -566,6 +625,14 @@
                                     <div class="rowOpt w100 optionTarget">
                                         <span class="simulationPointListItem typeOption"></span>
                                         <input class="inputOption" type="text" :value="option.text" disabled>
+                                    </div>
+                                    <!-- Mostrar imagen si existe -->
+                                    <div v-if="option.image" class="contImgOption">
+                                        <div class="blockImgOp">
+                                            {{ console.log('Imagen de opción:', option.image, 'Opción completa:', option) }}
+                                            <img :src="option.image.url" :alt="option.text">
+                                            <i class="fa-solid fa-xmark equisImg none"></i>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -738,8 +805,12 @@
             </div>
 
             <section class="adminBarFormsContainer">
-                <div class="adminBarForms" @click="validarPreguntaAnterior($event.currentTarget.parentNode.parentNode,props.formId)">
-                    <i class="fa-regular fa-square-plus"></i>
+                <div class="adminBarForms" @click="handleAddQuestion($event.currentTarget.parentNode.parentNode)" :class="{ 'loading': isCreatingQuestion }">
+                    <i v-if="!isCreatingQuestion" class="fa-regular fa-square-plus"></i>
+                    <div v-else class="loader-spinner">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Validando...</span>
+                    </div>
                 </div>
             </section>
         </div>
@@ -748,8 +819,40 @@
     </section>
 </template>
 
+<style scoped>
+/* Los estilos de .contImgOption y .blockImgOp ya están definidos globalmente */
+/* No necesitamos definir estilos adicionales para que se vea igual al modo creación */
 
+/* Estilos para el loader del botón agregar pregunta */
+.adminBarForms.loading {
+    pointer-events: none;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 
+.loader-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #666;
+}
 
+.loader-spinner i {
+    font-size: 18px;
+    color: #007bff;
+}
+
+.loader-spinner span {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Animación suave para la transición */
+.adminBarForms {
+    transition: opacity 0.3s ease;
+}
+</style>
 
 
