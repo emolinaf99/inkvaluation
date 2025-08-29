@@ -916,6 +916,8 @@ function agregarOpcion(contenedorGeneral) {
     let seccionOpciones = contenedorGeneral.querySelector('.optionsAnswer');
     let tipoDePregunta = contenedorGeneral.querySelector('.questionSelect').value;
     let contador = contenedorGeneral ? contenedorGeneral.querySelectorAll('.cajaOption').length - 1 : 0; // -1 porque hay una cajaOption extra
+    
+    console.log('agregarOpcion - tipoDePregunta:', tipoDePregunta, 'tipo:', typeof tipoDePregunta);
 
     function generarIconoTipoPregunta(tipoDePregunta) {
         if (tipoDePregunta == 1) {
@@ -950,10 +952,10 @@ function agregarOpcion(contenedorGeneral) {
                         </div>
                         <input class="questionNumberJump" type="number">
                     </div>
-                    <label for="">
+                    ${parseInt(tipoDePregunta) !== 3 ? `<label for="">
                         <img src="/img/noImg.jpg" alt=""> 
                         <input class="inputImgOption" hidden type="file" accept="image/*">
-                    </label>
+                    </label>` : ''}
                     
                 </div>
                 <div class="rowOpt equisDesktop">

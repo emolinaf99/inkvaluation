@@ -138,7 +138,7 @@
     overflow: hidden;
 }
 
-.listChat input {
+.listChat input:not(.checkbox-option input[type="checkbox"]) {
     width: 20px;
     height: 20px;
 }
@@ -750,5 +750,685 @@
     .progresoFormulario {
         max-width: 50%;
         padding: 1rem 1.25rem;
+    }
+}
+
+/* ===== ESTILOS PARA ARCHIVOS ===== */
+.archivosSeleccionados {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    max-width: 100%;
+}
+
+.archivoItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(17, 75, 122, 0.05);
+    border: 1px solid rgba(17, 75, 122, 0.2);
+    border-radius: 8px;
+    max-width: 100%;
+}
+
+.imagenPreview {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imagenPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.iconoArchivo {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(17, 75, 122, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #114B7A;
+    font-size: 1.2rem;
+}
+
+.infoArchivo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.infoArchivo span {
+    font-weight: 500;
+    color: #333;
+    word-break: break-word;
+}
+
+.infoArchivo small {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+/* ===== ESTILOS PARA ARCHIVOS ENVIADOS EN MENSAJES ===== */
+.msgUserArchivos {
+    background: transparent !important;
+    padding: 0;
+    box-shadow: none;
+}
+
+.archivosEnviados {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 300px;
+}
+
+.archivoEnviado {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #114B7A;
+    border-radius: 12px;
+    color: white;
+}
+
+.imagenEnviada {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.imagenEnviada img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.iconoArchivoEnviado {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.1rem;
+}
+
+.infoArchivoEnviado {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.infoArchivoEnviado span {
+    font-weight: 500;
+    color: white;
+    word-break: break-word;
+    font-size: 0.9rem;
+}
+
+.infoArchivoEnviado small {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+}
+
+/* Responsive para archivos */
+@media (max-width: 768px) {
+    .archivoItem {
+        padding: 0.5rem;
+        gap: 0.75rem;
+    }
+    
+    .imagenPreview {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .iconoArchivo {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+    
+    .archivosEnviados {
+        max-width: 250px;
+    }
+    
+    .archivoEnviado {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .imagenEnviada {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .iconoArchivoEnviado {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+}
+
+/* ===== ESTILOS PARA OPCIONES CON IMAGEN SELECCIONADAS ===== */
+.msgUserOpcionImagen {
+    background: transparent !important;
+    padding: 0;
+    box-shadow: none;
+}
+
+.opcionImagenSeleccionada {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #114B7A;
+    border-radius: 12px;
+    color: white;
+    max-width: 250px;
+}
+
+.imagenSeleccionada {
+    flex-shrink: 0;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.imagenSeleccionada img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.textoSeleccionado {
+    flex: 1;
+    min-width: 0;
+}
+
+.textoSeleccionado p {
+    margin: 0;
+    font-weight: 500;
+    color: white;
+    word-break: break-word;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+/* Responsive para opciones con imagen */
+@media (max-width: 768px) {
+    .opcionImagenSeleccionada {
+        max-width: 220px;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .imagenSeleccionada {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .textoSeleccionado p {
+        font-size: 0.85rem;
+    }
+}
+
+/* ===== SLIDER HORIZONTAL DE IMÁGENES ===== */
+.sliderImagenesContainer {
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem;
+}
+
+.sliderImagenes {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(17, 75, 122, 0.3) transparent;
+}
+
+.sliderImagenes::-webkit-scrollbar {
+    height: 6px;
+}
+
+.sliderImagenes::-webkit-scrollbar-track {
+    background: rgba(17, 75, 122, 0.1);
+    border-radius: 3px;
+}
+
+.sliderImagenes::-webkit-scrollbar-thumb {
+    background: rgba(17, 75, 122, 0.5);
+    border-radius: 3px;
+}
+
+.sliderImagenes::-webkit-scrollbar-thumb:hover {
+    background: rgba(17, 75, 122, 0.7);
+}
+
+.sliderItem {
+    flex-shrink: 0;
+    width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 2px solid rgba(17, 75, 122, 0.2);
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sliderItem:hover {
+    border-color: #114B7A;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(17, 75, 122, 0.2);
+}
+
+.sliderItem.selected {
+    border-color: #114B7A;
+    background: rgba(17, 75, 122, 0.05);
+}
+
+.sliderImagenWrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sliderImagenWrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.checkboxIndicador {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    background: #114B7A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sliderItem.selected .checkboxIndicador {
+    opacity: 1;
+}
+
+.sliderTexto {
+    text-align: center;
+    width: 100%;
+}
+
+.sliderTexto p {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.sliderTexto small {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #666;
+    line-height: 1.2;
+}
+
+/* Responsive para slider */
+@media (max-width: 768px) {
+    .sliderImagenesContainer {
+        max-width: 100%;
+        padding: 0.75rem;
+    }
+    
+    .sliderItem {
+        width: 160px;
+        padding: 0.75rem;
+    }
+    
+    .sliderImagenWrapper {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .sliderTexto p {
+        font-size: 0.8rem;
+    }
+    
+    .sliderTexto small {
+        font-size: 0.7rem;
+    }
+}
+
+/* ===== DROPDOWN PERSONALIZADO CON BÚSQUEDA ===== */
+
+.customDropdownContainer {
+    width: 70%;
+    min-width: fit-content;
+    max-width: 350px;
+    position: relative;
+}
+
+.customDropdown {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    background: white;
+    border: 2px solid rgba(17, 75, 122, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.customDropdown:hover {
+    border-color: rgba(17, 75, 122, 0.4);
+}
+
+.customDropdown.active {
+    border-color: #114B7A;
+    box-shadow: 0 4px 16px rgba(17, 75, 122, 0.2);
+}
+
+.dropdownInput {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 12px 40px 12px 16px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #333;
+    outline: none;
+    cursor: pointer;
+}
+
+.searchInput::placeholder {
+    color: #999;
+}
+
+.searchInput.hasValue {
+    color: #114B7A;
+    font-weight: 500;
+}
+
+.dropdownIcon {
+    position: absolute;
+    right: 16px;
+    color: #114B7A;
+    font-size: 0.9rem;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.dropdownIcon.rotated {
+    transform: rotate(180deg);
+}
+
+.dropdownList {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #114B7A;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(17, 75, 122, 0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    animation: dropdownSlideIn 0.2s ease-out;
+}
+
+@keyframes dropdownSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdownOption {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid rgba(17, 75, 122, 0.1);
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.dropdownOption:last-child {
+    border-bottom: none;
+}
+
+.dropdownOption:hover,
+.dropdownOption.highlighted {
+    background: rgba(17, 75, 122, 0.1);
+    color: #114B7A;
+}
+
+.noResults {
+    padding: 16px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* Scrollbar personalizada para la lista */
+.dropdownList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdownList::-webkit-scrollbar-track {
+    background: rgba(17, 75, 122, 0.1);
+    border-radius: 3px;
+}
+
+.dropdownList::-webkit-scrollbar-thumb {
+    background: rgba(17, 75, 122, 0.5);
+    border-radius: 3px;
+}
+
+.dropdownList::-webkit-scrollbar-thumb:hover {
+    background: rgba(17, 75, 122, 0.7);
+}
+
+/* Responsive para dropdown */
+@media (max-width: 768px) {
+    .customDropdownContainer {
+        max-width: 90%;
+    }
+    
+    .searchInput {
+        padding: 10px 35px 10px 14px;
+        font-size: 0.9rem;
+    }
+    
+    .dropdownOption {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+    }
+    
+    .dropdownList {
+        max-height: 180px;
+    }
+}
+
+/* ===== ESTILOS PARA CHECKBOXES MÚLTIPLES ===== */
+.checkboxContainer {
+    width: fit-content;
+    max-width: 85%;
+    display: flex;
+    flex-direction: column;
+}
+
+.checkboxContainer .listChat {
+    width: fit-content;
+    max-width: 85%;
+    min-width: 200px;
+}
+
+.listChat .checkbox-option {
+    position: relative;
+    /* Heredar estilos de .listChat li pero con especificidad mayor */
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e1e5e9;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;  /* Sin gap porque usamos margin-right en el checkbox */
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.listChat .checkbox-option input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px !important;
+    height: 18px !important;
+    border: 2px solid #114B7A;
+    border-radius: 3px;
+    margin-right: 0.75rem;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.listChat .checkbox-option input[type="checkbox"]:checked {
+    background-color: #114B7A;
+    border-color: #114B7A;
+}
+
+.listChat .checkbox-option input[type="checkbox"]:checked::before {
+    content: '✓';
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.listChat .checkbox-option input[type="checkbox"]:hover {
+    border-color: #0d3a5f;
+    box-shadow: 0 0 0 3px rgba(17, 75, 122, 0.1);
+}
+
+.checkbox-option.selected {
+    background-color: rgba(17, 75, 122, 0.05);
+    border-color: #114B7A;
+}
+
+.listChat .checkbox-option label {
+    cursor: pointer;
+    flex: 0 1 auto;
+    display: block;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.listChat .checkbox-option:hover {
+    background-color: #f8f9fa;
+}
+
+/* Asegurar que el hover del li no interfiera con el checkbox */
+.listChat .checkbox-option:hover input[type="checkbox"]:not(:checked) {
+    border-color: #0d3a5f;
+}
+
+/* Responsive para checkboxes */
+@media (min-width: 768px) {
+    .checkboxContainer {
+        max-width: 70%;
+    }
+    
+    .checkboxContainer .listChat {
+        max-width: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .listChat .checkbox-option input[type="checkbox"] {
+        width: 16px !important;
+        height: 16px !important;
+        margin-right: 0.75rem;
+    }
+    
+    .listChat .checkbox-option input[type="checkbox"]:checked::before {
+        font-size: 10px;
+    }
+    
+    .listChat .checkbox-option label {
+        font-size: 14px;
     }
 }

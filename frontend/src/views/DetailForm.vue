@@ -37,6 +37,9 @@
     })
 
     let formQuestions = ref([])
+    let loadingQuestions = ref(true)
+    
+    console.log('Estado inicial loadingQuestions:', loadingQuestions.value)
 
     async function getForm() {
 
@@ -316,6 +319,77 @@
     window.agregarNuevaPreguntaVue = agregarNuevaPregunta;
     window.eliminarPreguntaVue = eliminarPreguntaVue;
 
+    // Variables para drag and drop
+    let draggedIndex = null
+    
+    // Funciones de drag and drop
+    const handleDragStart = (event, index) => {
+        draggedIndex = index
+        event.dataTransfer.effectAllowed = 'move'
+        event.target.classList.add('dragging')
+        document.body.classList.add('dragging-active')
+        console.log('Arrastrando pregunta desde índice:', index)
+    }
+    
+    const handleDragOver = (event) => {
+        event.preventDefault()
+        event.dataTransfer.dropEffect = 'move'
+    }
+    
+    const handleDragEnter = (event) => {
+        event.preventDefault()
+        event.target.classList.add('drag-over')
+    }
+    
+    const handleDragLeave = (event) => {
+        event.target.classList.remove('drag-over')
+    }
+    
+    const handleDrop = (event, dropIndex) => {
+        event.preventDefault()
+        event.target.classList.remove('drag-over')
+        
+        if (draggedIndex === null || draggedIndex === dropIndex) {
+            return
+        }
+        
+        console.log('Soltando pregunta en índice:', dropIndex, 'desde:', draggedIndex)
+        
+        // Reordenar el array de preguntas
+        const questionToMove = formQuestions.value[draggedIndex]
+        
+        // Remover de la posición original
+        formQuestions.value.splice(draggedIndex, 1)
+        
+        // Insertar en la nueva posición
+        const newIndex = draggedIndex < dropIndex ? dropIndex - 1 : dropIndex
+        formQuestions.value.splice(newIndex, 0, questionToMove)
+        
+        // Actualizar questionOrder para todas las preguntas
+        formQuestions.value.forEach((question, index) => {
+            question.questionOrder = index + 1
+        })
+        
+        console.log('Preguntas reordenadas. Nuevo orden:', formQuestions.value.map(q => ({
+            id: q.id,
+            text: q.text,
+            questionOrder: q.questionOrder
+        })))
+        
+        // Limpiar estado de drag
+        draggedIndex = null
+        document.querySelector('.dragging')?.classList.remove('dragging')
+        document.body.classList.remove('dragging-active')
+    }
+    
+    const handleDragEnd = (event) => {
+        event.target.classList.remove('dragging')
+        document.body.classList.remove('dragging-active')
+        document.querySelectorAll('.drag-over').forEach(el => {
+            el.classList.remove('drag-over')
+        })
+    }
+
     onMounted(async() => {
         console.log('DetailForm.vue onMounted ejecutándose con formId:', props.formId);
         getForm()
@@ -351,6 +425,14 @@
             console.error("Error inesperado cargando preguntas:", error);
             formQuestions.value = []; // Asegurar que sea un array vacío
             window.preguntasExistentes = 0;
+        } finally {
+            // Delay mínimo para mostrar el skeleton (UX)
+            await new Promise(resolve => setTimeout(resolve, 800))
+            
+            // Desactivar loading después de cargar (exitoso o con error)
+            console.log('Desactivando loadingQuestions...')
+            loadingQuestions.value = false;
+            console.log('loadingQuestions ahora es:', loadingQuestions.value)
         }
 
         let contenedorPadreForm = document.querySelector('.contenedorSecConfAssistant')
@@ -468,21 +550,23 @@
                 
             </div>
 
-            <section class="adminBarFormsContainer">
-                <div class="adminBarForms" @click="handleAddQuestion($event.currentTarget.parentNode.parentNode)" :class="{ 'loading': isCreatingQuestion }">
-                    <i v-if="!isCreatingQuestion" class="fa-regular fa-square-plus"></i>
-                    <div v-else class="loader-spinner">
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                        <span>Validando...</span>
+            <!-- Skeleton loader para preguntas -->
+            <!-- Debug: loadingQuestions = {{ loadingQuestions }} -->
+            <div v-if="loadingQuestions" class="w100">
+                <div class="accountBlock padding1" v-for="n in 4" :key="'skeleton-' + n" style="margin-bottom: 1rem;">
+                    <div class="skeleton skeleton-text skeleton-text-lg" style="width: 60%; margin-bottom: 1rem;"></div>
+                    <div class="skeleton skeleton-input" style="width: 100%; margin-bottom: 0.5rem;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="skeleton skeleton-select" style="width: 150px;"></div>
+                        <div class="skeleton skeleton-button" style="width: 80px; height: 35px;"></div>
                     </div>
                 </div>
-            </section>
-
-            
+            </div>
 
             <div 
                 class="w100"
                 v-for="(question, index) in formQuestions"
+                v-show="!loadingQuestions"
                 :key="question.id"
             >
 
@@ -491,6 +575,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-if="question.questionType.id == 1" 
                 > 
                     <div class="questionNumberBlock">
@@ -546,6 +636,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-else-if="question.questionType.id == 2" 
                 > 
                     <div class="questionNumberBlock">
@@ -601,6 +697,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-else-if="question.questionType.id == 3" 
                 > 
                     <div class="questionNumberBlock">
@@ -656,6 +758,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-else-if="question.questionType.id == 4" 
                 > 
                     <div class="questionNumberBlock">
@@ -679,6 +787,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-else-if="question.questionType.id == 5" 
                 > 
                     <div class="questionNumberBlock">
@@ -702,6 +816,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-else-if="question.questionType.id == 6" 
                 > 
                     <div class="questionNumberBlock">
@@ -725,6 +845,12 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    @dragstart="handleDragStart($event, index)"
+                    @dragover="handleDragOver($event)"
+                    @drop="handleDrop($event, index)"
+                    @dragenter="handleDragEnter($event)"
+                    @dragleave="handleDragLeave($event)"
+                    @dragend="handleDragEnd($event)"
                     v-else-if="question.questionType.id == 7" 
                 > 
                     <div class="questionNumberBlock">
@@ -779,7 +905,15 @@
                 </div>
                 
             </div>
-
+            <section class="adminBarFormsContainer">
+                <div class="adminBarForms" @click="handleAddQuestion($event.currentTarget.parentNode.parentNode)" :class="{ 'loading': isCreatingQuestion }">
+                    <i v-if="!isCreatingQuestion" class="fa-regular fa-square-plus"></i>
+                    <div v-else class="loader-spinner">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <span>Validando...</span>
+                    </div>
+                </div>
+            </section>
 
 
 
@@ -852,6 +986,65 @@
 /* Animación suave para la transición */
 .adminBarForms {
     transition: opacity 0.3s ease;
+}
+
+/* Estilos para drag and drop */
+.draggable {
+    cursor: grab;
+    transition: all 0.2s ease;
+}
+
+.draggable:active {
+    cursor: grabbing;
+}
+
+.dragging {
+    opacity: 0.7;
+    transform: scale(0.95);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    position: relative;
+}
+
+.dragging::before {
+    content: 'Moviendo pregunta...';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
+    color: #007bff;
+    border-radius: 6px;
+    z-index: 1001;
+}
+
+.dragging > * {
+    visibility: hidden;
+}
+
+.drag-over {
+    border: 2px dashed #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+    transform: scale(1.02);
+}
+
+/* Durante el drag, evitar que elementos hijos interfieran */
+.draggable.drag-over > * {
+    pointer-events: none;
+}
+
+/* Durante el drag activo global, desactivar hover de elementos internos */
+body.dragging-active .draggable:not(.dragging) > * {
+    pointer-events: none;
+}
+
+.draggable:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
 

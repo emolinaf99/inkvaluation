@@ -455,8 +455,25 @@ export function useFormsAPI() {
     try {
       const allQuestions = await getQuestions(formState.currentFormId)
       const total = allQuestions.length
-      const current = formState.visitedQuestions.length
+      
+      // Calcular progreso basado en la pregunta actual, no en visitedQuestions
+      let current = 0
+      if (currentQuestion.value && currentQuestion.value.questionOrder) {
+        current = currentQuestion.value.questionOrder
+      } else if (formState.visitedQuestions.length > 0) {
+        // Fallback: usar visitedQuestions si no hay pregunta actual
+        current = formState.visitedQuestions.length
+      }
+      
       const percentage = total > 0 ? Math.round((current / total) * 100) : 0
+      
+      console.log('getFormProgress calculado:', {
+        currentQuestionOrder: currentQuestion.value?.questionOrder,
+        visitedQuestionsLength: formState.visitedQuestions.length,
+        current,
+        total,
+        percentage
+      })
       
       return { current, total, percentage }
     } catch (err) {
@@ -464,7 +481,104 @@ export function useFormsAPI() {
     }
   }
 
-  // 15. Limpiar estado
+  // 15. Retroceder a una pregunta específica
+  const goBackToQuestion = async (questionOrder) => {
+    if (!formState.currentFormId) {
+      throw new Error('No hay formulario activo')
+    }
+    
+    loading.value = true
+    error.value = null
+    
+    try {
+      console.log('Reiniciando formulario completamente para sincronizar con backend...')
+      
+      // ESTRATEGIA: Reiniciar completamente el formulario y reproducir respuestas hasta la pregunta objetivo
+      const respuestasParaReproducir = { ...formState.responses }
+      
+      // Reiniciar el formulario completamente
+      const formData = await startForm(formState.currentFormId)
+      if (!formData || !formData.question) {
+        throw new Error('No se pudo reiniciar el formulario')
+      }
+      
+      // Obtener todas las preguntas ordenadas
+      const allQuestions = await apiRequest(`/questions/form/${formState.currentFormId}`)
+      const sortedQuestions = allQuestions.sort((a, b) => {
+        const orderA = a.questionOrder || 999
+        const orderB = b.questionOrder || 999
+        return orderA - orderB
+      })
+      
+      // Encontrar la pregunta objetivo
+      const targetQuestion = sortedQuestions.find(q => q.questionOrder === questionOrder)
+      if (!targetQuestion) {
+        throw new Error(`No se encontró una pregunta con el orden ${questionOrder}`)
+      }
+      
+      console.log('Reproduciendo respuestas hasta pregunta objetivo:', {
+        preguntaObjetivo: targetQuestion.id,
+        questionOrder: questionOrder,
+        respuestasAReproducir: Object.keys(respuestasParaReproducir).length
+      })
+      
+      // Reproducir respuestas solo hasta la pregunta objetivo (NO incluirla)
+      const preguntasHastaObjetivo = sortedQuestions.filter(q => q.questionOrder < questionOrder)
+      
+      for (const pregunta of preguntasHastaObjetivo) {
+        if (respuestasParaReproducir[pregunta.id]) {
+          const respuestaData = respuestasParaReproducir[pregunta.id]
+          console.log(`Reproduciendo respuesta para pregunta ${pregunta.id} (order: ${pregunta.questionOrder})`)
+          
+          // Procesar la respuesta
+          await processOptionSelection(respuestaData.optionId, respuestaData.customValue)
+        }
+      }
+      
+      // Ahora deberíamos estar exactamente en la pregunta objetivo
+      console.log('Estado final después de reproducir:', {
+        currentQuestionId: formState.currentQuestionId,
+        targetQuestionId: targetQuestion.id,
+        visitedQuestions: formState.visitedQuestions,
+        coincide: formState.currentQuestionId === targetQuestion.id
+      })
+      
+      // CRÍTICO: Limpiar visitedQuestions para que NO incluya la pregunta objetivo
+      // Solo debe incluir las preguntas ANTERIORES a la pregunta objetivo
+      formState.visitedQuestions = formState.visitedQuestions.filter(qId => {
+        const question = sortedQuestions.find(q => q.id === qId)
+        return question && question.questionOrder < questionOrder
+      })
+      
+      console.log('VisitedQuestions limpiadas - solo anteriores a pregunta objetivo:', {
+        visitedQuestions: formState.visitedQuestions,
+        preguntaObjetivo: targetQuestion.id,
+        questionOrder: questionOrder
+      })
+      
+      // Forzar la pregunta objetivo por si acaso
+      currentQuestion.value = targetQuestion
+      formState.currentQuestionId = targetQuestion.id
+      
+      const questionOptions = targetQuestion.options || []
+      options.value = questionOptions
+      
+      console.log(`Formulario completamente sincronizado en pregunta ${questionOrder}`)
+      
+      return {
+        question: targetQuestion,
+        options: questionOptions
+      }
+      
+    } catch (err) {
+      handleError(err, `retroceder a la pregunta ${questionOrder}`)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // 16. Limpiar estado
   const resetForm = () => {
     formState.currentFormId = null
     formState.currentQuestionId = null
@@ -511,6 +625,7 @@ export function useFormsAPI() {
     // Métodos de navegación
     startForm,
     processOptionSelection,
+    goBackToQuestion,
     isFormComplete,
     getFormProgress,
     resetForm
