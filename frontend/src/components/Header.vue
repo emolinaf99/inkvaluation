@@ -1,8 +1,14 @@
 <script setup>
     import {reactive,ref,onMounted,watch} from 'vue'
     import { RouterLink, RouterView, useRoute} from 'vue-router'
+    import LanguageSelector from './LanguageSelector.vue'
 
     const route = useRoute()
+    const isBurgerMenuOpen = ref(false)
+
+    const toggleBurgerMenu = () => {
+        isBurgerMenuOpen.value = !isBurgerMenuOpen.value
+    }
 
     const handleScroll = (header,navBarMenu) => {
         let menuHamburguesa = header.querySelector('#burgerMenuIcon')
@@ -105,19 +111,42 @@
 </script>
 
 <template>
+    <!-- Burger Menu Mobile/Tablet -->
+    <div class="mobile-burger-menu" :class="{ 'active': isBurgerMenuOpen }">
+        <div class="opacity-overlay" @click="toggleBurgerMenu"></div>
+        <div class="burger-menu-content">
+            <i class="fa-solid fa-xmark close-burger" @click="toggleBurgerMenu"></i>
+            <div class="burger-menu-items">
+                <RouterLink to="/prices" @click="toggleBurgerMenu" class="burger-menu-item">
+                    <i class="fa-solid fa-tag"></i>
+                    <span>{{ $t('Precios') }}</span>
+                </RouterLink>
+                <RouterLink to="/login" @click="toggleBurgerMenu" class="burger-menu-item">
+                    <i class="fa-solid fa-sign-in-alt"></i>
+                    <span>{{ $t('Login') }}</span>
+                </RouterLink>
+                <RouterLink to="/register" @click="toggleBurgerMenu" class="burger-menu-item">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>{{ $t('Registro') }}</span>
+                </RouterLink>
+            </div>
+        </div>
+    </div>
+
     <div class="bloque_logo_burgerMenu">
-        <!-- <i class="fa-solid fa-bars" id="burgerMenuIcon"></i> -->
+        <i class="fa-solid fa-bars mobile-burger-icon" @click="toggleBurgerMenu"></i>
         <RouterLink to="/"><img class="logoApp" src="/img/InkValuationLogo.png" alt=""></RouterLink>
-        <div class="navbarMenu">
-            <RouterLink to="/prices" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">Precios</RouterLink>
-            <RouterLink to="/login" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">Login</RouterLink>
-            
+        <div class="navbarMenu desktop-only">
+            <RouterLink to="/prices" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">{{ $t('Precios') }}</RouterLink>
+            <RouterLink to="/login" :class="{ 'redirectNavbar': true, 'redirectNavbarGrey': route.name === 'Prices' }">{{ $t('Login') }}</RouterLink>
         </div>
     </div>
     
-    
-    <div class="btnRegistroBlock">
-        <RouterLink to="/register" :class="{ 'btnRegistro': true, 'btnRegistroScroll': route.name === 'Prices' }">Registro</RouterLink>
+    <div class="header-right">
+        <LanguageSelector />
+        <div class="btnRegistroBlock desktop-only">
+            <RouterLink to="/register" :class="{ 'btnRegistro': true, 'btnRegistroScroll': route.name === 'Prices' }">{{ $t('Registro') }}</RouterLink>
+        </div>
     </div>
 
     <div class="notificacionContainer">

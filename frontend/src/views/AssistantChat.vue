@@ -649,6 +649,9 @@
                     </p>
                 </div>
             </div>
+            <div class="header-chat-right">
+                <LanguageSelector />
+            </div>
             <p class="ux-fade-in ux-stagger-3">Asistente virtual para cotizaciones personalizadas</p>
         </div>
 
@@ -725,7 +728,7 @@
                     @input="manejarCambioInput($event.target.value)"
                     class="inputNameChat ux-form-field"
                     type="number"
-                    placeholder="Ingresa un número..."
+                    placeholder="Escribe tu respuesta..."
                 />
             </div>
 

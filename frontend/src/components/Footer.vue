@@ -23,9 +23,9 @@
             <p>Copyright <i class="fa-regular fa-copyright"></i> 2025 Inkvaluation S.A.S</p>
         </div>
         <div class="tyc-Pv">
-            <a href=""><p>Terminos y Condiciones</p></a>
+            <a href=""><p>{{ $t('Términos y Condiciones') }}</p></a>
             <p>|</p>
-            <a href=""><p>Política de Privacidad</p></a>
+            <a href=""><p>{{ $t('Política de Privacidad') }}</p></a>
         </div>
         
     </section>

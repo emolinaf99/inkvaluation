@@ -141,9 +141,9 @@
 
 /* ==== FORM SKELETON ==== */
 .skeleton-form {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 50%;
+  margin: 0;
+  padding: 0.3rem 4rem;
 }
 
 .skeleton-form-header {

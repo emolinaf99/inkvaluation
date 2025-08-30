@@ -16,15 +16,28 @@
     order: 1;
     top: 0;
     left: -350px;
-    transition: all .5s ease ;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
     padding: 5rem 0;
     z-index: 9999;
     overflow-x: hidden;
     gap: 5rem;
+    opacity: 0;
 }
 
 .activeMain {
-    transform:translate(+349px) ;
+    transform: translateX(349px);
+    opacity: 1;
+}
+
+.contenedorSiteHome {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s;
+}
+
+.activeMain .contenedorSiteHome {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .site-home::-webkit-scrollbar {

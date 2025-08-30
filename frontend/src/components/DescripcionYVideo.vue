@@ -53,19 +53,19 @@
 <template>
     <div class="contenedorDescripcionYVideo">
         <div class="contenedorDescripcion">
-            <h1 class="titleMain">Optimiza tus Cotizaciones y Gana Más Clientes</h1>
-            <p class="descripcion">Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.</p>
+            <h1 class="titleMain">{{ $t('Optimiza tus Cotizaciones y Gana Más Clientes') }}</h1>
+            <p class="descripcion">{{ $t('Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.') }}</p>
             <br>
             <br>
-            <p class="descripcion">Dejanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento</p>
+            <p class="descripcion">{{ $t('Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento') }}</p>
             <br>
             <div class="suscribirseBlock">
                 <form class="formSuscribirse" @submit.prevent=submitForm()>
-                    <input class="inputMain" type="text" v-model="suscribeForm.nombre" placeholder="Nombre">
+                    <input class="inputMain" type="text" v-model="suscribeForm.nombre" :placeholder="$t('Nombre')">
                     <div class="mgLeft1 error"v-if="errorsSuscribeForm.nombre">{{errorsSuscribeForm.nombre}}</div>
-                    <input class="inputMain" type="text" v-model="suscribeForm.email" placeholder="Su correo electrónico">
+                    <input class="inputMain" type="text" v-model="suscribeForm.email" :placeholder="$t('Su correo electrónico')">
                     <div class="mgLeft1 error" v-if="errorsSuscribeForm.email">{{errorsSuscribeForm.email}}</div>
-                    <button class="buttonSuscribirseMain" type="submit">Inscribirse</button>
+                    <button class="buttonSuscribirseMain" type="submit">{{ $t('Inscribirse') }}</button>
                 </form>
                 
             </div>

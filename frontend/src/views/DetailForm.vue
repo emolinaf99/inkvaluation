@@ -327,6 +327,7 @@
         draggedIndex = index
         event.dataTransfer.effectAllowed = 'move'
         event.target.classList.add('dragging')
+        event.target.setAttribute('data-drag-text', 'Moviendo pregunta...')
         document.body.classList.add('dragging-active')
         console.log('Arrastrando pregunta desde índice:', index)
     }
@@ -1007,7 +1008,7 @@
 }
 
 .dragging::before {
-    content: 'Moviendo pregunta...';
+    content: attr(data-drag-text);
     position: absolute;
     top: 0;
     left: 0;

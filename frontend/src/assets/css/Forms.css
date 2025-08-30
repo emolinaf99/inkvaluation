@@ -152,6 +152,18 @@
     border-color: #039BE5;
 }
 
+.blockInput:has(.custom-country-selector) .blockIcon {
+    background-color: #fbfbfb;
+    color: #666666;
+    border-color: #D0D3D8;
+}
+
+.blockInput:has(.custom-country-selector.focused) .blockIcon {
+    background-color: #039BE5;
+    color: white;
+    border-color: #039BE5;
+}
+
 .inputForm {
     width: 100%;
     height: 2.5rem;
@@ -163,6 +175,11 @@
     background-color: #fbfbfb;
 }
 
+.inputWithIcon {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 .inputForm:focus {
     border-color: #039BE5;
     box-shadow: 0 0 0 3px rgba(3, 155, 229, 0.1);
@@ -171,6 +188,162 @@
 
 .inputForm:hover {
     border-color: #039BE5;
+}
+
+.phone-prefix {
+    position: absolute;
+    left: 42px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #f8f9fa;
+    border: 1px solid #D0D3D8;
+    border-left: none;
+    border-right: 1px solid #D0D3D8;
+    padding: 0 8px;
+    font-size: 14px;
+    color: #666;
+    z-index: 1;
+    height: calc(100% - 2px);
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+}
+
+.country-flag-display {
+    position: absolute;
+    left: 42px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    z-index: 1;
+    padding: 0 8px;
+    height: calc(100% - 2px);
+}
+
+.country-flag-display img {
+    width: 24px;
+    height: 18px;
+    border-radius: 2px;
+}
+
+.custom-country-selector {
+    width: 100%;
+    position: relative;
+}
+
+.country-selector-display {
+    width: 100%;
+    height: 2.5rem;
+    border: 1px solid #D0D3D8;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: #fbfbfb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 35px 0 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.country-selector-display:hover {
+    border-color: #039BE5;
+    background-color: white;
+}
+
+.selected-country,
+.placeholder-country {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.selected-country img {
+    width: 24px;
+    height: 18px;
+    border-radius: 2px;
+}
+
+.placeholder-country span,
+.selected-country span {
+    color: #333;
+    font-size: 14px;
+}
+
+.search-mode {
+    width: 100%;
+    position: relative;
+}
+
+.country-search-input {
+    width: 100%;
+    height: 2.5rem;
+    border: 1px solid #D0D3D8;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    background-color: white;
+    padding: 0 35px 0 12px;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    border-color: #039BE5;
+    outline: none;
+}
+
+.dropdown-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: #666;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.dropdown-arrow.rotated {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.country-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #D0D3D8;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.country-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.country-option:hover {
+    background-color: #f8f9fa;
+}
+
+.country-option img {
+    width: 24px;
+    height: 18px;
+    border-radius: 2px;
+}
+
+.country-option span {
+    color: #333;
+    font-size: 14px;
 }
 
 .btnSubmit {
@@ -319,10 +492,15 @@
         color: white;
         font-size: 40px;
         width: 70%;
+        height: 120px; /* Altura fija para evitar saltos */
         position: absolute;
-        top: 25%;
-        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Centrado perfecto */
         z-index: 2;
         text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

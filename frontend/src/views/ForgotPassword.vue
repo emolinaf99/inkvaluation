@@ -68,8 +68,8 @@
     <section class="resetPasswordSection">
         <div class="infoContainer">
             <form class="accountBlock" @submit.prevent="submitForm()">
-                <h4>Recupera tu cuenta</h4>
-                <p style="height: 1rem !important;">Introduce tu correo electrónico para buscar tu cuenta.</p>
+                <h4>{{ $t('Recupera tu cuenta') }}</h4>
+                <p style="height: 1rem !important;">{{ $t('Introduce tu correo electrónico para buscar tu cuenta.') }}</p>
 
                 <div class="divInput">
                     <div class="inputIcon">
@@ -80,8 +80,8 @@
                 </div>
 
                 <div class="buttonsForgotPassword w100">
-                    <RouterLink to="/login"><button class="btnAccountBlock" type="button">Cancelar</button></RouterLink>
-                    <button class="btnAccountBlock BGBlue" type="submit">Buscar</button>
+                    <RouterLink to="/login"><button class="btnAccountBlock" type="button">{{ $t('Cancelar') }}</button></RouterLink>
+                    <button class="btnAccountBlock BGBlue" type="submit">{{ $t('Buscar') }}</button>
                 </div>
                 
                     

@@ -53,17 +53,17 @@
     <div class="site-home" >
         <i class="fa-solid fa-xmark equis" id="equisOculta"></i> 
         <div class="contenedorSiteHome">
-            <RouterLink to="/configAssistant"><div class="contItem"><i class="fa-solid fa-user-gear"></i><p>Asistente personal</p></div></RouterLink>
-            <RouterLink to="/assistantBussiness"><div class="contItem"><i class="fa-solid fa-house-user"></i><p>Asistente estudio</p></div></RouterLink>
-            <RouterLink to="/forms"><div class="contItem"><i class="fa-solid fa-file"></i><p>Formularios</p></div></RouterLink>    
-            <RouterLink to="/request"><div class="contItem"><i class="fa-solid fa-file-signature"></i><p>Solicitudes</p></div></RouterLink>    
+            <RouterLink to="/configAssistant"><div class="contItem"><i class="fa-solid fa-user-gear"></i><p>{{ $t('Asistente personal') }}</p></div></RouterLink>
+            <RouterLink to="/assistantBussiness"><div class="contItem"><i class="fa-solid fa-house-user"></i><p>{{ $t('Asistente de estudio') }}</p></div></RouterLink>
+            <RouterLink to="/forms"><div class="contItem"><i class="fa-solid fa-file"></i><p>{{ $t('Formularios') }}</p></div></RouterLink>    
+            <RouterLink to="/request"><div class="contItem"><i class="fa-solid fa-file-signature"></i><p>{{ $t('Solicitudes') }}</p></div></RouterLink>    
             
         </div>
         <div class="contenedorSiteHome">
-            <RouterLink to="/account"><div class="contItem"><i class="fa-solid fa-user"></i><p>Mi cuenta</p></div></RouterLink>
-            <RouterLink to="/accountBussiness"><div class="contItem"><i class="fa-solid fa-pen-nib"></i><p>Mi estudio</p></div></RouterLink>
-            <RouterLink to="/mailbox"><div class="contItem"><i class="fa-solid fa-inbox"></i><p>Buzón de sugerencias</p></div></RouterLink>    
-            <RouterLink to="/"><div class="contItem"><i class="fa-solid fa-right-from-bracket"></i><p>Cerrar sesión</p></div></RouterLink> 
+            <RouterLink to="/account"><div class="contItem"><i class="fa-solid fa-user"></i><p>{{ $t('Mi cuenta') }}</p></div></RouterLink>
+            <RouterLink to="/accountBussiness"><div class="contItem"><i class="fa-solid fa-pen-nib"></i><p>{{ $t('Mi estudio') }}</p></div></RouterLink>
+            <RouterLink to="/mailbox"><div class="contItem"><i class="fa-solid fa-inbox"></i><p>{{ $t('Buzón de sugerencias') }}</p></div></RouterLink>    
+            <RouterLink to="/"><div class="contItem"><i class="fa-solid fa-right-from-bracket"></i><p>{{ $t('Cerrar Sesión') }}</p></div></RouterLink> 
         </div>
 
         

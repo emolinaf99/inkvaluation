@@ -1,0 +1,139 @@
+export default {
+  // Header y navegación
+  'Precios': 'Precios',
+  'Login': 'Login',
+  'Registro': 'Registro',
+  'Iniciar Sesión': 'Iniciar Sesión',
+  'Registrarse': 'Registrarse',
+  'Cerrar Sesión': 'Cerrar Sesión',
+  'Mi Cuenta': 'Mi Cuenta',
+  
+  // Menu hamburguesa
+  'Asistente personal': 'Asistente personal',
+  'Asistente de estudio': 'Asistente de estudio',
+  'Formularios': 'Formularios',
+  'Solicitudes': 'Solicitudes',
+  'Mi cuenta': 'Mi cuenta',
+  'Mi estudio': 'Mi estudio',
+  'Buzón de sugerencias': 'Buzón de sugerencias',
+  
+  // Formularios
+  'Nombre': 'Nombre',
+  'Correo': 'Correo',
+  'Contraseña': 'Contraseña',
+  'Enviar': 'Enviar',
+  'Continuar': 'Continuar',
+  'Cancelar': 'Cancelar',
+  'Guardar': 'Guardar',
+  'Eliminar': 'Eliminar',
+  'Editar': 'Editar',
+  'Pregunta': 'Pregunta',
+  'de': 'de',
+  'País de residencia': 'País de residencia',
+  'Teléfono': 'Teléfono',
+  'Seleccione': 'Seleccione',
+  'Seleccione país primero': 'Seleccione país primero',
+  
+  // Texto dinámico Register
+  'tatúas': 'tatúas',
+  'diseñas': 'diseñas',
+  'descansas': 'descansas',
+  
+  // Chat y asistente
+  'En línea': 'En línea',
+  'Escribiendo...': 'Escribiendo...',
+  'Asistente virtual para cotizaciones personalizadas': 'Asistente virtual para cotizaciones personalizadas',
+  'Seleccionar archivo(s)': 'Seleccionar archivo(s)',
+  'Enviar Archivos': 'Enviar Archivos',
+  
+  // Mailbox
+  'Buzón de sugerencias': 'Buzón de sugerencias',
+  'Asunto': 'Asunto',
+  'Escriba un asunto': 'Escriba un asunto',
+  'Escriba su sugerencia (máximo 200 caracteres)': 'Escriba su sugerencia (máximo 200 caracteres)',
+  'En InkValuation, tu opinión es esencial para mejorar nuestro servicio. Queremos saber cómo podemos seguir transformando tu experiencia y hacer que cada detalle de tu proceso creativo sea más fluido y eficiente. Comparte con nosotros tus sugerencias para que podamos seguir impulsando la innovación en la plataforma y ofrecerte las herramientas que necesitas.': 'En InkValuation, tu opinión es esencial para mejorar nuestro servicio. Queremos saber cómo podemos seguir transformando tu experiencia y hacer que cada detalle de tu proceso creativo sea más fluido y eficiente. Comparte con nosotros tus sugerencias para que podamos seguir impulsando la innovación en la plataforma y ofrecerte las herramientas que necesitas.',
+
+  // Login
+  '¡Bienvenido de nuevo!': '¡Bienvenido de nuevo!',
+  'Por favor, inicia sesión para continuar': 'Por favor, inicia sesión para continuar',
+  '¿No tienes cuenta aún? haz click aquí': '¿No tienes cuenta aún? haz click aquí',
+  '¿Has olvidado la contraseña?': '¿Has olvidado la contraseña?',
+  'Ingresar': 'Ingresar',
+  '¿No tienes cuenta aún?': '¿No tienes cuenta aún?',
+
+  // Register
+  'Apellido': 'Apellido',
+  'Fecha de nacimiento': 'Fecha de nacimiento',
+  'País de residencia': 'País de residencia',
+  'Seleccione': 'Seleccione',
+  'Teléfono': 'Teléfono',
+  'Mínimo 8 caracteres': 'Mínimo 8 caracteres',
+  'Cómo nos conociste': 'Cómo nos conociste',
+  '¿Ya tienes una cuenta?': '¿Ya tienes una cuenta?',
+  'haz click aquí': 'haz click aquí',
+  'Atiende a tus clientes mientras': 'Atiende a tus clientes mientras',
+  'Descansas': 'Descansas',
+
+  // ForgotPassword
+  'Recupera tu cuenta': 'Recupera tu cuenta',
+  'Introduce tu correo electrónico para buscar tu cuenta.': 'Introduce tu correo electrónico para buscar tu cuenta.',
+  'Buscar': 'Buscar',
+
+  // Prices
+  'Elije el plan adecuado para ti.': 'Elije el plan adecuado para ti.',
+  'Mensual': 'Mensual',
+  'Anual': 'Anual',
+  'PLAN INICIAL': 'PLAN INICIAL',
+  'mes': 'mes',
+  'año': 'año',
+  '1 Usuario': '1 Usuario',
+  '5 Cotizaciones': '5 Cotizaciones',
+  'Sin personalización visual de tu asistente': 'Sin personalización visual de tu asistente',
+  'Empezar': 'Empezar',
+  'PLAN PROFESIONAL': 'PLAN PROFESIONAL',
+  '5 Usuarios': '5 Usuarios',
+  '60 Cotizaciones': '60 Cotizaciones',
+  'Personalización visual de tu asistente': 'Personalización visual de tu asistente',
+  'PLAN PRO': 'PLAN PRO',
+  '20 Usuarios': '20 Usuarios',
+  'Cotizaciones ilimitadas': 'Cotizaciones ilimitadas',
+
+  // Footer
+  'Términos y Condiciones': 'Términos y Condiciones',
+  'Política de Privacidad': 'Política de Privacidad',
+
+  // PasoAPaso
+  'Configura tu cuenta': 'Configura tu cuenta',
+  'El usuario se registra en la plataforma y configura su cuenta. Durante esta fase, se ingresan los datos del estudio, los servicios ofrecidos y se detallan los tatuadores o piercers disponibles.': 'El usuario se registra en la plataforma y configura su cuenta. Durante esta fase, se ingresan los datos del estudio, los servicios ofrecidos y se detallan los tatuadores o piercers disponibles.',
+  'Comparte el link': 'Comparte el link',
+  'Se genera un enlace personalizado. Este enlace se envía a los clientes potenciales, quienes lo abren para interactuar con nuestro asistente virtual, quien hace preguntas para obtener información detallada sobre los deseos y preferencias del cliente.': 'Se genera un enlace personalizado. Este enlace se envía a los clientes potenciales, quienes lo abren para interactuar con nuestro asistente virtual, quien hace preguntas para obtener información detallada sobre los deseos y preferencias del cliente.',
+  'Contacto': 'Contacto',
+  'El estudio recibe la información recopilada por el asistente virtual y se pone en contacto con el cliente potencial. Esta comunicación finaliza concretando el servicio solicitado, asegurando que el tatuador o perforador esté bien informado sobre las expectativas del cliente.': 'El estudio recibe la información recopilada por el asistente virtual y se pone en contacto con el cliente potencial. Esta comunicación finaliza concretando el servicio solicitado, asegurando que el tatuador o perforador esté bien informado sobre las expectativas del cliente.',
+
+  // SeccionBeneficios
+  'Beneficios': 'Beneficios',
+  'InkValuation brinda beneficios para los clientes y para los estudios de tatuaje': 'InkValuation brinda beneficios para los clientes y para los estudios de tatuaje',
+  'Facilidad de uso': 'Facilidad de uso',
+  'Los clientes pueden dejar sus datos personales y especificar sus preferencias de tatuaje de manera rápida y sencilla.': 'Los clientes pueden dejar sus datos personales y especificar sus preferencias de tatuaje de manera rápida y sencilla.',
+  'Elección de Tatuador:': 'Elección de Tatuador:',
+  'Permite a los clientes seleccionar con qué tatuador del estudio desean realizar su tatuaje, asegurando una experiencia personalizada.': 'Permite a los clientes seleccionar con qué tatuador del estudio desean realizar su tatuaje, asegurando una experiencia personalizada.',
+  'Claridad en la Comunicación:': 'Claridad en la Comunicación:',
+  'Los clientes pueden detallar el diseño aproximado, la ubicación del tatuaje, el tipo de tatuaje y el color de la tinta, eliminando malentendidos y asegurando que sus expectativas sean claras desde el principio.': 'Los clientes pueden detallar el diseño aproximado, la ubicación del tatuaje, el tipo de tatuaje y el color de la tinta, eliminando malentendidos y asegurando que sus expectativas sean claras desde el principio.',
+  'Atención 24/7:': 'Atención 24/7:',
+  'La plataforma está disponible las 24 horas del día, los 7 días de la semana, permitiendo a los clientes realizar consultas y reservar citas en cualquier momento.': 'La plataforma está disponible las 24 horas del día, los 7 días de la semana, permitiendo a los clientes realizar consultas y reservar citas en cualquier momento.',
+  'Ahorro de Tiempo:': 'Ahorro de Tiempo:',
+  'La plataforma organiza y centraliza la información de los clientes, permitiendo a los tatuadores conocer fácilmente las preferencias de cada cliente y eliminando la necesidad de largas conversaciones iniciales.': 'La plataforma organiza y centraliza la información de los clientes, permitiendo a los tatuadores conocer fácilmente las preferencias de cada cliente y eliminando la necesidad de largas conversaciones iniciales.',
+  'Gestión de Clientes Potenciales:': 'Gestión de Clientes Potenciales:',
+  'Facilita la gestión de todos los clientes potenciales en un solo lugar, mejorando la organización y el seguimiento de cada caso.': 'Facilita la gestión de todos los clientes potenciales en un solo lugar, mejorando la organización y el seguimiento de cada caso.',
+  'Filtrado de Consultas Irrelevantes:': 'Filtrado de Consultas Irrelevantes:',
+  'Ayuda a filtrar a los clientes que solo buscan información sin intención de concretar un tatuaje, permitiendo a los tatuadores enfocarse en clientes serios y maximizar su tiempo productivo.': 'Ayuda a filtrar a los clientes que solo buscan información sin intención de concretar un tatuaje, permitiendo a los tatuadores enfocarse en clientes serios y maximizar su tiempo productivo.',
+  'Mejora de la Experiencia del Cliente:': 'Mejora de la Experiencia del Cliente:',
+  'Al tener toda la información necesaria de antemano, los tatuadores pueden ofrecer un servicio más eficiente y personalizado, mejorando la satisfacción del cliente.': 'Al tener toda la información necesaria de antemano, los tatuadores pueden ofrecer un servicio más eficiente y personalizado, mejorando la satisfacción del cliente.',
+
+  // DescripcionYVideo
+  'Optimiza tus Cotizaciones y Gana Más Clientes': 'Optimiza tus Cotizaciones y Gana Más Clientes',
+  'Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.': 'Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.',
+  'Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento': 'Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento',
+  'Su correo electrónico': 'Su correo electrónico',
+  'Inscribirse': 'Inscribirse'
+}

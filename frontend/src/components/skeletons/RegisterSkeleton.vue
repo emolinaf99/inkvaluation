@@ -1,41 +1,46 @@
 <template>
   <section class="sectionLoginAndRegister">
-    <!-- Image Section Skeleton (Desktop) -->
-    <div class="contenedorImagenRegister" id="contenedorImgRegister">
-      <div class="skeleton skeleton-text skeleton-text-lg" style="width: 70%; margin-bottom: 1rem; color: white;"></div>
-    </div>
-
-    <!-- Form Section -->
-    <div class="skeleton-form" id="contenedorFormRegister">
+    <!-- Form Section - usando mismas clases que el real -->
+    <div class="contenedorForm" id="contenedorFormRegister">
       <!-- Logo Skeleton -->
-      <div class="skeleton-form-header">
-        <div class="skeleton skeleton-avatar"></div>
+      <div class="contenedorLogoForm">
+        <div class="skeleton" style="width: 150px; height: 40px; border-radius: 4px;"></div>
       </div>
       
-      <!-- Welcome Text Skeleton -->
-      <div class="skeleton skeleton-text skeleton-text-lg" style="width: 60%; margin: 0 auto 0.5rem;"></div>
-      <div class="skeleton skeleton-text" style="width: 80%; margin: 0 auto 1rem;"></div>
-      <div class="skeleton skeleton-text skeleton-text-sm" style="width: 70%; margin: 0 auto 1.5rem;"></div>
+      <!-- Title Skeleton -->
+      <div class="skeleton skeleton-text skeleton-text-lg" style="width: 150px; height: 32px; margin-bottom: 1rem;"></div>
+      
+      <!-- Already have account link -->
+      <div class="alreadyEx">
+        <div class="skeleton skeleton-text skeleton-text-sm" style="width: 200px; height: 20px;"></div>
+      </div>
       
       <!-- Form Fields Skeleton -->
-      <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-        <div class="skeleton-form-field" v-for="n in 6" :key="`register-${n}`">
-          <div class="skeleton skeleton-text skeleton-text-sm"></div>
-          <div class="skeleton skeleton-input"></div>
+      <form class="generalForm">
+        <div class="blockForm" v-for="n in 8" :key="`field-${n}`">
+          <div class="skeleton skeleton-text skeleton-text-sm" style="width: 80px; height: 16px; margin-bottom: 0.3rem;"></div>
+          <div class="blockInput">
+            <span class="blockIcon">
+              <div class="skeleton" style="width: 16px; height: 16px; border-radius: 50%;"></div>
+            </span>
+            <div class="skeleton skeleton-input" style="width: 100%; height: 2.5rem; border-radius: 0 10px 10px 0;"></div>
+          </div>
         </div>
         
-        <!-- Terms Checkbox -->
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin: 1rem 0;">
-          <div class="skeleton" style="width: 18px; height: 18px; border-radius: 3px;"></div>
-          <div class="skeleton skeleton-text skeleton-text-sm" style="width: 70%;"></div>
-        </div>
+        <!-- Submit Button Skeleton -->
+        <div class="skeleton" style="width: 100%; height: 2.5rem; margin-top: 1rem; border-radius: 10px;"></div>
+      </form>
+    </div>
+
+    <!-- Image Section Skeleton (Desktop) -->
+    <div class="contenedorImagenRegister" id="contenedorImgRegister">
+      <div class="alreadyExist" id="alreadyExistRegister">
+        <div class="skeleton skeleton-text skeleton-text-sm" style="width: 120px; height: 18px;"></div>
+        <div class="skeleton" style="width: 80px; height: 36px; border-radius: 20px;"></div>
       </div>
-      
-      <!-- Submit Button Skeleton -->
-      <div class="skeleton skeleton-button" style="margin-top: 1rem;"></div>
-      
-      <!-- Login Link Skeleton -->
-      <div class="skeleton skeleton-text skeleton-text-sm" style="width: 50%; margin: 1rem auto 0;"></div>
+      <div class="contenedorTextoDinamico">
+        <!-- Skeleton del texto dinámico eliminado -->
+      </div>
     </div>
   </section>
 </template>

@@ -47,7 +47,7 @@ export function useSkeletonDev(viewName = 'default', defaultDuration = 1500) {
     isLoading.value = true
     isFading.value = false
     
-    const duration = globalSkeletonState.value.currentDuration || localDuration.value
+    const duration = localDuration.value
     console.log('⏱️ Duration:', duration, 'for', viewName)
     
     // Si duración es muy alta (infinito), no iniciar timeout
@@ -101,9 +101,8 @@ export function useSkeletonDev(viewName = 'default', defaultDuration = 1500) {
   }
   
   onMounted(() => {
-    if (globalSkeletonState.value.isDevMode && !globalSkeletonState.value.forceShow) {
-      startLoading()
-    }
+    // Siempre iniciar loading, independientemente del modo dev
+    startLoading()
     
     // Escuchar eventos de reinicio
     window.addEventListener('skeleton-restart', () => {
