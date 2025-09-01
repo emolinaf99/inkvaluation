@@ -1,7 +1,7 @@
 <script setup>
     import {reactive, ref, onMounted} from 'vue'
     import {useRouter} from 'vue-router'
-    import {mostrarNotificacion} from '@/js/notificationsRequest'
+    import {mostrarNotificacion} from '@/js/mensajeNotificacionFront'
     import {useApi} from '/src/js/useFetch.js'
     import {services} from '/src/data/services.js'
 

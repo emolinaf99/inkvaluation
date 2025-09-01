@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LandingPage from '../views/LandingPage.vue'
-import { checkAuth } from '../js/guards/checkAuth.js'; // Importa la función de verificación de autenticación
+import { authService } from '../js/auth.js'; // Importa el servicio de autenticación
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,116 +8,145 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: LandingPage
+      component: LandingPage,
+      meta: { requiresGuest: true } // Solo accesible si NO está autenticado
     },
     {
       path: '/prices',
       name: 'Prices',
-      component: () => import('../views/Prices.vue')
+      component: () => import('../views/Prices.vue'),
+      meta: { requiresGuest: true } // Solo accesible si NO está autenticado
     },
     {
       path: '/login',
       name: 'Login',
-      component: () => import('../views/Login.vue')
+      component: () => import('../views/Login.vue'),
+      meta: { requiresGuest: true } // Solo accesible si NO está autenticado
     },
     {
       path: '/forgotPassword',
       name: 'ForgotPassword',
-      component: () => import('../views/ForgotPassword.vue')
+      component: () => import('../views/ForgotPassword.vue'),
+      meta: { requiresGuest: true } // Solo accesible si NO está autenticado
     },
     {
       path: '/register',
       name: 'Register',
-      component: () => import('../views/Register.vue')
+      component: () => import('../views/Register.vue'),
+      meta: { requiresGuest: true } // Solo accesible si NO está autenticado
     },
     {
       path: '/request',
       name: 'Request',
       component: () => import('../views/Request.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/account',
       name: 'Account',
       component: () => import('../views/Account.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/mailbox',
       name: 'Mailbox',
       component: () => import('../views/Mailbox.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/configAssistant',
       name: 'AssistantConfiguration',
       component: () => import('../views/ConfigAssistant.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/assistantChat',
       name: 'AssistantChat',
       component: () => import('../views/AssistantChat.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/assistantChatAI',
       name: 'AssistantChatAI',
       component: () => import('../views/AssistantChatAI.vue'),
+      meta: { requiresAuth: true }
     },
     {
       path: '/assistantBussiness',
       name: 'AssistantBussiness',
       component: () => import('../views/BussinessAssistant.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/accountBussiness',
       name: 'AccountBussiness',
       component: () => import('../views/Bussiness.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/forms',
       name: 'Forms',
       component: () => import('../views/Forms.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      meta: { requiresAuth: true }
     },
     {
       path: '/newForm/:serviceId',
       name: 'NewForm',
       component: () => import('../views/NewForm.vue'),
-      props: true // Pasar el parámetro 'id' como prop al componente
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
+      props: true,
+      meta: { requiresAuth: true }
     },
     {
       path: '/detailForm/:formId',
       name: 'DetailForm',
       component: () => import('../views/DetailForm.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
-      props: true // Pasar el parámetro 'id' como prop al componente
+      props: true,
+      meta: { requiresAuth: true }
     },
     {
       path: '/resetPassword/:token',
       name: 'ResetPassword',
       component: () => import('../views/ResetPassword.vue'),
-      // meta: { requiresAuth: true }  // Añade un meta campo para indicar que esta ruta requiere autenticación
-      props: true // Pasar el parámetro 'token' como prop al componente
+      props: true,
+      meta: { requiresGuest: true } // Cualquiera puede resetear contraseña
+    },
+    {
+      path: '/updateSubscription',
+      name: 'UpdateSubscription',
+      component: () => import('../views/UpdateSubscription.vue'),
+      meta: { requiresAuth: true }
     }
     
   ]
 })
 
-// Guardias de navegación global para manejar paginas que requieren sesion
+// Guardias de navegación global para manejar autenticación
 router.beforeEach(async (to, from, next) => {
-  const isAuthenticated = await checkAuth();
-  console.log(isAuthenticated);
-  if (to.matched.some(record => record.meta.requiresAuth) && !isAuthenticated) {
-    // Si la ruta requiere autenticación y el usuario no está autenticado, redirige a login
-    next({ name: 'Login' });
-  } else {
-    // Si la ruta no requiere autenticación o el usuario está autenticado, permite la navegación
-    next();
+  const isAuthenticated = await authService.checkAuth();
+  console.log('Usuario autenticado:', isAuthenticated);
+
+  // Verificar si la ruta requiere autenticación
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (!isAuthenticated) {
+      // Usuario no autenticado intentando acceder a ruta privada
+      console.log('Redirigiendo a login - ruta privada sin autenticación');
+      next({ name: 'Login' });
+      return;
+    }
   }
+
+  // Verificar si la ruta requiere ser invitado (no autenticado)
+  if (to.matched.some(record => record.meta.requiresGuest)) {
+    if (isAuthenticated) {
+      // Usuario autenticado intentando acceder a ruta pública
+      console.log('Redirigiendo a account - usuario ya autenticado');
+      next({ name: 'Account' });
+      return;
+    }
+  }
+
+  // Permitir navegación
+  next();
 });
 
 // Función para desplazarse al Home de la página

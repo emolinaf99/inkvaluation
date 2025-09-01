@@ -93,10 +93,12 @@
         logoHeader.addEventListener('click',() => {
             
             header.classList.remove('BGWhite')
-            burgerMenuIcon.classList.remove('redirectNavbarGrey')
-            burgerMenuIcon.classList.add('fa-bars')
-            burgerMenuIcon.classList.remove('fa-x')
+            const burgerMenuIcon = document.querySelector('.mobile-burger-icon')
+            if (burgerMenuIcon) {
+                burgerMenuIcon.classList.remove('redirectNavbarGrey')
+            }
             navBarMenu.classList.remove('activeNavbar')
+            isBurgerMenuOpen.value = false
             
         })
 

@@ -1,7 +1,7 @@
-const db = require('../database/models/index'); // trae toda la base de datos
-const Op = db.Sequelize.Op; // operadores sequelize
+import db from '../database/models/index.js';
+const Op = db.Sequelize.Op;
 
-module.exports = {
+const indexController = {
 
     inscripcionUsuarioInteresado: async (req, res) => {
         try {
@@ -63,4 +63,6 @@ module.exports = {
         }
     }
 
-}
+};
+
+export default indexController;

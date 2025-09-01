@@ -16,8 +16,9 @@
 @import url(./views/Mailbox.css);
 @import url(./views/ConfigAssistant.css);
 @import url(./views/AssistantChat.css);
-@import url(./views/Forms.css);
 @import url(./views/ResetPassword.css);
+@import url(./views/Forms.css);
+
 *{
   margin: 0px;
   padding: 0px;
@@ -68,6 +69,10 @@ ul li {
 .error::before {
   content: '⚠';
   font-size: 0.9em;
+}
+
+.eyePassword {
+  cursor: pointer; position: absolute;right: 0.5rem; color: grey;
 }
 
 @keyframes errorShake {

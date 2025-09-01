@@ -3,29 +3,56 @@ import { useUserStore } from '../stores/userLogged.js';
 
 // Función para verificar autenticación
 export async function checkAuth() {
-
-    const token = localStorage.getItem('jwt');
-    if (!token) return false;
-
     try {
-        const response = await fetch('/api/auth/validate', {
+        // Hacer petición al backend para verificar la sesión (cookies automáticas)
+        const response = await fetch('http://localhost:3001/api/auth/check', {
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
+            credentials: 'include', // Incluir cookies automáticamente
         });
 
         if (!response.ok) {
-            throw new Error('Token inválido o expirado');
+            return false;
         }
 
-        // Si el token es válido, guarda la información del usuario en el store
-        const userStore = useUserStore();
-        const userData = await response.json();
-        userStore.setUser(userData); // Guarda los datos del usuario
+        const data = await response.json();
+        
+        if (data.success && data.authenticated) {
+            // Si la sesión es válida, guardar la información del usuario en el store
+            const userStore = useUserStore();
+            userStore.setUser(data.user);
+            return true;
+        }
 
-        return true; // Token válido
+        return false;
     } catch (error) {
-        console.error('Error de autenticación:', error.message);
-        localStorage.removeItem('jwt'); // Limpiar token inválido
+        console.error('Error verificando autenticación:', error);
+        return false;
+    }
+}
+
+// Función para limpiar sesión
+export function clearSession() {
+    const userStore = useUserStore();
+    userStore.clearUser();
+}
+
+// Función para hacer logout
+export async function logout() {
+    try {
+        // Llamar al endpoint de logout del backend
+        const response = await fetch('http://localhost:3001/api/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        // Limpiar store independientemente del resultado
+        clearSession();
+
+        return true;
+    } catch (error) {
+        console.error('Error en logout:', error);
+        // Limpiar store aunque haya error
+        clearSession();
         return false;
     }
 }

@@ -38,22 +38,21 @@ header {
 
 .notificacionContainer {
     width: fit-content;
-    padding: 0.75rem 1.5rem;
-    min-height: 2.5rem;
-    background-color: rgba(255, 255, 255, 0.95);
+    padding: 0.5rem 1rem;
+    height: 2.5rem;
+    background-color: white ;
+    border: #d5d5d5 1px solid;
+    color: tomato;
     position: fixed;
     z-index: 13;
-    bottom: 3rem;
+    bottom: 2rem;
     left: 2rem;
     display: none;
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    border-left: 4px solid #039BE5;
-    animation: slideInUp 0.3s ease-out;
-    backdrop-filter: blur(10px);
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, .16);
+    border: 1px solid tomato;
 }
 
 @keyframes slideInUp {
@@ -220,12 +219,6 @@ header {
         padding: 1rem 2rem;
     }
 
-    .notificacionContainer {
-        top: auto;
-        bottom: 2rem;
-        left: 3rem;
-    }
-
     .btnRegistro {
         padding: 0.8rem 3rem;
     }
@@ -248,6 +241,10 @@ header {
         position: initial;
         top: 0rem;
         left: 0;
+    }
+
+    .notificacionContainer {
+        left: 4rem;
     }
 }
 

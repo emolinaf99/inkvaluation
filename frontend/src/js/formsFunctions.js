@@ -1,7 +1,7 @@
 import {useApi} from '/src/js/useFetch.js'
 import {mostrarFileEnImgPreview} from '/src/js/previewFile.js'
 import {checkOptAssistant} from '/src/js/checkOpt.js'
-import {mostrarNotificacion} from '@/js/notificationsRequest'
+import {mostrarNotificacion} from '@/js/mensajeNotificacionFront'
 import {toRaw} from 'vue'
 
 // Llama a la función de `useApi` para obtener los datos

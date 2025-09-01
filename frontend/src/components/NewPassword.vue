@@ -3,7 +3,7 @@
     import { inputFromPasswordToText } from '@/js/inputFromPasswordToText';
     import {useApi} from '/src/js/useFetch.js'
     import {validateForm} from '/src/js/validateForm.js'
-    import {mostrarNotificacion} from '/src/js/notificationsRequest.js'
+    import {mostrarNotificacion} from '/src/js/mensajeNotificacionFront.js'
     import { useRoute } from 'vue-router';
 
     // Recibir el tipo de formulario como prop o desde la ruta
@@ -19,9 +19,11 @@
 
     // Errores del formulario actualizar contraseña
     const errorsPassword = ref({});
+    const isSubmitting = ref(false);
 
     // Enviar formulario
     const submitFormPassword = async () => {
+        if (isSubmitting.value) return;
 
         
         // Definir las reglas de validación
@@ -47,42 +49,51 @@
             return;
         }
 
-        // // Si todo es válido, enviar los datos
-        // try {
-        //     let endpoint = formType === 'Account' ? '/api/change-password' : '/api/reset-password';
-        //     let body = { newPassword: formPassword.newPassword };
+        isSubmitting.value = true;
 
-        //     if (formType === 'Account') {
-        //         body.lastPassword = formPassword.lastPassword;
-        //     } else {
-        //         body.token = formPassword.token; // Token enviado por correo
-        //     }
+        try {
+            if (formType === 'Account') {
+                // Cambiar contraseña (usuario autenticado)
+                const changePasswordData = {
+                    currentPassword: formPassword.lastPassword,
+                    newPassword: formPassword.newPassword
+                };
 
-        //     const response = await fetch(endpoint, {
-        //         method: "POST",
-        //         headers: { "Content-Type": "application/json" },
-        //         body: JSON.stringify(body)
-        //     });
+                const { data, error } = await useApi('http://localhost:2000/api/user/change-password', 'PUT', changePasswordData);
 
-        //     const result = await response.json();
+                if (error.value) {
+                    if (error.value.errors) {
+                        const backendErrors = {};
+                        error.value.errors.forEach(err => {
+                            const fieldMap = {
+                                'currentPassword': 'lastPassword',
+                                'newPassword': 'newPassword'
+                            };
+                            const frontendField = fieldMap[err.path] || err.path;
+                            backendErrors[frontendField] = err.msg;
+                        });
+                        errorsPassword.value = { ...errorsPassword.value, ...backendErrors };
+                        mostrarNotificacion('Por favor corrige los errores señalados', 0);
+                    } else {
+                        mostrarNotificacion(error.value.message || 'Error cambiando contraseña', 0);
+                    }
+                } else if (data.value?.success) {
+                    mostrarNotificacion("Contraseña actualizada con éxito", 1);
+                    
+                    // Resetear el formulario
+                    formPassword.lastPassword = '';
+                    formPassword.newPassword = '';
+                    formPassword.confirmPassword = '';
+                }
+            }
+            // TODO: Implementar reset password con token cuando se necesite
 
-        //     if (!response.ok) throw new Error(result.message || "Error en la operación");
-
-        //     mostrarNotificacion(formType === 'Account' ? "Contraseña actualizada con éxito" : "Contraseña restablecida con éxito", 1);
-
-        //     // Resetear el formulario
-        //     formPassword.lastPassword = '';
-        //     formPassword.newPassword = '';
-        //     formPassword.confirmPassword = '';
-        //     formPassword.token = '';
-
-        // } catch (error) {
-        //     mostrarNotificacion(error.message, 0);
-        // }
-
-       
-
-
+        } catch (error) {
+            console.error('Error actualizando contraseña:', error);
+            mostrarNotificacion('Error de conexión', 0);
+        } finally {
+            isSubmitting.value = false;
+        }
     };
 
 </script>
@@ -123,8 +134,8 @@
             <div class="error" v-if="errorsPassword.confirmPassword">{{ errorsPassword.confirmPassword }}</div>
         </div>
 
-        <button class="btnAccountBlock BGYellow" type="submit">
-            {{ formType === 'Account' ? 'Actualizar' : 'Restablecer' }}
+        <button class="btnAccountBlock BGYellow" type="submit" :disabled="isSubmitting">
+            {{ isSubmitting ? 'Procesando...' : (formType === 'Account' ? 'Actualizar' : 'Restablecer') }}
         </button>
     </form>
 </template>

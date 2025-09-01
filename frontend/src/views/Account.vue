@@ -3,8 +3,12 @@
     import NewPassword from '../components/NewPassword.vue'
     import { RouterLink } from 'vue-router';
     import {checkOptAssistant} from '/src/js/checkOpt.js'
-    import {mostrarNotificacion} from '/src/js/notificationsRequest.js'
+    import {mostrarNotificacion} from '/src/js/mensajeNotificacionFront.js'
     import {services} from '/src/data/services.js'
+
+    const state = reactive({
+        services: services
+    })
     import {userLogged} from '/src/data/userInSession.js'
     import { useUserStore } from '../js/stores/userLogged.js'; // cuando exista sesion
 
@@ -57,37 +61,85 @@
     // Errores del formulario actualizar datos personales
     const errorsPersonalData= ref({});
    
+    const isSubmittingPersonalData = ref(false);
+
     // Enviar formulario
-    const submitForm = (formType) => {
+    const submitForm = async (formType) => {
 
         if(formType === 'personalData') { // formulario datos personales
-            // Definir las reglas de validación
+            if (isSubmittingPersonalData.value) return;
+
+            // Definir las reglas de validación frontend
             const validationRules = {
-                imgPerfil: { required: true },
-                nombre: { required: true, maxLength: 10 },
-                apellido: { required: true, },
-                paisResidencia: { required: true },
-                telefono: { required: true, numeric: true },
+                imgPerfil: { required: false }, // Opcional en actualización
+                nombre: { required: true, maxLength: 50 },
+                apellido: { required: true, maxLength: 50 },
+                paisResidencia: { required: false, maxLength: 10 },
+                telefono: { required: false, maxLength: 20, numeric: true },
                 correo: { required: true, email: true }
             };
 
-            // Validar el formulario
-            const errors = validateForm(formPersonalData, validationRules);
-            errorsPersonalData.value = errors; // Guardar los errores para mostrarlos en la vista
+            // Validar el formulario frontend
+            const frontendErrors = validateForm(formPersonalData, validationRules);
+            errorsPersonalData.value = frontendErrors;
 
             // Si hay errores, detener el envío
-            if (Object.keys(errors).length > 0) {
-                console.log("Errores en el formulario:", errors);
+            if (Object.keys(frontendErrors).length > 0) {
+                mostrarNotificacion("Por favor corrige los errores en el formulario", 0);
                 return;
             }
 
-            // Si todo es válido, enviar los datos
-            mostrarNotificacion("Datos personales actualizados con éxito",1);
-            console.log("Datos enviados:", formPersonalData);
-            
-        }
+            isSubmittingPersonalData.value = true;
 
-        
+            try {
+                // Preparar datos para backend
+                const updateData = {
+                    Nombre: formPersonalData.nombre,
+                    Apellido: formPersonalData.apellido,
+                    Telefono: formPersonalData.telefono,
+                    Pais_Residencia: formPersonalData.paisResidencia
+                };
+
+                // Si hay imagen nueva, incluirla
+                if (formPersonalData.imgPerfil instanceof File) {
+                    updateData.Profile_Picture = formPersonalData.imgPerfil;
+                }
+
+                const { data, error } = await useApi('http://localhost:2000/api/user/profile', 'PUT', updateData);
+
+                if (error.value) {
+                    // Manejar errores del backend
+                    if (error.value.errors) {
+                        const backendErrors = {};
+                        error.value.errors.forEach(err => {
+                            const fieldMap = {
+                                'Nombre': 'nombre',
+                                'Apellido': 'apellido',
+                                'Telefono': 'telefono',
+                                'Pais_Residencia': 'paisResidencia'
+                            };
+                            const frontendField = fieldMap[err.path] || err.path;
+                            backendErrors[frontendField] = err.msg;
+                        });
+                        errorsPersonalData.value = { ...errorsPersonalData.value, ...backendErrors };
+                        mostrarNotificacion('Por favor corrige los errores señalados', 0);
+                    } else {
+                        mostrarNotificacion(error.value.message || 'Error actualizando datos', 0);
+                    }
+                } else if (data.value?.success) {
+                    mostrarNotificacion("Datos personales actualizados con éxito", 1);
+                    
+                    // Los datos del usuario se actualizan automáticamente via cookies
+                    // No necesitamos localStorage
+                }
+
+            } catch (error) {
+                console.error('Error actualizando perfil:', error);
+                mostrarNotificacion('Error de conexión', 0);
+            } finally {
+                isSubmittingPersonalData.value = false;
+            }
+        }
     };
 
     onMounted(() => {
@@ -205,20 +257,22 @@
                         </div>
                         <div class="error" v-if="errorsPersonalData.correo">{{ errorsPersonalData.correo }}</div>
                     </div>
-                    <button class="btnAccountBlock BGYellow" type="submit">Actualizar</button>
+                    <button class="btnAccountBlock BGYellow" type="submit" :disabled="isSubmittingPersonalData">
+                        {{ isSubmittingPersonalData ? 'Actualizando...' : 'Actualizar' }}
+                    </button>
                 </form>
                 <div class="accountBlock ux-card ux-stagger-2">
                     <h4>Servicios</h4>
                     <!-- <p class="parOptForm">Activa los servicios para los que tu cliente puede solicitar presupuesto y selecciona cómo quieres recibir las solicitudes.</p>
                     <p class="parOptForm bold">Lista de servicios</p> -->
                     <div class="contOpts">
-                        <div v-for="service in services" class="btnDescInfo">
+                        <div v-for="service in state.services" :key="service.id" class="btnDescInfo">
                             <div class="btnYDesc">
                                 <div class="simBtnWithAnimation" @click="checkOptAssistant($event.currentTarget)">
                                     <div class="circleMove"></div>
                                     <input class="inputCheck" type="checkbox" name="" id="">
                                 </div>
-                                <p>{{service.Services_Name}}</p>
+                                <p>{{service.description}}</p>
                                 
                             </div>
                             
@@ -262,7 +316,7 @@
                         </div>
                         
                     </div>
-                    <RouterLink to=""><button class="btnAccountBlock BGBlue" type="button">Actualizar suscripción</button></RouterLink>
+                    <RouterLink to="/updateSubscription"><button class="btnAccountBlock BGBlue" type="button">Actualizar suscripción</button></RouterLink>
                     
                 </div>
 

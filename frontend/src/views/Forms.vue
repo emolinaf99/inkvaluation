@@ -5,7 +5,7 @@
     import {services} from '/src/data/services.js'
     import Formulario from '../components/ItemForm.vue'
     import {useApi} from '/src/js/useFetch.js'
-    import { mostrarNotificacion } from '@/js/notificationsRequest';
+    import { mostrarNotificacion } from '@/js/mensajeNotificacionFront';
     import FormsSkeleton from '../components/skeletons/FormsSkeleton.vue'
     import { useSkeleton } from '../js/useSkeleton.js'
 
@@ -109,14 +109,14 @@
     </div>
 
     <!-- Contenido Real -->
-    <section v-else class="sectionGeneralConfAssistant ux-container">
-        <h1 class="ux-header">Formularios</h1>
+    <section v-else class="sectionGeneralConfAssistant">
+        <h1>Formularios</h1>
 
-        <div class="contenedorSecConfAssistant ux-content">
+        <div class="contenedorSecConfAssistant">
             <!-- <RouterLink to="/newForm" class="btnNewForm">Nuevo formulario</RouterLink> -->
             
-            <div class="accountBlock ux-card">
-                <div v-for="(service, index) in services" :key="service.id" class="containerServiceForms ux-list-item" :style="`animation-delay: ${0.1 * (index + 1)}s`">
+            <div class="accountBlock">
+                <div v-for="(service, index) in services" :key="service.id" class="containerServiceForms">
                     <button type="button" class="btnNewForm">{{ service.description }}</button>
                     
                     <div class="newFormIcon">
@@ -139,13 +139,11 @@
                             :key="formulario.id"
                             v-bind:formulario="formulario"
                             @delete-form="deleteForm"
-                            class="ux-table-row"
-                            :style="`animation-delay: ${0.1 * (formIndex + 3)}s`"
                         />
                     </div>
 
                     <!-- Si no hay formularios, se muestra el mensaje -->
-                    <p v-else class="noFormsMessage ux-fade-in ux-delay-medium">No hay formularios asociados aún.</p>
+                    <p v-else class="noFormsMessage">No hay formularios asociados aún.</p>
                 </div>
                 
             </div>

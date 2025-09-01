@@ -1,3 +1,4 @@
-const port = process.env.PORT || 2000;
+const port = process.env.PORT || 3001;
 const start = () => console.log(`Servidor corriendo en puerto ${port}`);
-module.exports = {port,start};
+export {port, start};
+export default {port, start};

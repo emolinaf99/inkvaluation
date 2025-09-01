@@ -1,5 +1,49 @@
 <script setup>
     import {reactive,ref,onMounted, watch} from 'vue'
+    import { useRouter } from 'vue-router'
+    import { authService } from '../js/auth.js'
+    import { mostrarNotificacion } from '../js/mensajeNotificacionFront.js'
+
+    const router = useRouter()
+
+    // Función para manejar logout
+    const handleLogout = async () => {
+        // Cerrar el menú hamburguesa
+        const navBarBurguerMenu = document.querySelector('.site-home');
+        const fondoTransparenteOscuro = document.querySelector('.opacity');
+        
+        if (navBarBurguerMenu && navBarBurguerMenu.classList.contains('activeMain')) {
+            navBarBurguerMenu.classList.remove('activeMain');
+            if (fondoTransparenteOscuro) {
+                fondoTransparenteOscuro.style.display = 'none';
+            }
+        }
+
+        try {
+            const result = await authService.logout();
+            
+            if (result.success) {
+                mostrarNotificacion('Sesión cerrada exitosamente', 1);
+                // Redirigir al home después del logout
+                setTimeout(() => {
+                    router.push('/');
+                }, 1500);
+            } else {
+                mostrarNotificacion(result.message || 'Error cerrando sesión', 0);
+                // Redirigir aunque haya error (ya se limpió el store)
+                setTimeout(() => {
+                    router.push('/');
+                }, 1500);
+            }
+        } catch (error) {
+            console.error('Error en logout:', error);
+            mostrarNotificacion('Error cerrando sesión', 0);
+            // Redirigir aunque haya error
+            setTimeout(() => {
+                router.push('/');
+            }, 1500);
+        }
+    }
 
     onMounted(() => {
         
@@ -36,8 +80,10 @@
         })
 
 
-        optionsNavbarBurgerMenu.forEach(option => {
-            option.addEventListener('click',() => {
+        // Solo cerrar menú para los RouterLinks, no para el botón de logout
+        const routerLinks = document.querySelectorAll('.site-home a');
+        routerLinks.forEach(link => {
+            link.addEventListener('click',() => {
                 abrirYCerrarNavbarBurguerMenu()
             })
         });
@@ -63,7 +109,7 @@
             <RouterLink to="/account"><div class="contItem"><i class="fa-solid fa-user"></i><p>{{ $t('Mi cuenta') }}</p></div></RouterLink>
             <RouterLink to="/accountBussiness"><div class="contItem"><i class="fa-solid fa-pen-nib"></i><p>{{ $t('Mi estudio') }}</p></div></RouterLink>
             <RouterLink to="/mailbox"><div class="contItem"><i class="fa-solid fa-inbox"></i><p>{{ $t('Buzón de sugerencias') }}</p></div></RouterLink>    
-            <RouterLink to="/"><div class="contItem"><i class="fa-solid fa-right-from-bracket"></i><p>{{ $t('Cerrar Sesión') }}</p></div></RouterLink> 
+            <div class="contItem" @click="handleLogout" style="cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i><p>{{ $t('Cerrar Sesión') }}</p></div> 
         </div>
 
         

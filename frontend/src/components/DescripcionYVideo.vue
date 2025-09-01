@@ -1,6 +1,6 @@
 <script setup>
     import {reactive,ref,onMounted} from 'vue'
-    import {mostrarNotificacion} from '/src/js/notificationsRequest.js'
+    import {mostrarNotificacion} from '/src/js/mensajeNotificacionFront.js'
     import {useApi} from '/src/js/useFetch.js'
     import {validateForm} from '/src/js/validateForm.js'
 

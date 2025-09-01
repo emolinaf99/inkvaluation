@@ -1,15 +1,19 @@
 <script setup>
-    import {reactive,ref,onMounted,watch} from 'vue'
-    import { RouterLink, RouterView } from 'vue-router'
+    import {reactive,ref,onMounted,onUnmounted,watch} from 'vue'
+    import { RouterLink, RouterView, useRouter } from 'vue-router'
     import { useApi } from '../js/useFetch.js'
+    import { validateForm } from '../js/validateForm.js'
+    import { mostrarNotificacion } from '../js/mensajeNotificacionFront.js'
     import { useI18n } from 'vue-i18n'
     const countries = ref([])
     const selectedCountry = ref(null)
     const isCountryDropdownOpen = ref(false)
     const countrySearchText = ref('')
     const filteredCountries = ref([])
+    const comoNosConociste_opciones = ref([])
     
     const { t, locale } = useI18n()
+    const router = useRouter()
 
     const formData = ref({
         nombre: '',
@@ -19,14 +23,112 @@
         telefono: '',
         email: '',
         contrasena: '',
+        confirmarContrasena: '',
         comoNosConociste: ''
     });
 
-    const submitRegister = () => {
-        // Aquí puedes manejar la lógica para enviar los datos del formulario
-        console.log('Datos enviados:', formData.value);
-        // Por ejemplo, puedes llamar a una función para enviar los datos a través de una API
-        // o realizar alguna acción específica con los datos del formulario.
+    const errors = ref({});
+    const isSubmitting = ref(false);
+    const showPassword = ref(false);
+    const showConfirmPassword = ref(false);
+
+    const togglePasswordVisibility = () => {
+        showPassword.value = !showPassword.value;
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+        showConfirmPassword.value = !showConfirmPassword.value;
+    };
+
+    const submitRegister = async () => {
+        if (isSubmitting.value) return;
+
+        // Validaciones frontend
+        const validationRules = {
+            nombre: { required: true, minLength: 1, maxLength: 50 },
+            apellido: { required: true, minLength: 1, maxLength: 50 },
+            fechaDeNacimiento: { required: true },
+            telefono: { required: true, minLength: 7, maxLength: 20 },
+            email: { required: true, email: true },
+            contrasena: { required: true, minLength: 6 },
+            confirmarContrasena: { required: true, match: 'contrasena' },
+            comoNosConociste: { required: true }
+        };
+
+        // Limpiar errores previos
+        errors.value = {};
+
+        // Validación personalizada para país
+        if (!selectedCountry.value) {
+            errors.value.pais = 'Debe seleccionar un país';
+        }
+
+        const frontendErrors = validateForm(formData.value, validationRules);
+        errors.value = { ...errors.value, ...frontendErrors };
+
+        if (Object.keys(errors.value).length > 0) {
+            mostrarNotificacion('Por favor corrige los errores en el formulario', 0);
+            return;
+        }
+
+        isSubmitting.value = true;
+
+        try {
+            // Preparar datos para backend
+            const registerData = {
+                nombre: formData.value.nombre,
+                apellido: formData.value.apellido,
+                email: formData.value.email,
+                contrasena: formData.value.contrasena,
+                confirmarContrasena: formData.value.confirmarContrasena,
+                fechaDeNacimiento: formData.value.fechaDeNacimiento,
+                telefono: formData.value.telefono,
+                paisDeResidencia: selectedCountry.value?.cca2 || formData.value.pais,
+                comoNosConociste: formData.value.comoNosConociste
+            };
+
+            const { data, error } = await useApi('http://localhost:3001/api/auth/register', 'POST', registerData);
+
+            if (error.value) {
+                // Manejar errores del backend
+                if (error.value.response?.data?.errors) {
+                    // Errores de validación express-validator
+                    const backendErrors = {};
+                    error.value.response.data.errors.forEach(err => {
+                        // Mapear campos del backend al frontend
+                        const fieldMap = {
+                            'nombre': 'nombre',
+                            'apellido': 'apellido',
+                            'email': 'email',
+                            'contrasena': 'contrasena',
+                            'confirmarContrasena': 'confirmarContrasena',
+                            'fechaDeNacimiento': 'fechaDeNacimiento',
+                            'telefono': 'telefono',
+                            'paisDeResidencia': 'pais',
+                            'comoNosConociste': 'comoNosConociste'
+                        };
+                        const frontendField = fieldMap[err.path] || err.path;
+                        backendErrors[frontendField] = err.msg;
+                    });
+                    errors.value = { ...errors.value, ...backendErrors };
+                    mostrarNotificacion('Por favor corrige los errores señalados', 0);
+                } else {
+                    mostrarNotificacion(error.value.response?.data?.message || 'Error en el registro', 0);
+                }
+            } else if (data.value?.success) {
+                mostrarNotificacion('¡Cuenta creada exitosamente! Revisa tu correo para la confirmación.', 1);
+                // Redirigir al dashboard ya que el usuario está automáticamente logueado
+                setTimeout(() => {
+                    router.push('/account');
+                }, 2000);
+            }
+
+        } catch (error) {
+            console.error('Error en registro:', error);
+            mostrarNotificacion('Error de conexión', 0);
+        } finally {
+            isSubmitting.value = false;
+        }
     };
 
     // Cargar países con prefijos telefónicos
@@ -43,13 +145,18 @@
                         country.name?.common &&
                         country.name.common.length > 2 // Filtrar códigos muy cortos
                     )
-                    .map(country => ({
-                        name: country.name.common,
-                        nameSpanish: country.name.common,
-                        code: country.idd.root + (country.idd.suffixes[0] || ''),
-                        flag: `https://flagcdn.com/24x18/${country.cca2.toLowerCase()}.png`,
-                        cca2: country.cca2
-                    }))
+                    .map(country => {
+                        const countryData = {
+                            name: country.name.common,
+                            nameSpanish: country.name.common,
+                            code: country.idd.root + (country.idd.suffixes[0] || ''),
+                            flag: `https://flagcdn.com/24x18/${country.cca2.toLowerCase()}.png`,
+                            cca2: country.cca2
+                        };
+                        
+                        
+                        return countryData;
+                    })
                     .filter(country => {
                         // Excluir solo códigos de 2 letras que no sean nombres reales
                         const isCodeOnly = country.name.length <= 2 && /^[A-Z]{2}$/.test(country.name);
@@ -60,17 +167,31 @@
                 countries.value = processedCountries;
                 filteredCountries.value = processedCountries;
                 
-                // Seleccionar Colombia por defecto
-                const colombia = processedCountries.find(c => c.nameSpanish.includes('Colombia') || c.code === '+57');
-                if (colombia) {
-                    selectedCountry.value = colombia;
-                    formData.value.pais = colombia.nameSpanish;
-                }
+                // No seleccionar país por defecto para forzar validación
+                // const colombia = processedCountries.find(c => c.nameSpanish.includes('Colombia') || c.code === '+57');
+                // if (colombia) {
+                //     selectedCountry.value = colombia;
+                //     formData.value.pais = colombia.nameSpanish;
+                // }
                 
                 console.log('Países cargados:', processedCountries.length);
             }
         } catch (error) {
             console.error('Error cargando países:', error);
+        }
+    };
+
+    // Cargar opciones de "Cómo nos conociste"
+    const loadComoNosConociste = async () => {
+        try {
+            const { data, error } = await useApi('http://localhost:3001/api/user/como-nos-conociste');
+            
+            if (!error.value && data.value?.success) {
+                comoNosConociste_opciones.value = data.value.opciones;
+                console.log('Opciones "Cómo nos conociste" cargadas:', data.value.opciones.length);
+            }
+        } catch (error) {
+            console.error('Error cargando opciones "Cómo nos conociste":', error);
         }
     };
 
@@ -105,9 +226,14 @@
         if (searchValue.trim() === '') {
             filteredCountries.value = countries.value;
         } else {
-            filteredCountries.value = countries.value.filter(country =>
-                country.nameSpanish.toLowerCase().includes(searchValue.toLowerCase())
-            );
+            const search = searchValue.toLowerCase().trim();
+            
+            filteredCountries.value = countries.value.filter(country => {
+                const countryName = country.nameSpanish.toLowerCase();
+                
+                // Solo mostrar países que contengan exactamente la secuencia escrita
+                return countryName.includes(search);
+            });
         }
         
         if (!isCountryDropdownOpen.value) {
@@ -190,8 +316,17 @@
     }
 
     onMounted(() => {
+        // Agregar clase específica al body para estilos de registro
+        document.body.classList.add('register-page');
+        
         loadCountries();
+        loadComoNosConociste();
         setTimeout(textoDinamico, 100);
+    });
+
+    // Limpiar la clase al desmontar el componente
+    onUnmounted(() => {
+        document.body.classList.remove('register-page');
     });
 
     
@@ -201,7 +336,7 @@
 </script>
 
 <template>
-    <section class="sectionLoginAndRegister">
+    <section class="sectionLoginAndRegister sRegister">
         <div class="contenedorForm" id="contenedorFormRegister">
             <div class="contenedorLogoForm">
                 <RouterLink to="/"><img class="logoApp" src="/img/InkValuationLogo.png" alt=""></RouterLink>
@@ -233,6 +368,7 @@
                         <span class="blockIcon"><i class="fa-regular fa-user"></i></span>
                         <input class="inputForm" type="text" placeholder="Ej: Sergio" v-model="formData.nombre">
                     </div>
+                    <div class="error" v-if="errors.nombre">{{ errors.nombre }}</div>
                 </div>
                 <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('Apellido') }}</label>
@@ -240,6 +376,7 @@
                         <span class="blockIcon"><i class="fa-solid fa-file-signature"></i></span>
                         <input class="inputForm" type="text" placeholder="Ej: Gomez" v-model="formData.apellido">
                     </div>
+                    <div class="error" v-if="errors.apellido">{{ errors.apellido }}</div>
                 </div>
                 <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('Fecha de nacimiento') }}</label>
@@ -247,6 +384,7 @@
                         <span class="blockIcon"><i class="fa-regular fa-calendar"></i></span>
                         <input class="inputForm" type="date" v-model="formData.fechaDeNacimiento">
                     </div>
+                    <div class="error" v-if="errors.fechaDeNacimiento">{{ errors.fechaDeNacimiento }}</div>
                 </div>
                 <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('País de residencia') }}</label>
@@ -276,8 +414,8 @@
                             </div>
                             <div v-if="isCountryDropdownOpen" class="country-dropdown">
                                 <div 
-                                    v-for="country in filteredCountries" 
-                                    :key="country.code" 
+                                    v-for="(country, index) in filteredCountries" 
+                                    :key="`${country.cca2}-${index}`" 
                                     class="country-option"
                                     @click="selectCountry(country)"
                                 >
@@ -287,6 +425,7 @@
                             </div>
                         </div>
                     </div>
+                    <div class="error" v-if="errors.pais">{{ errors.pais }}</div>
                 </div>
                 <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('Teléfono') }}</label>
@@ -301,21 +440,39 @@
                             :style="selectedCountry ? 'padding-left: 70px;' : ''"
                         >
                     </div>
+                    <div class="error" v-if="errors.telefono">{{ errors.telefono }}</div>
                 </div>
                 <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('Correo') }}</label>
                     <div class="blockInput">
                         <span class="blockIcon"><i class="fa-regular fa-envelope"></i></span>
-                        <input class="inputForm" type="email" v-model="formData.correo">
+                        <input class="inputForm" type="email" v-model="formData.email">
                     </div>
+                    <div class="error" v-if="errors.email">{{ errors.email }}</div>
                 </div>
-                <div class="blockForm" style="margin-bottom: 1rem;">
+                <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('Contraseña') }}</label>
                     <div class="blockInput">
                         <span class="blockIcon"><i class="fa-solid fa-key"></i></span>
-                        <input class="inputForm" type="password" v-model="formData.contrasena">
+                        <input class="inputForm" :type="showPassword ? 'text' : 'password'" v-model="formData.contrasena">
+                        <span class="eyePassword" @click="togglePasswordVisibility">
+                            <i :class="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                        </span>
                     </div>
-                    <span class="passwordText">{{ $t('Mínimo 8 caracteres') }}</span>
+                    <div class="error" v-if="errors.contrasena">{{ errors.contrasena }}</div>
+                    <span class="passwordText">{{ $t('Mínimo 6 caracteres') }}</span>
+                </div>
+                <div class="blockForm" style="margin-bottom: 1rem;">
+                    <label class="labelForm"for="">{{ $t('Confirmar contraseña') }}</label>
+                    <div class="blockInput">
+                        <span class="blockIcon"><i class="fa-solid fa-key"></i></span>
+                        <input class="inputForm" :type="showConfirmPassword ? 'text' : 'password'" v-model="formData.confirmarContrasena">
+                        <span class="eyePassword" @click="toggleConfirmPasswordVisibility" >
+    
+                            <i :class="showConfirmPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+                        </span>
+                    </div>
+                    <div class="error" v-if="errors.confirmarContrasena">{{ errors.confirmarContrasena }}</div>
                 </div>
                 <div class="blockForm">
                     <label class="labelForm"for="">{{ $t('Cómo nos conociste') }}</label>
@@ -323,11 +480,21 @@
                         <span class="blockIcon"><i class="fa-solid fa-globe"></i></span>
                         <select class="inputForm inputWithIcon" v-model="formData.comoNosConociste">
                             <option value="">{{ $t('Seleccione') }}</option>
+                            <option 
+                                v-for="opcion in comoNosConociste_opciones" 
+                                :key="opcion.Id" 
+                                :value="opcion.Descripcion"
+                            >
+                                {{ opcion.Descripcion }}
+                            </option>
                         </select>
                     </div>
+                    <div class="error" v-if="errors.comoNosConociste">{{ errors.comoNosConociste }}</div>
                 </div>
 
-                <button class="btnSubmit" type="submit" style="margin-top: 1rem">{{ $t('Registrarse') }}</button>
+                <button class="btnSubmit" type="submit" style="margin-top: 1rem" :disabled="isSubmitting">
+                    {{ isSubmitting ? $t('Registrando...') : $t('Registrarse') }}
+                </button>
                 
                 
             </form>
@@ -335,7 +502,7 @@
             
 
         </div>
-        <div class="contenedorImagenRegister" id="contenedorImgRegister">
+        <div class="contenedorImagenRegisterNew" id="contenedorImgRegister">
             <div class="alreadyExist" id="alreadyExistRegister"><span>{{ $t('¿Ya tienes una cuenta?') }}</span><RouterLink to="/login" class="btnLogin">{{ $t('Login') }}</RouterLink></div>
             <div class="contenedorTextoDinamico">
                 <h2 style="height: 17rem;">{{ $t('Atiende a tus clientes mientras') }} <br><span id="dynamicText">{{ $t('Descansas') }}</span></h2>

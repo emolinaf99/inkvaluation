@@ -1,8 +1,11 @@
 <script setup>
     import {reactive,ref,onMounted} from 'vue'
-    import { RouterLink, RouterView } from 'vue-router'
+    import { RouterLink, RouterView, useRouter } from 'vue-router'
+    import { useApi } from '../js/useFetch.js'
     import {validateForm} from '/src/js/validateForm.js'
-    import { inputFromPasswordToText } from '@/js/inputFromPasswordToText';
+    import { mostrarNotificacion } from '../js/mensajeNotificacionFront.js'
+    import { inputFromPasswordToText } from '@/js/inputFromPasswordToText'
+    import { useUserStore } from '../js/stores/userLogged.js';
 
     const loginForm = reactive({
         email: '',
@@ -10,29 +13,83 @@
     });
 
     const errorsLoginForm = ref({})
+    const isSubmitting = ref(false)
+    const showPassword = ref(false)
+    const router = useRouter()
+    const userStore = useUserStore()
+
+    // Función para toggle de visibilidad de contraseña
+    const togglePasswordVisibility = () => {
+        showPassword.value = !showPassword.value;
+    }
 
     // Enviar formulario
-    const submitLogin= () => {
+    const submitLogin = async () => {
+        if (isSubmitting.value) return;
 
-        // Definir las reglas de validación
+        // Definir las reglas de validación frontend
         const validationRules = {
             email: { required: true, email: true },
-            password: { required:true }
+            password: { required: true }
         };
 
         // Validar el formulario
-        const errors = validateForm(loginForm, validationRules);
-        errorsLoginForm.value = errors; // Guardar los errores para mostrarlos en la vista
+        const frontendErrors = validateForm(loginForm, validationRules);
+        errorsLoginForm.value = frontendErrors;
 
         // Si hay errores, detener el envío
-        if (Object.keys(errors).length > 0) {
-            console.log("Errores en el formulario:", errors);
+        if (Object.keys(frontendErrors).length > 0) {
+            mostrarNotificacion('Por favor completa todos los campos correctamente', 0);
             return;
         }
 
-        // Si todo es válido, enviar los datos
-        console.log("Datos enviados:", loginForm);
-        
+        isSubmitting.value = true;
+
+        try {
+            // Preparar datos para backend
+            const loginData = {
+                email: loginForm.email,
+                password: loginForm.password
+            };
+
+            const { data, error } = await useApi('http://localhost:3001/api/auth/login', 'POST', loginData);
+
+            if (error.value) {
+                // Manejar errores del backend
+                if (error.value.response?.data?.errors) {
+                    // Errores de validación express-validator
+                    const backendErrors = {};
+                    error.value.response.data.errors.forEach(err => {
+                        const fieldMap = {
+                            'email': 'email',
+                            'password': 'password'
+                        };
+                        const frontendField = fieldMap[err.path] || err.path;
+                        backendErrors[frontendField] = err.msg;
+                    });
+                    errorsLoginForm.value = { ...errorsLoginForm.value, ...backendErrors };
+                    mostrarNotificacion('Por favor corrige los errores señalados', 0);
+                } else {
+                    mostrarNotificacion(error.value.response?.data?.message || 'Error en el inicio de sesión', 0);
+                }
+            } else if (data.value?.success) {
+                mostrarNotificacion('Inicio de sesión exitoso', 1);
+                
+                // Actualizar store con información del usuario
+                userStore.setUser(data.value.user);
+                
+                // Redirigir al dashboard/account
+                setTimeout(() => {
+                    router.push('/account');
+                }, 1500);
+            }
+
+        } catch (error) {
+            console.error('Error en login:', error);
+            mostrarNotificacion('Error de conexión', 0);
+        } finally {
+            isSubmitting.value = false;
+        }
     };
 
 </script>
@@ -71,7 +128,9 @@
                 </div>
                 
                 <RouterLink to="/forgotPassword" class="ux-content ux-stagger-3"><p id="forgotThePasswordText">{{ $t('¿Has olvidado la contraseña?') }}</p></RouterLink>
-                <button class="btnSubmit ux-button ux-stagger-4" type="submit" style="margin-top: 1rem">{{ $t('Ingresar') }}</button>
+                <button class="btnSubmit ux-button ux-stagger-4" type="submit" style="margin-top: 1rem" :disabled="isSubmitting">
+                    {{ isSubmitting ? $t('Ingresando...') : $t('Ingresar') }}
+                </button>
                 
             </form>
             

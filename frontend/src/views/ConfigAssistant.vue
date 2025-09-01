@@ -2,6 +2,7 @@
     import {reactive, ref, onMounted} from 'vue'
     import {services} from '/src/data/services.js'
     import {formularios} from '/src/data/forms.js'
+    import {checkOptAssistant} from '/src/js/checkOpt.js'
     import ConfigAssistantSkeleton from '../components/skeletons/ConfigAssistantSkeleton.vue'
     import { useSkeleton } from '../js/useSkeleton.js'
 
@@ -10,7 +11,6 @@
     const state = reactive({
         services: services
     })
-
 
     function mostrarInfoOpt(btnInfo,aparecerODesaparecer) {
         // 0 para aparecer 1 para desaparecer
@@ -40,7 +40,7 @@
 
     <!-- Contenido Real -->
     <section v-else class="sectionGeneralConfAssistant ux-container">
-        <h1 class="ux-header">Configuración de asistente</h1>
+        <h1 class="ux-header">Configuración de asistente personal</h1>
 
         <div class="contenedorSecConfAssistant ux-content">
             <div class="linkAndPreview ux-card ux-stagger-1">
@@ -84,7 +84,24 @@
                 
                 <button class="btnAccountBlock BGYellow ux-button ux-stagger-3" type="button">Guardar</button>
             </div>
-            <div class="accountBlock ux-card ux-stagger-4" style="padding-bottom: 0;">
+            <div class="accountBlock ux-card ux-stagger-4">
+                <h4>Servicios disponibles</h4>
+                <p class="parOptForm">Activa los servicios que ofreces para que aparezcan en tu asistente personal.</p>
+                
+                <div class="contOpts">
+                    <div v-for="(service, index) in state.services" :key="service.id" class="btnDescInfo">
+                        <div class="btnYDesc">
+                            <div class="simBtnWithAnimation" @click="checkOptAssistant($event.currentTarget)">
+                                <div class="circleMove"></div>
+                                <input class="inputCheck" type="checkbox" name="" id="">
+                            </div>
+                            <p>{{ service.description }}</p>
+                        </div>
+                    </div>
+                    <button class="btnAccountBlock BGYellow ux-button ux-stagger-3" type="button">Guardar</button>
+                </div>
+            </div>
+            <div class="accountBlock ux-card ux-stagger-5" style="padding-bottom: 0;">
                 <h4 style="margin: 0;" class="ux-fade-in">Formularios de servicios</h4>
                 <p style="height: auto; margin-bottom: 1rem;" class="ux-fade-in ux-stagger-1">Para cada servicio se debe elegir un formulario que el cliente debe responder al elegir el servicio deseado</p>
                 <div class="questionAndType servicesForm titleServicesForm ux-fade-in ux-stagger-2">

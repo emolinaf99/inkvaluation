@@ -1,8 +1,9 @@
-const {Router} = require("express");
+import { Router } from 'express';
+import controller from '../controllers/indexController.js';
+
 const router = Router();
-const controller = require('../controllers/indexController')
 
 // APIs
 router.post("/api/userInterested", controller.inscripcionUsuarioInteresado);
 
-module.exports = router;
+export default router;

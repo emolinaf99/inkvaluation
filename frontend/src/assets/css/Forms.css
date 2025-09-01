@@ -1,14 +1,30 @@
 /* ===== BASE STYLES (MOBILE FIRST) ===== */
 
-.sectionLoginAndRegister {
-    width: 100vw;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: flex-start;
+/* Reset específico para la página de registro */
+body.register-page {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow-x: hidden;
 }
 
-.contenedorImagenRegister {
+.sRegister {
+    justify-content: center !important;
+}
+
+.sectionLoginAndRegister {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+}
+
+.contenedorImagenRegister,
+.contenedorImagenRegisterNew {
     display: none;
 }
 
@@ -403,6 +419,12 @@
 
 /* ===== DESKTOP STYLES (1280px and up) ===== */
 @media (min-width: 1280px) {
+    .sectionLoginAndRegister {
+        flex-direction: row;
+        justify-content: center;
+        align-items: stretch;
+        height: 100vh;
+    }
     #contenedorFormRegister {
         order: 1;
     }
@@ -413,46 +435,93 @@
     
     #contenedorImgRegister {
         order: 2;
-        height: 120vh;
     }
     
     #contenedorImgLogin {
         order: 1;
-        height: 100vh;
+        
     }
 
     .alreadyEx {
         display: none;
     }
 
+    .sRegister {
+        justify-content: flex-start !important;
+    }
+
     .contenedorImagenRegister {
         display: flex;
         width: 60%;
-        position: relative;
-        height: 120vh;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        height: 100vh;
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        z-index: 0;
     }
 
     .contenedorImagenRegister::before {
         content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: auto !important;
+        width: 60% !important;
+        height: 100vh !important;
         background-image: url(/img/tatuadorTrabajando.jpg);
         background-size: cover;
         background-position: center;
+        background-repeat: no-repeat;
         opacity: 0.8;
         z-index: 1;
     }
 
+    .contenedorImagenRegisterNew {
+        display: flex;
+        width: 60%;
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        z-index: 0;
+    }
+
+    .contenedorImagenRegisterNew::before {
+        content: '';
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: auto !important;
+        width: 60% !important;
+        height: 100vh !important;
+        background-image: url(/img/tatuadorTrabajando.jpg);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.8;
+        z-index: 1;
+    }
+
+    
+
     .contenedorForm {
         width: 40%;
-        padding: 0.3rem 4rem;
+        padding: 2rem 3rem;
         margin-bottom: 0;
+        position: relative;
+        z-index: 10;
+        max-width: 600px;
+        height: fit-content;
     }
 
     .alreadyExist {
