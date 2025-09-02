@@ -44,17 +44,7 @@ router.get('/profile',
 // Verificar si el usuario está autenticado (para guards de Vue)
 router.get('/check', 
   verifyToken,
-  (req, res) => {
-    // Si llegamos aquí, el token es válido (gracias al middleware verifyToken)
-    res.json({
-      success: true,
-      authenticated: true,
-      user: {
-        userId: req.user.userId,
-        email: req.user.email
-      }
-    });
-  }
+  getProfile
 );
 
 export default router;

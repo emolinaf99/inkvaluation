@@ -5,6 +5,7 @@
     import { validateForm } from '../js/validateForm.js'
     import { mostrarNotificacion } from '../js/mensajeNotificacionFront.js'
     import { useI18n } from 'vue-i18n'
+    import { useSecurityPassword } from '../js/useSecurityPassword.js'
     const countries = ref([])
     const selectedCountry = ref(null)
     const isCountryDropdownOpen = ref(false)
@@ -29,6 +30,23 @@
 
     const errors = ref({});
     const isSubmitting = ref(false);
+
+    // Usar el composable de seguridad de contraseñas
+    const { validatePassword } = useSecurityPassword();
+    const passwordValidation = ref(null);
+
+    // Validar contraseña en tiempo real
+    const validatePasswordStrength = () => {
+        if (formData.value.contrasena) {
+            passwordValidation.value = validatePassword(formData.value.contrasena, formData.value.confirmarContrasena);
+        } else {
+            passwordValidation.value = null;
+        }
+    };
+
+    // Watch para validar contraseña en tiempo real
+    watch(() => formData.value.contrasena, validatePasswordStrength);
+    watch(() => formData.value.confirmarContrasena, validatePasswordStrength);
     const showPassword = ref(false);
     const showConfirmPassword = ref(false);
 
@@ -43,15 +61,13 @@
     const submitRegister = async () => {
         if (isSubmitting.value) return;
 
-        // Validaciones frontend
+        // Validaciones frontend básicas
         const validationRules = {
             nombre: { required: true, minLength: 1, maxLength: 50 },
             apellido: { required: true, minLength: 1, maxLength: 50 },
             fechaDeNacimiento: { required: true },
             telefono: { required: true, minLength: 7, maxLength: 20 },
             email: { required: true, email: true },
-            contrasena: { required: true, minLength: 6 },
-            confirmarContrasena: { required: true, match: 'contrasena' },
             comoNosConociste: { required: true }
         };
 
@@ -61,6 +77,18 @@
         // Validación personalizada para país
         if (!selectedCountry.value) {
             errors.value.pais = 'Debe seleccionar un país';
+        }
+
+        // Validar contraseña con useSecurityPassword
+        const passwordValidationResult = validatePassword(formData.value.contrasena, formData.value.confirmarContrasena);
+        
+        if (!passwordValidationResult.isValid) {
+            if (passwordValidationResult.errors.password.length > 0) {
+                errors.value.contrasena = passwordValidationResult.errors.password[0];
+            }
+            if (passwordValidationResult.errors.confirm.length > 0) {
+                errors.value.confirmarContrasena = passwordValidationResult.errors.confirm[0];
+            }
         }
 
         const frontendErrors = validateForm(formData.value, validationRules);
@@ -79,15 +107,14 @@
                 nombre: formData.value.nombre,
                 apellido: formData.value.apellido,
                 email: formData.value.email,
-                contrasena: formData.value.contrasena,
-                confirmarContrasena: formData.value.confirmarContrasena,
-                fechaDeNacimiento: formData.value.fechaDeNacimiento,
+                password: formData.value.contrasena,
                 telefono: formData.value.telefono,
-                paisDeResidencia: selectedCountry.value?.cca2 || formData.value.pais,
-                comoNosConociste: formData.value.comoNosConociste
+                pais_residencia: selectedCountry.value?.cca2 || formData.value.pais,
+                fecha_nacimiento: formData.value.fechaDeNacimiento,
+                como_nos_conociste_id: formData.value.comoNosConociste
             };
 
-            const { data, error } = await useApi('http://localhost:3001/api/auth/register', 'POST', registerData);
+            const { data, error } = await useApi('/api/auth/register', 'POST', registerData);
 
             if (error.value) {
                 // Manejar errores del backend
@@ -184,7 +211,7 @@
     // Cargar opciones de "Cómo nos conociste"
     const loadComoNosConociste = async () => {
         try {
-            const { data, error } = await useApi('http://localhost:3001/api/user/como-nos-conociste');
+            const { data, error } = await useApi('/api/user/como-nos-conociste');
             
             if (!error.value && data.value?.success) {
                 comoNosConociste_opciones.value = data.value.opciones;
@@ -459,8 +486,25 @@
                             <i :class="showPassword ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
                         </span>
                     </div>
+                    
+                    <!-- Indicador de fortaleza de contraseña -->
+                    <div v-if="passwordValidation && formData.contrasena" class="password-strength">
+                        <div class="strength-bar">
+                            <div 
+                                class="strength-fill" 
+                                :style="{ 
+                                    width: passwordValidation.strength + '%', 
+                                    backgroundColor: passwordValidation.strengthColor 
+                                }"
+                            ></div>
+                        </div>
+                        <div class="strength-text" :style="{ color: passwordValidation.strengthColor }">
+                            {{ $t('Fortaleza') }}: {{ passwordValidation.strengthLevel }} ({{ passwordValidation.strength }}%)
+                        </div>
+                    </div>
+                    
                     <div class="error" v-if="errors.contrasena">{{ errors.contrasena }}</div>
-                    <span class="passwordText">{{ $t('Mínimo 6 caracteres') }}</span>
+                    <span class="passwordText" v-if="!formData.contrasena">{{ $t('Crea una contraseña segura con mayúsculas, minúsculas, números y símbolos') }}</span>
                 </div>
                 <div class="blockForm" style="margin-bottom: 1rem;">
                     <label class="labelForm"for="">{{ $t('Confirmar contraseña') }}</label>
@@ -483,7 +527,7 @@
                             <option 
                                 v-for="opcion in comoNosConociste_opciones" 
                                 :key="opcion.Id" 
-                                :value="opcion.Descripcion"
+                                :value="opcion.Id"
                             >
                                 {{ opcion.Descripcion }}
                             </option>
@@ -510,5 +554,40 @@
         </div>
     </section>
 </template>
+
+<style scoped>
+.password-strength {
+    margin-top: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.strength-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 3px;
+}
+
+.strength-text {
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.passwordText {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+</style>
 
 

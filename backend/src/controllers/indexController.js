@@ -1,8 +1,6 @@
 import db from '../database/models/index.js';
-const Op = db.Sequelize.Op;
 
 const indexController = {
-
     inscripcionUsuarioInteresado: async (req, res) => {
         try {
             // Verificar que el cuerpo tenga los campos requeridos
@@ -18,7 +16,7 @@ const indexController = {
             });
 
             if (inscripcionExistente) {
-                return res.status(409).json({ mensaje: 'Correo ya inscrito' }); // 409 Conflict es más preciso
+                return res.status(409).json({ mensaje: 'Correo ya inscrito' });
             }
 
             // Crear nueva inscripción
@@ -28,41 +26,13 @@ const indexController = {
                 Fecha_Inscripcion: new Date()
             });
 
-            return res.status(201).json({ mensaje: 'Inscripción realizada exitosamente' }); // 201 Created
+            return res.status(201).json({ mensaje: 'Inscripción realizada exitosamente' });
 
         } catch (error) {
             console.error('Error en la inscripción:', error);
             return res.status(500).json({ mensaje: 'Error interno del servidor' });
         }
-    },
-
-    submitFormulario: async (req, res) => {
-        try {
-            const { formId, sessionId, responses, completedAt, visitedQuestions } = req.body;
-
-            // Log para debugging
-            console.log('Recibiendo formulario:', {
-                formId,
-                sessionId, 
-                responses: Object.keys(responses || {}),
-                completedAt,
-                visitedQuestions: Object.keys(visitedQuestions || {})
-            });
-
-            // Por ahora, solo devolvemos éxito
-            // Aquí puedes agregar lógica para guardar en base de datos
-            return res.status(200).json({ 
-                mensaje: 'Formulario enviado exitosamente',
-                submissionId: `submission_${Date.now()}`,
-                status: 'completed'
-            });
-
-        } catch (error) {
-            console.error('Error al enviar formulario:', error);
-            return res.status(500).json({ mensaje: 'Error interno del servidor' });
-        }
     }
-
 };
 
 export default indexController;

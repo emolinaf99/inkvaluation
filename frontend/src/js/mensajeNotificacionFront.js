@@ -90,12 +90,14 @@ export function mostrarNotificacion(mensaje, color) {
         
         @media (max-width: 640px) {
             .notification-toast {
-                top: 20px !important;
+                top: 120px !important;
                 left: 16px !important;
                 right: 16px !important;
                 min-width: auto !important;
                 max-width: none !important;
                 transform: translateY(-100%) !important;
+                position: fixed !important;
+                z-index: 99999 !important;
             }
         }
     `;
@@ -108,17 +110,21 @@ export function mostrarNotificacion(mensaje, color) {
     // Aplicar posición responsive
     const applyResponsiveStyles = () => {
         if (window.innerWidth <= 640) {
-            notificacion.style.top = '20px';
+            notificacion.style.top = '120px';
             notificacion.style.left = '16px';
             notificacion.style.right = '16px';
             notificacion.style.minWidth = 'auto';
             notificacion.style.maxWidth = 'none';
             notificacion.style.transform = 'translateY(-100%)';
+            notificacion.style.position = 'fixed';
+            notificacion.style.zIndex = '99999';
         } else {
             notificacion.style.top = '24px';
             notificacion.style.right = '24px';
             notificacion.style.left = 'auto';
             notificacion.style.transform = 'translateX(100%)';
+            notificacion.style.position = 'fixed';
+            notificacion.style.zIndex = '10000';
         }
     };
     

@@ -1,5 +1,4 @@
 import db from './models/index.js';
-import { seedSubscriptionPlans } from './seeders/subscriptionPlans.js';
 import { seedComoNosConociste } from './seeders/comoNosConoceiste.js';
 
 export const initializeDatabase = async () => {
@@ -10,12 +9,11 @@ export const initializeDatabase = async () => {
     await db.sequelize.authenticate();
     console.log('✅ Conexión con la base de datos establecida correctamente.');
 
-    // Sincronizar modelos (crear tablas si no existen)
-    await db.sequelize.sync({ alter: true });
+    // Sincronizar modelos (crear tablas si no existen, pero no alterar las existentes)
+    await db.sequelize.sync({ alter: false });
     console.log('✅ Modelos sincronizados correctamente.');
 
     // Ejecutar seeders
-    await seedSubscriptionPlans();
     await seedComoNosConociste();
     console.log('✅ Base de datos inicializada correctamente.');
 

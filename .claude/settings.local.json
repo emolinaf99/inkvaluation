@@ -9,7 +9,11 @@
       "Bash(npm i)",
       "Bash(npm i:*)",
       "Bash(mkdir:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(mysql:*)",
+      "Bash(find:*)",
+      "Bash(npm start)",
+      "Bash(node:*)"
     ],
     "deny": [],
     "ask": []

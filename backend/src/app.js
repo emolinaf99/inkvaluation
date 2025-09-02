@@ -15,18 +15,10 @@ import userRoutes from './routes/user.js';
 // Importar inicialización de base de datos
 import { initializeDatabase } from './database/init.js';
 
-// Importar módulos existentes
-import config from './modules/server.js';
-import statics from './modules/static.js';
-
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || config.port || 3000;
-
-// Configuración de archivos estáticos y rutas
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const port = process.env.PORT || 3001;
 
 // Configuración de seguridad
 app.use(helmetConfig);
@@ -45,25 +37,27 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(sanitizeInput);
 
-// Archivos estáticos
-app.use(statics(path.join(__dirname,"../public")));
-
-// Rutas del microservicio de usuario
+// Rutas del microservicio de autenticación y usuarios
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 
-// Rutas adicionales (mantener solo user-interested para landing)
+// Ruta para inscripción de usuarios interesados (landing page)
 import indexRoutes from './routes/index.routes.js';
 app.use(indexRoutes);
 
-// Ruta de prueba del microservicio
+// Ruta de health check del microservicio de autenticación
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Microservicio de usuario funcionando correctamente',
-    service: 'user-session-service',
+    message: 'Microservicio de autenticación funcionando correctamente',
+    service: 'auth-microservice',
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth/{register,login,logout,refresh-token,profile,check}',
+      user: '/api/user/{profile,change-password,como-nos-conociste}',
+      landing: 'POST /inscripcion'
+    }
   });
 });
 
@@ -92,12 +86,12 @@ const iniciarServidor = async () => {
     await initializeDatabase();
     
     app.listen(port, () => {
-      console.log(`🚀 Microservicio de Usuario corriendo en http://localhost:${port}`);
+      console.log(`🚀 Microservicio de Autenticación corriendo en http://localhost:${port}`);
       console.log(`📊 Modo: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🔒 Seguridad: Helmet, CORS y Rate Limiting activados`);
       console.log(`💾 Base de datos: MySQL con Sequelize ORM`);
       console.log(`🔐 Autenticación: JWT con cookies httpOnly`);
-      console.log(`👤 Servicios: Autenticación, Perfil de Usuario, Suscripciones`);
+      console.log(`👤 Servicios: Register, Login, Logout, Profile, Landing Inscriptions`);
     });
   } catch (error) {
     console.error('❌ Error iniciando el servidor:', error);

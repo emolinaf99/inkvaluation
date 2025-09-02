@@ -5,7 +5,7 @@ import { validateRequest } from '../middleware/security.js';
 import bcrypt from 'bcryptjs';
 import db from '../database/models/index.js';
 
-const { User, UserSuscription, SuscriptionPlan, ComoNosConociste } = db;
+const { User, ComoNosConociste } = db;
 const router = express.Router();
 
 // Validaciones para actualizar perfil
@@ -60,12 +60,9 @@ export const updateProfile = async (req, res) => {
     const updatedUser = await User.findOne({
       where: { User_Id: userId },
       include: [{
-        model: UserSuscription,
-        as: 'UserSuscription',
-        include: [{
-          model: SuscriptionPlan,
-          as: 'SuscriptionPlan'
-        }]
+        model: ComoNosConociste,
+        as: 'ComoNosConociste',
+        required: false
       }],
       attributes: { exclude: ['Password', 'Refresh_Token'] }
     });
@@ -128,63 +125,6 @@ export const changePassword = async (req, res) => {
   }
 };
 
-// Actualizar configuración de renovación automática
-export const updateAutoRenewal = async (req, res) => {
-  try {
-    const userId = req.user.userId;
-    const { automaticRenewal } = req.body;
-
-    const userSuscription = await UserSuscription.findOne({
-      where: { User_Id: userId }
-    });
-
-    if (!userSuscription) {
-      return res.status(404).json({
-        success: false,
-        message: 'Suscripción no encontrada'
-      });
-    }
-
-    await UserSuscription.update(
-      { Automatic_Renovation: automaticRenewal },
-      { where: { User_Id: userId } }
-    );
-
-    res.json({
-      success: true,
-      message: 'Configuración de renovación actualizada'
-    });
-
-  } catch (error) {
-    console.error('Error actualizando renovación automática:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-};
-
-// Obtener planes de suscripción disponibles
-export const getSubscriptionPlans = async (req, res) => {
-  try {
-    const plans = await SuscriptionPlan.findAll({
-      where: { Status: 'active' }
-    });
-
-    res.json({
-      success: true,
-      plans: plans
-    });
-
-  } catch (error) {
-    console.error('Error obteniendo planes:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
-  }
-};
-
 // Obtener opciones de "Cómo nos conociste"
 export const getComoNosConociste = async (req, res) => {
   try {
@@ -223,17 +163,13 @@ router.put('/change-password',
   changePassword
 );
 
-router.put('/auto-renewal',
-  verifyToken,
-  updateAutoRenewal
-);
-
-router.get('/subscription-plans',
-  getSubscriptionPlans
-);
-
 router.get('/como-nos-conociste',
   getComoNosConociste
 );
+
+// ====================================================================
+// NOTA: Las rutas de autenticación están disponibles en /api/auth/*
+// Este microservicio solo maneja operaciones de perfil de usuario
+// ====================================================================
 
 export default router;

@@ -52,7 +52,12 @@
                 password: loginForm.password
             };
 
-            const { data, error } = await useApi('http://localhost:3001/api/auth/login', 'POST', loginData);
+            console.log('🔐 Intentando login con:', { email: loginData.email, password: '***' });
+            console.log('🌐 URL del endpoint:', '/api/user/auth/login');
+            
+            const { data, error } = await useApi('/api/auth/login', 'POST', loginData);
+            
+            console.log('📥 Respuesta completa del servidor:', { data: data.value, error: error.value });
 
             if (error.value) {
                 // Manejar errores del backend

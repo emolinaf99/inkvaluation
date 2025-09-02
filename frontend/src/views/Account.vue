@@ -1,5 +1,5 @@
 <script setup>
-    import {reactive,ref, onMounted, computed} from 'vue'
+    import {reactive,ref, onMounted, computed, watch} from 'vue'
     import NewPassword from '../components/NewPassword.vue'
     import { RouterLink } from 'vue-router';
     import {checkOptAssistant} from '/src/js/checkOpt.js'
@@ -9,10 +9,14 @@
     const state = reactive({
         services: services
     })
-    import {userLogged} from '/src/data/userInSession.js'
-    import { useUserStore } from '../js/stores/userLogged.js'; // cuando exista sesion
+    
+    // Estado para servicios del usuario
+    const userServices = ref([])
+    const loadingUserServices = ref(false)
+    import { useUserStore } from '../js/stores/userLogged.js';
 
-    // import {suscriptions} from '/src/data/suscriptions.js'
+    const userStore = useUserStore();
+    const userLogged = computed(() => userStore.userLogged);
     import {useApi} from '/src/js/useFetch.js'
     import {mostrarFileEnImgPreview} from '/src/js/previewFile.js'
     import {validateForm} from '/src/js/validateForm.js'
@@ -21,13 +25,10 @@
 
     const { isLoading, isFading, startLoading, finishLoading } = useSkeleton()
 
-    // const userStore = useUserStore(); // cuando haya sesión
-    // const userLogged = computed(() => userStore.userLogged);
-
     const countries = ref(null) // valor de paises inicialmente
 
     const isAutomaticRenewalEnabled = computed(() => {
-        return userLogged.UserSuscription?.Automatic_Renovation === 1 || userLogged.UserSuscription?.Automatic_Renovation === true;
+        return userLogged.value?.UserSuscription?.Automatic_Renovation === 1 || userLogged.value?.UserSuscription?.Automatic_Renovation === true;
     });
 
     const imgPreview = ref(null); // Referencia a la imagen
@@ -50,13 +51,52 @@
 
     // Estado del formulario para actualizar datos personales
     const formPersonalData = reactive({
-        imgPerfil: userLogged.Profile_Picture,
-        nombre: userLogged.Nombre,
-        apellido: userLogged.Apellido,
-        paisResidencia: userLogged.Pais_Residencia,
-        telefono: userLogged.Telefono,
-        correo: userLogged.Email
+        imgPerfil: '',
+        nombre: '',
+        apellido: '',
+        paisResidencia: '',
+        telefono: '',
+        correo: ''
     })
+    
+    // Función para obtener servicios activos del usuario (funcionalidad deshabilitada)
+    const getUserServices = async () => {
+        loadingUserServices.value = true
+        try {
+            // Simular carga ya que los servicios fueron removidos del microservicio
+            userServices.value = []
+            console.log('Servicios deshabilitados en el microservicio de autenticación')
+        } catch (error) {
+            console.error('Error al cargar servicios:', error)
+        } finally {
+            loadingUserServices.value = false
+        }
+    }
+    
+    // Función para activar/desactivar servicio (deshabilitada)
+    const toggleService = async (service) => {
+        mostrarNotificacion('Funcionalidad de servicios no disponible en este microservicio', 0)
+        console.log('Toggle de servicios deshabilitado - microservicio de autenticación pura')
+    }
+    
+    // Computed para verificar si un servicio está activo
+    const isServiceActive = (serviceId) => {
+        return userServices.value.some(userService => 
+            userService.Service_Id === serviceId && userService.Is_Active
+        )
+    }
+    
+    // Watch para actualizar form cuando userLogged cambie
+    watch(() => userLogged.value, (newUser) => {
+        if (newUser) {
+            formPersonalData.imgPerfil = newUser.Profile_Picture || '';
+            formPersonalData.nombre = newUser.Nombre || '';
+            formPersonalData.apellido = newUser.Apellido || '';
+            formPersonalData.paisResidencia = newUser.Pais_Residencia || '';
+            formPersonalData.telefono = newUser.Telefono || '';
+            formPersonalData.correo = newUser.Email || '';
+        }
+    }, { immediate: true })
 
     // Errores del formulario actualizar datos personales
     const errorsPersonalData= ref({});
@@ -105,7 +145,7 @@
                     updateData.Profile_Picture = formPersonalData.imgPerfil;
                 }
 
-                const { data, error } = await useApi('http://localhost:2000/api/user/profile', 'PUT', updateData);
+                const { data, error } = await useApi('/api/user/profile', 'PUT', updateData);
 
                 if (error.value) {
                     // Manejar errores del backend
@@ -144,10 +184,8 @@
 
     onMounted(() => {
         async function obtenerPaises(){ // para el select pais residencia
-            startLoading() // Iniciar skeleton solo al comenzar carga real
-            
             try {
-                const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all?fields=name,ccn3', 'GET');
+                const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all?fields=name,ccn3,cca2', 'GET');
                 
                 // Esperar hasta que los datos estén listos
                 if (!error.value && data.value) { 
@@ -157,38 +195,32 @@
                     console.error('Error al cargar los datos de países:', error.value);
                     // Usar países mock en caso de error
                     countries.value = [
-                        { name: { common: 'Colombia' }, ccn3: '170' },
-                        { name: { common: 'México' }, ccn3: '484' },
-                        { name: { common: 'España' }, ccn3: '724' }
+                        { name: { common: 'Colombia' }, ccn3: '170', cca2: 'CO' },
+                        { name: { common: 'México' }, ccn3: '484', cca2: 'MX' },
+                        { name: { common: 'España' }, ccn3: '724', cca2: 'ES' }
                     ];
                 }
             } catch (error) {
                 console.error('Error al cargar los datos de países en el componente:', error);
                 // Usar países mock en caso de error
                 countries.value = [
-                    { name: { common: 'Colombia' }, ccn3: '170' },
-                    { name: { common: 'México' }, ccn3: '484' },
-                    { name: { common: 'España' }, ccn3: '724' }
+                    { name: { common: 'Colombia' }, ccn3: '170', cca2: 'CO' },
+                    { name: { common: 'México' }, ccn3: '484', cca2: 'MX' },
+                    { name: { common: 'España' }, ccn3: '724', cca2: 'ES' }
                 ];
-            } finally {
-                finishLoading() // Terminar skeleton cuando los datos estén listos
             }
         }
 
         obtenerPaises()
+        getUserServices() // Cargar servicios del usuario al montar el componente
 
     });
     
 </script>
 
 <template>
-    <!-- Skeleton Loader -->
-    <div v-if="isLoading" class="skeleton-container" :class="{ 'skeleton-fade-out': isFading }">
-        <AccountSkeleton />
-    </div>
-
     <!-- Contenido Real -->
-    <section v-else class="sectionAccount ux-container">
+    <section class="sectionAccount ux-container">
         <h1 class="ux-header">Mi cuenta</h1>
         <div class="containerAccount ux-content">
             
@@ -228,10 +260,11 @@
                         <div class="inputIcon">
                             <i class="fa-solid fa-globe"></i>
                             <select v-model="formPersonalData.paisResidencia" class="inputSelectWoBorderOLeft" style="padding: 0; padding-left: 0.5rem;" >
+                                <option value="" disabled>Selecciona un país</option>
                                 <option 
                                     v-for="country in countries"
                                     :key="country.ccn3" 
-                                    :value="country.ccn3"
+                                    :value="country.cca2"
                                     
                                 >
                                     {{country.name.common}}
@@ -268,9 +301,17 @@
                     <div class="contOpts">
                         <div v-for="service in state.services" :key="service.id" class="btnDescInfo">
                             <div class="btnYDesc">
-                                <div class="simBtnWithAnimation" @click="checkOptAssistant($event.currentTarget)">
-                                    <div class="circleMove"></div>
-                                    <input class="inputCheck" type="checkbox" name="" id="">
+                                <div 
+                                    class="simBtnWithAnimation" 
+                                    @click="toggleService(service)"
+                                    :class="{ 'BGGreen': isServiceActive(service.id) }"
+                                    :disabled="loadingUserServices"
+                                >
+                                    <div 
+                                        class="circleMove" 
+                                        :class="{ 'moveRight': isServiceActive(service.id) }"
+                                    ></div>
+                                    <input class="inputCheck" type="checkbox" :checked="isServiceActive(service.id)">
                                 </div>
                                 <p>{{service.description}}</p>
                                 
@@ -278,8 +319,7 @@
                             
                         </div>
                         
-                        <button class="btnAccountBlock BGYellow" type="button">Guardar</button>
-                        
+                        <p v-if="loadingUserServices" class="text-center">Cargando servicios...</p>
                         
                     </div>
                 </div>
@@ -292,14 +332,14 @@
                         <label for="">Nombre del plan</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-user-tag"></i>
-                            <input type="text" disabled name="" class="inputSelectWoBorderOLeft" :value="userLogged.UserSuscription.SuscriptionPlan.Plan_Name">
+                            <input type="text" disabled name="" class="inputSelectWoBorderOLeft" :value="userLogged?.UserSuscription?.SuscriptionPlan?.Plan_Name || 'Cargando...'">
                         </div>
                     </div>
                     <div class="divInput">
                         <label for="">Vigencia hasta</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-hourglass-end"></i>
-                            <input type="text" disabled class="inputSelectWoBorderOLeft" name="" :value="userLogged.UserSuscription.End_Date">
+                            <input type="text" disabled class="inputSelectWoBorderOLeft" name="" :value="userLogged?.UserSuscription?.End_Date || 'Cargando...'">
                         </div>
                     </div>
                     <div class="btnDescInfo">

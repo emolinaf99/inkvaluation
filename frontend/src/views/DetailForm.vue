@@ -14,11 +14,13 @@
         validarPreguntaAnterior,
         getDragAfterElement,
         cargarPreguntasExistentes,
-        mostrarPreguntaExistente
+        mostrarPreguntaExistente,
+        activarCamposPregunta,
+        bloquearCamposPregunta
     } from '/src/js/formsFunctions.js'
     
-    // Importar funciones desde formsFunctions.js
-    import { bloquearCamposPregunta, activarCamposPregunta, agregarOpcion, asignarEventoClickAgregarOpcion, asignarEventoChangeSelectTipoPregunta, eliminarPregunta } from '/src/js/formsFunctions.js'
+    // Importar funciones adicionales desde formsFunctions.js
+    import { agregarOpcion, asignarEventoClickAgregarOpcion, asignarEventoChangeSelectTipoPregunta, eliminarPregunta } from '/src/js/formsFunctions.js'
     
     console.log('Todas las importaciones básicas completadas');
 
@@ -54,6 +56,10 @@
     // Variables reactivas para almacenar las opciones actual y anterior
     const selectedOption = ref(null);
     const previousOption = ref(null);
+    
+    // Variables para manejar estado de edición
+    const editingQuestions = ref(new Set()); // Set para almacenar IDs de preguntas en edición
+    const originalQuestionData = ref({}); // Para almacenar datos originales para cancelar
 
     // Watch para actualizar la opción anterior cuando cambia la opción seleccionada
     watch(selectedOption, (newVal, oldVal) => {
@@ -83,17 +89,31 @@
                 });
             }
             
-            // Asignar evento editar a preguntas existentes
+            // COMENTADO: Asignar evento editar a preguntas existentes (ahora se maneja en el template Vue)
+            /*
             const iconoEditar = pregunta.querySelector('.questionEdit');
             if (iconoEditar) {
                 console.log(`Asignando evento editar a pregunta existente ${index + 1}`);
-                iconoEditar.addEventListener('click', (event) => {
+                // Remover eventos previos para evitar duplicados
+                iconoEditar.replaceWith(iconoEditar.cloneNode(true));
+                const nuevoIconoEditar = pregunta.querySelector('.questionEdit');
+                
+                nuevoIconoEditar.addEventListener('click', (event) => {
                     event.preventDefault();
-                    const contenedorPregunta = event.currentTarget.parentNode.parentNode;
-                    console.log('Activando campos para edición...');
-                    activarCamposPregunta(contenedorPregunta);
+                    event.stopPropagation();
+                    console.log('Click en editar detectado');
+                    
+                    // Obtener ID de la pregunta desde el DOM o desde el array
+                    const questionId = formQuestions.value[index]?.id;
+                    if (questionId) {
+                        console.log(`Activando edición para pregunta ID: ${questionId}`);
+                        activarEdicionPregunta(questionId, index);
+                    } else {
+                        console.error('No se pudo obtener el ID de la pregunta');
+                    }
                 });
             }
+            */
             
             // Asignar evento cambio de tipo al select de preguntas existentes
             const selectTipoPregunta = pregunta.querySelector('.questionSelect');
@@ -287,8 +307,8 @@
                 try {
                     console.log(`Llamando API para eliminar pregunta ID: ${pregunta.id}`);
                     
-                    // Llamar al endpoint de eliminación
-                    const {data, error} = await useApi(`/api/questions/${pregunta.id}`, 'DELETE');
+                    // Llamar al endpoint de eliminación del microservicio externo
+                    const {data, error} = await useApi(`http://217.196.61.73:8082/api/questions/${pregunta.id}`, 'DELETE');
                     
                     if (!error.value) {
                         console.log('Pregunta eliminada exitosamente del servidor');
@@ -318,6 +338,485 @@
     // Exponer las funciones globalmente para que formsFunctions.js pueda usarlas
     window.agregarNuevaPreguntaVue = agregarNuevaPregunta;
     window.eliminarPreguntaVue = eliminarPreguntaVue;
+    window.activarEdicionPregunta = activarEdicionPregunta; // Para debugging
+    window.editingQuestions = editingQuestions; // Para debugging
+
+    // Función para activar modo edición de una pregunta
+    function activarEdicionPregunta(questionId, index) {
+        console.log(`🔧 Activando edición para pregunta ID: ${questionId}, índice: ${index}`);
+        console.log('Estado editingQuestions antes:', editingQuestions.value);
+        console.log('Pregunta a editar:', formQuestions.value[index]);
+        
+        // Agregar a set de preguntas en edición
+        editingQuestions.value.add(questionId);
+        console.log('Estado editingQuestions después:', editingQuestions.value);
+        
+        // Guardar datos originales para poder cancelar
+        const question = formQuestions.value[index];
+        originalQuestionData.value[questionId] = {
+            text: question.text,
+            questionTypeId: question.questionType.id,
+            questionOrder: question.questionOrder,
+            options: question.options ? question.options.map(option => ({
+                id: option.id,
+                text: option.text,
+                image: option.image
+            })) : []
+        };
+        
+        console.log('✅ Datos originales guardados:', originalQuestionData.value[questionId]);
+        console.log('✅ isEditing() devuelve:', isEditing(questionId));
+        
+        // Usar la función de formsFunctions.js para activar los campos
+        nextTick(() => {
+            const contenedorPregunta = document.querySelector(`[data-question-id="${questionId}"]`);
+            if (contenedorPregunta) {
+                console.log('✅ Activando campos con formsFunctions.js para:', questionId);
+                activarCamposPregunta(contenedorPregunta);
+                
+                // Configurar eventos para los botones creados por formsFunctions.js
+                setTimeout(() => {
+                    const botonGuardar = contenedorPregunta.querySelector('.questionSave');
+                    if (botonGuardar) {
+                        // Remover evento anterior y agregar el nuestro
+                        const nuevoBotonGuardar = botonGuardar.cloneNode(true);
+                        botonGuardar.parentNode.replaceChild(nuevoBotonGuardar, botonGuardar);
+                        
+                        nuevoBotonGuardar.addEventListener('click', () => {
+                            guardarEdicionPregunta(questionId, index);
+                        });
+                    }
+                    
+                    // Configurar eventos para eliminar imágenes de opciones
+                    const equisImagen = contenedorPregunta.querySelectorAll('.equisImg');
+                    equisImagen.forEach(equis => {
+                        equis.addEventListener('click', async function() {
+                            console.log('Click en equis imagen');
+                            const contenedorImagen = this.closest('.contImgOption');
+                            console.log('Contenedor imagen:', contenedorImagen);
+                            
+                            if (contenedorImagen) {
+                                // Buscar el contenedor de opción antes de eliminar la imagen
+                                const contenedorOpcion = contenedorImagen.closest('.containerOption');
+                                console.log('Contenedor opción:', contenedorOpcion);
+                                
+                                if (contenedorOpcion) {
+                                    const opcionesContainer = contenedorOpcion.parentNode;
+                                    const opcionIndex = Array.from(opcionesContainer.children).indexOf(contenedorOpcion);
+                                    console.log('Índice de opción:', opcionIndex);
+                                    
+                                    // Obtener el ID de la opción para la API
+                                    const question = formQuestions.value[index];
+                                    if (question.options && question.options[opcionIndex] && question.options[opcionIndex].id) {
+                                        const optionId = question.options[opcionIndex].id;
+                                        console.log('Eliminando imagen de opción ID:', optionId);
+                                        
+                                        try {
+                                            // Llamar API DELETE para eliminar imagen de opción
+                                            const { data, error } = await useApi(`http://217.196.61.73:8082/api/options/${optionId}/image`, 'DELETE');
+                                            
+                                            if (error.value) {
+                                                console.error('Error eliminando imagen de opción:', error.value);
+                                                alert('Error al eliminar la imagen: ' + (error.value.message || 'Error desconocido'));
+                                                return;
+                                            }
+                                            
+                                            if (data.value?.success) {
+                                                console.log('✅ Imagen eliminada exitosamente del microservicio');
+                                                
+                                                // Actualizar el modelo de Vue
+                                                question.options[opcionIndex].image = null;
+                                                console.log('Imagen eliminada del modelo Vue');
+                                                
+                                                // Eliminar visualmente la imagen
+                                                contenedorImagen.remove();
+                                                console.log('Imagen eliminada visualmente');
+                                            }
+                                            
+                                        } catch (err) {
+                                            console.error('Error inesperado eliminando imagen:', err);
+                                            alert('Error inesperado al eliminar la imagen');
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Configurar eventos para cambiar imágenes de opciones (click en imagen)
+                    const imagenesOpciones = contenedorPregunta.querySelectorAll('.contImgOption img');
+                    imagenesOpciones.forEach(imagen => {
+                        imagen.addEventListener('click', function() {
+                            console.log('Click en imagen de opción para cambiarla');
+                            const contenedorImagen = this.closest('.contImgOption');
+                            const contenedorOpcion = contenedorImagen?.closest('.containerOption');
+                            
+                            if (contenedorOpcion) {
+                                const opcionesContainer = contenedorOpcion.parentNode;
+                                const opcionIndex = Array.from(opcionesContainer.children).indexOf(contenedorOpcion);
+                                
+                                const question = formQuestions.value[index];
+                                if (question.options && question.options[opcionIndex] && question.options[opcionIndex].id) {
+                                    const optionId = question.options[opcionIndex].id;
+                                    
+                                    // Crear input file temporal
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.accept = 'image/*';
+                                    
+                                    input.onchange = async (event) => {
+                                        const file = event.target.files[0];
+                                        if (file) {
+                                            console.log('Archivo seleccionado:', file.name);
+                                            
+                                            try {
+                                                // Crear FormData para enviar archivo
+                                                const formData = new FormData();
+                                                formData.append('image', file);
+                                                
+                                                // Llamar API PUT para actualizar imagen de opción
+                                                const { data, error } = await useApi(`http://217.196.61.73:8082/api/options/${optionId}/image`, 'PUT', formData, 'multipart/form-data');
+                                                
+                                                if (error.value) {
+                                                    console.error('Error actualizando imagen de opción:', error.value);
+                                                    alert('Error al actualizar la imagen: ' + (error.value.message || 'Error desconocido'));
+                                                    return;
+                                                }
+                                                
+                                                if (data.value?.success) {
+                                                    console.log('✅ Imagen actualizada exitosamente en el microservicio');
+                                                    
+                                                    // Actualizar la imagen visualmente
+                                                    const reader = new FileReader();
+                                                    reader.onload = (e) => {
+                                                        imagen.src = e.target.result;
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                    
+                                                    // Actualizar el modelo de Vue si es necesario
+                                                    if (data.value.imageUrl) {
+                                                        question.options[opcionIndex].image = {
+                                                            url: data.value.imageUrl
+                                                        };
+                                                    }
+                                                    
+                                                    console.log('Imagen actualizada visualmente y en modelo Vue');
+                                                }
+                                                
+                                            } catch (err) {
+                                                console.error('Error inesperado actualizando imagen:', err);
+                                                alert('Error inesperado al actualizar la imagen');
+                                            }
+                                        }
+                                    };
+                                    
+                                    input.click();
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Configurar eventos para eliminar opciones completas
+                    const equisOpciones = contenedorPregunta.querySelectorAll('.equisOption');
+                    equisOpciones.forEach(equis => {
+                        equis.addEventListener('click', async function() {
+                            console.log('Click en equis para eliminar opción completa');
+                            const contenedorOpcion = this.closest('.containerOption');
+                            console.log('Contenedor opción encontrado:', contenedorOpcion);
+                            
+                            if (contenedorOpcion) {
+                                // Obtener el texto de la opción para encontrarla en el modelo
+                                const inputOpcion = contenedorOpcion.querySelector('.inputOption');
+                                const textoOpcion = inputOpcion ? inputOpcion.value : '';
+                                console.log('Texto de opción encontrado:', textoOpcion);
+                                
+                                const question = formQuestions.value[index];
+                                console.log('Opciones en el modelo:', question.options);
+                                
+                                // Buscar la opción por texto en el modelo de Vue
+                                let opcionIndex = -1;
+                                let optionId = null;
+                                
+                                if (question.options) {
+                                    for (let i = 0; i < question.options.length; i++) {
+                                        if (question.options[i].text === textoOpcion && question.options[i].id) {
+                                            opcionIndex = i;
+                                            optionId = question.options[i].id;
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                console.log('Índice encontrado:', opcionIndex, 'ID:', optionId);
+                                
+                                if (opcionIndex >= 0 && optionId) {
+                                    console.log('Eliminando opción ID:', optionId);
+                                        
+                                        // Confirmar eliminación
+                                        if (confirm('¿Estás seguro de que quieres eliminar esta opción?')) {
+                                            try {
+                                                // Llamar API DELETE para eliminar opción completa
+                                                const { data, error } = await useApi(`http://217.196.61.73:8082/api/options/${optionId}`, 'DELETE');
+                                                
+                                                if (error.value) {
+                                                    console.error('Error eliminando opción:', error.value);
+                                                    alert('Error al eliminar la opción: ' + (error.value.message || 'Error desconocido'));
+                                                    return;
+                                                }
+                                                
+                                                if (data.value?.success) {
+                                                    console.log('✅ Opción eliminada exitosamente del microservicio');
+                                                    
+                                                    // Eliminar del modelo de Vue
+                                                    question.options.splice(opcionIndex, 1);
+                                                    console.log('Opción eliminada del modelo Vue');
+                                                    
+                                                    // Eliminar visualmente
+                                                    contenedorOpcion.remove();
+                                                    console.log('Opción eliminada visualmente');
+                                                }
+                                                
+                                            } catch (err) {
+                                                console.error('Error inesperado eliminando opción:', err);
+                                                alert('Error inesperado al eliminar la opción');
+                                            }
+                                        }
+                                } else {
+                                    console.log('❌ Opción no encontrada en el modelo o sin ID');
+                                }
+                            } else {
+                                console.log('❌ No se encontró contenedor de opción');
+                            }
+                        });
+                    });
+                    
+                }, 100);
+            } else {
+                console.log('❌ No se encontró contenedor para questionId:', questionId);
+            }
+        });
+        
+        // Forzar re-render del componente
+        formQuestions.value = [...formQuestions.value];
+    }
+    
+    // Función para cancelar edición
+    function cancelarEdicionPregunta(questionId, index) {
+        console.log(`Cancelando edición para pregunta ID: ${questionId}`);
+        
+        // Restaurar datos originales
+        const originalData = originalQuestionData.value[questionId];
+        if (originalData) {
+            const question = formQuestions.value[index];
+            question.text = originalData.text;
+            question.questionType.id = originalData.questionTypeId;
+            question.questionOrder = originalData.questionOrder;
+            
+            // Restaurar opciones originales
+            if (originalData.options && question.options) {
+                originalData.options.forEach((originalOption, optIndex) => {
+                    if (question.options[optIndex]) {
+                        question.options[optIndex].text = originalOption.text;
+                        question.options[optIndex].image = originalOption.image;
+                    }
+                });
+            }
+        }
+        
+        // Remover del set de edición
+        editingQuestions.value.delete(questionId);
+        delete originalQuestionData.value[questionId];
+        
+        // Usar la función de formsFunctions.js para bloquear los campos
+        nextTick(() => {
+            const contenedorPregunta = document.querySelector(`[data-question-id="${questionId}"]`);
+            if (contenedorPregunta) {
+                console.log('✅ Bloqueando campos con formsFunctions.js para:', questionId);
+                bloquearCamposPregunta(contenedorPregunta);
+            }
+        });
+        
+        // Forzar re-render
+        formQuestions.value = [...formQuestions.value];
+    }
+    
+    // Función para guardar cambios de pregunta
+    async function guardarEdicionPregunta(questionId, index) {
+        console.log(`Guardando cambios para pregunta ID: ${questionId}, índice: ${index}`);
+        
+        try {
+            const question = formQuestions.value[index];
+            
+            // Sincronizar con el DOM actual para asegurar que tenemos los valores más recientes
+            const contenedorPregunta = document.querySelector(`[data-question-id="${questionId}"]`);
+            if (contenedorPregunta) {
+                const inputsOpciones = contenedorPregunta.querySelectorAll('.containerOption .inputOption');
+                console.log('🔄 Sincronizando opciones con DOM...');
+                inputsOpciones.forEach((input, i) => {
+                    if (question.options[i] && input.value !== question.options[i].text) {
+                        console.log(`📝 Actualizando opción ${i} desde DOM:`, {
+                            viejo: question.options[i].text,
+                            nuevo: input.value
+                        });
+                        question.options[i].text = input.value;
+                    }
+                });
+            }
+            
+            // Preparar datos según la estructura solicitada
+            const questionData = {
+                questionTypeId: question.questionType.id,
+                questionText: question.text,
+                questionOrder: question.questionOrder
+            };
+            
+            // Si la pregunta tiene opciones, incluirlas en la petición
+            if (question.options && question.options.length > 0) {
+                questionData.options = question.options.map(option => ({
+                    id: option.id,
+                    text: option.text,
+                    image: option.image || null
+                }));
+            }
+            
+            // Primero actualizar opciones modificadas individualmente
+            const originalData = originalQuestionData.value[questionId];
+            console.log('📋 Datos originales guardados:', originalData);
+            console.log('📋 Opciones actuales:', question.options);
+            
+            if (originalData && originalData.options && question.options) {
+                console.log('🔄 Verificando opciones modificadas...');
+                
+                for (let i = 0; i < question.options.length; i++) {
+                    const opcionActual = question.options[i];
+                    const opcionOriginal = originalData.options[i];
+                    
+                    console.log(`🔍 Comparando opción ${i}:`, {
+                        actual: opcionActual?.text,
+                        original: opcionOriginal?.text,
+                        tieneId: !!opcionActual?.id,
+                        id: opcionActual?.id,
+                        cambio: opcionActual?.text !== opcionOriginal?.text
+                    });
+                    
+                    // Verificar si la opción cambió y tiene ID (no es nueva)
+                    if (opcionActual && opcionOriginal && opcionActual.id && 
+                        opcionActual.text !== opcionOriginal.text) {
+                        
+                        console.log(`🔧 Opción ${i} modificada:`, {
+                            original: opcionOriginal.text,
+                            actual: opcionActual.text,
+                            id: opcionActual.id
+                        });
+                        
+                        try {
+                            // Actualizar opción individual con estructura correcta
+                            const opcionData = {
+                                optionText: opcionActual.text,
+                                jump: opcionActual.jump || null  // Si no hay salto, enviar null
+                            };
+                            
+                            console.log(`📤 Enviando a API:`, opcionData);
+                            console.log(`🎯 URL completa:`, `http://217.196.61.73:8082/api/options/${opcionActual.id}`);
+                            console.log(`🆔 ID de opción que se está editando:`, opcionActual.id);
+                            console.log(`📝 Texto que se está enviando:`, opcionData.optionText);
+                            console.log(`🔗 Objeto completo de la opción:`, opcionActual);
+                            
+                            const { data: optionData, error: optionError } = await useApi(
+                                `http://217.196.61.73:8082/api/options/${opcionActual.id}`, 
+                                'PUT', 
+                                opcionData
+                            );
+                            
+                            console.log(`📥 Respuesta del servidor:`, { data: optionData.value, error: optionError.value });
+                            
+                            if (optionError.value) {
+                                console.error(`❌ Error actualizando opción ${opcionActual.id}:`, optionError.value);
+                                console.log('⚠️ Microservicio no disponible, aplicando fallback local para opciones');
+                                
+                                // FALLBACK: Continuar sin actualizar en el servidor
+                                // Los cambios ya están en el modelo local de Vue
+                                console.log(`⚠️ Opción ${opcionActual.id} actualizada solo localmente`);
+                                
+                                // No hacer return aquí para continuar con otras opciones
+                                continue;
+                            }
+                            
+                            if (optionData.value?.success) {
+                                console.log(`✅ Opción ${opcionActual.id} actualizada exitosamente`);
+                            }
+                            
+                        } catch (err) {
+                            console.error(`Error inesperado actualizando opción ${opcionActual.id}:`, err);
+                            console.log('⚠️ Error de conexión, aplicando fallback local para opciones');
+                            console.log(`⚠️ Opción ${opcionActual.id} actualizada solo localmente`);
+                            
+                            // Continuar con otras opciones en lugar de fallar completamente
+                            continue;
+                        }
+                    }
+                }
+            }
+            
+            // Ahora actualizar la pregunta (sin opciones en el payload)
+            const questionDataOnly = {
+                questionTypeId: question.questionType.id,
+                questionText: question.text,
+                questionOrder: question.questionOrder
+            };
+            
+            console.log('🌐 Enviando request PUT a:', `http://217.196.61.73:8082/api/questions/${questionId}`);
+            console.log('📝 Datos de pregunta a enviar:', questionDataOnly);
+            
+            const { data, error } = await useApi(`http://217.196.61.73:8082/api/questions/${questionId}`, 'PUT', questionDataOnly);
+            
+            if (error.value) {
+                console.error('❌ Error al actualizar pregunta:', error.value);
+                alert('Error al guardar los cambios: ' + (error.value.message || 'Error desconocido'));
+                return;
+            }
+            
+            if (data.value?.success) {
+                console.log('✅ Pregunta actualizada exitosamente en el microservicio');
+                
+                // Actualizar el array local con los cambios
+                formQuestions.value[index] = {
+                    ...question,
+                    text: questionData.questionText,
+                    questionType: {
+                        ...question.questionType,
+                        id: questionData.questionTypeId
+                    },
+                    questionOrder: questionData.questionOrder
+                };
+                
+                // Remover del set de edición
+                editingQuestions.value.delete(questionId);
+                delete originalQuestionData.value[questionId];
+                
+                // Usar la función de formsFunctions.js para bloquear los campos
+                nextTick(() => {
+                    const contenedorPregunta = document.querySelector(`[data-question-id="${questionId}"]`);
+                    if (contenedorPregunta) {
+                        console.log('✅ Bloqueando campos con formsFunctions.js para:', questionId);
+                        bloquearCamposPregunta(contenedorPregunta);
+                    }
+                });
+                
+                console.log('Edición completada exitosamente');
+                console.log('📝 Estado final de opciones:', formQuestions.value[index].options?.map(opt => ({ id: opt.id, text: opt.text })));
+            }
+            
+        } catch (err) {
+            console.error('Error inesperado guardando pregunta:', err);
+            alert('Error inesperado al guardar los cambios');
+        }
+    }
+    
+    // Función helper para verificar si una pregunta está en edición
+    const isEditing = (questionId) => {
+        return editingQuestions.value.has(questionId);
+    }
 
     // Variables para drag and drop
     let draggedIndex = null
@@ -576,6 +1075,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -605,16 +1105,37 @@
                                 <div class="cajaOption">
                                     <div class="rowOpt w100 optionTarget">
                                         <span class="checkboxSpan typeOption"></span>
-                                        <input class="inputOption" type="text" :value="option.text" disabled>
+                                        <input class="inputOption" type="text" v-model="option.text" :disabled="!isEditing(question.id)">
                                     </div>
+                                    <div class="rowOpt equisMobile">
+                                        <i class="fa-solid fa-xmark equisOption"></i>
+                                    </div>
+                                </div>
+                                <div class="rowOpt">
+                                    <div class="jumps">
+                                        <p>Salto</p>
+                                        <div class="btnYDesc">
+                                            <div class="simBtnWithAnimation">
+                                                <div class="circleMove"></div>
+                                                <input class="inputCheck" type="checkbox" name="" id="">
+                                            </div>                
+                                        </div>
+                                        <input class="questionNumberJump" type="number">
+                                    </div>
+                                    <label for="">
+                                        <img src="/img/noImg.jpg" alt=""> 
+                                        <input class="inputImgOption" hidden type="file" accept="image/*">
+                                    </label>
+                                </div>
+                                <div class="rowOpt equisDesktop">
+                                    <i class="fa-solid fa-xmark equisOption"></i>
                                 </div>
                             </div>
                             <!-- Mostrar imagen si existe - al final del containerOption como en formsFunctions.js -->
                             <div v-if="option.image" class="contImgOption">
                                 <div class="blockImgOp">
-                                    {{ console.log('Imagen de opción:', option.image, 'Opción completa:', option) }}
                                     <img :src="option.image.url" :alt="option.text">
-                                    <i class="fa-solid fa-xmark equisImg none"></i>
+                                    <i class="fa-solid fa-xmark equisImg"></i>
                                 </div>
                             </div>
                         </div>
@@ -637,6 +1158,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -651,9 +1173,19 @@
                         <div class="questionNumber w33 fe">{{ index + 1 }}</div>
                     </div>
                     <div class="questionAndType">
-                        <input type="text" name="" :value="question.text" :disabled="!question.id.toString().startsWith('temp-')">
-                        <select name="" class="questionSelect" :disabled="!question.id.toString().startsWith('temp-')">
-                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id" :selected="qType.id === question.questionType.id">{{ qType.description }}</option>
+                        <input 
+                            type="text" 
+                            name="" 
+                            v-model="question.text" 
+                            :disabled="!question.id.toString().startsWith('temp-') && !isEditing(question.id)"
+                        >
+                        <select 
+                            name="" 
+                            class="questionSelect" 
+                            v-model="question.questionType.id"
+                            :disabled="!question.id.toString().startsWith('temp-') && !isEditing(question.id)"
+                        >
+                            <option v-for="qType in questionTypes" :key="qType.id" :value="qType.id">{{ qType.description }}</option>
                         </select>
                     </div>
                     <div class="optionsAnswer">
@@ -666,17 +1198,37 @@
                                 <div class="cajaOption">
                                     <div class="rowOpt w100 optionTarget">
                                         <span class="radioSpan typeOption"></span>
-                                        <input class="inputOption" type="text" :value="option.text" disabled>
+                                        <input class="inputOption" type="text" v-model="option.text" :disabled="!isEditing(question.id)">
                                     </div>
-                                    
+                                    <div class="rowOpt equisMobile">
+                                        <i class="fa-solid fa-xmark equisOption"></i>
+                                    </div>
+                                </div>
+                                <div class="rowOpt">
+                                    <div class="jumps">
+                                        <p>Salto</p>
+                                        <div class="btnYDesc">
+                                            <div class="simBtnWithAnimation">
+                                                <div class="circleMove"></div>
+                                                <input class="inputCheck" type="checkbox" name="" id="">
+                                            </div>                
+                                        </div>
+                                        <input class="questionNumberJump" type="number">
+                                    </div>
+                                    <label for="">
+                                        <img src="/img/noImg.jpg" alt=""> 
+                                        <input class="inputImgOption" hidden type="file" accept="image/*">
+                                    </label>
+                                </div>
+                                <div class="rowOpt equisDesktop">
+                                    <i class="fa-solid fa-xmark equisOption"></i>
                                 </div>
                             </div>
                             <!-- Mostrar imagen si existe -->
                             <div v-if="option.image" class="contImgOption">
                                 <div class="blockImgOp">
-                                    {{ console.log('Imagen de opción:', option.image, 'Opción completa:', option) }}
                                     <img :src="option.image.url" :alt="option.text">
-                                    <i class="fa-solid fa-xmark equisImg none"></i>
+                                    <i class="fa-solid fa-xmark equisImg"></i>
                                 </div>
                             </div>
                         </div>
@@ -688,8 +1240,15 @@
                         </div>
                     </div>
                     <div class="sectionDeleteQuestion">
-                        <i class="fa-solid fa-trash iconoEliminar"></i>
-                        <i class="fa-solid fa-pen-to-square iconoEliminar questionEdit" v-if="!question.id.toString().startsWith('temp-')"></i>
+                        <i class="fa-solid fa-trash iconoEliminar" v-if="!isEditing(question.id)"></i>
+                        
+                        <!-- Botón editar (solo para preguntas guardadas y no en edición) -->
+                        <i class="fa-solid fa-pen-to-square iconoEliminar questionEdit" 
+                           v-if="!question.id.toString().startsWith('temp-') && !isEditing(question.id)"
+                           @click.prevent.stop="activarEdicionPregunta(question.id, index)"
+                           style="cursor: pointer;"></i>
+                        
+                        <!-- Los botones de edición son manejados por formsFunctions.js -->
                     </div>   
                 </div>
 
@@ -698,6 +1257,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -727,16 +1287,34 @@
                                 <div class="cajaOption">
                                     <div class="rowOpt w100 optionTarget">
                                         <span class="simulationPointListItem typeOption"></span>
-                                        <input class="inputOption" type="text" :value="option.text" disabled>
+                                        <input class="inputOption" type="text" v-model="option.text" :disabled="!isEditing(question.id)">
                                     </div>
-                                    <!-- Mostrar imagen si existe -->
-                                    <div v-if="option.image" class="contImgOption">
-                                        <div class="blockImgOp">
-                                            {{ console.log('Imagen de opción:', option.image, 'Opción completa:', option) }}
-                                            <img :src="option.image.url" :alt="option.text">
-                                            <i class="fa-solid fa-xmark equisImg none"></i>
+                                    <div class="rowOpt equisMobile">
+                                        <i class="fa-solid fa-xmark equisOption"></i>
+                                    </div>
+                                </div>
+                                <div class="rowOpt">
+                                    <div class="jumps">
+                                        <p>Salto</p>
+                                        <div class="btnYDesc">
+                                            <div class="simBtnWithAnimation">
+                                                <div class="circleMove"></div>
+                                                <input class="inputCheck" type="checkbox" name="" id="">
+                                            </div>                
                                         </div>
+                                        <input class="questionNumberJump" type="number">
                                     </div>
+                                    <!-- Nota: Menú Desplegable no tiene opción de imagen según formsFunctions.js -->
+                                </div>
+                                <div class="rowOpt equisDesktop">
+                                    <i class="fa-solid fa-xmark equisOption"></i>
+                                </div>
+                            </div>
+                            <!-- Mostrar imagen si existe -->
+                            <div v-if="option.image" class="contImgOption">
+                                <div class="blockImgOp">
+                                    <img :src="option.image.url" :alt="option.text">
+                                    <i class="fa-solid fa-xmark equisImg"></i>
                                 </div>
                             </div>
                         </div>
@@ -759,6 +1337,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -788,6 +1367,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -817,6 +1397,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -846,6 +1427,7 @@
                     class="accountBlock padding1 draggable"
                     draggable="true"
                     :data-saved="!question.id.toString().startsWith('temp-') ? 'true' : null"
+                    :data-question-id="question.id"
                     @dragstart="handleDragStart($event, index)"
                     @dragover="handleDragOver($event)"
                     @drop="handleDrop($event, index)"
@@ -1046,6 +1628,33 @@ body.dragging-active .draggable:not(.dragging) > * {
 
 .draggable:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos para botones de edición usando estilos base de iconoEliminar */
+.edit-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Botón guardar - hereda estilos de iconoEliminar y agrega color verde */
+.cassette-save {
+    color: #059669 !important;
+}
+
+.cassette-save:hover {
+    color: #047857 !important;
+    transform: scale(1.1);
+}
+
+/* Botón cancelar - hereda estilos de iconoEliminar y agrega color rojo */
+.cassette-cancel {
+    color: #dc2626 !important;
+}
+
+.cassette-cancel:hover {
+    color: #b91c1c !important;
+    transform: scale(1.1);
 }
 </style>
 

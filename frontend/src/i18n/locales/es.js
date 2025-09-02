@@ -72,6 +72,7 @@ export default {
   'Mínimo 6 caracteres': 'Mínimo 6 caracteres',
   'Mínimo 8 caracteres': 'Mínimo 8 caracteres',
   'Confirmar contraseña': 'Confirmar contraseña',
+  'Ingresando...': 'Ingresando...',
   'Cómo nos conociste': 'Cómo nos conociste',
   '¿Ya tienes una cuenta?': '¿Ya tienes una cuenta?',
   'haz click aquí': 'haz click aquí',

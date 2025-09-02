@@ -26,7 +26,6 @@ export default (sequelize) => {
     Email: {
       type: DataTypes.STRING(100),
       allowNull: false,
-      unique: true,
       validate: {
         isEmail: true,
         notEmpty: true
@@ -101,17 +100,10 @@ export default (sequelize) => {
     }
   }, {
     tableName: 'users',
-    timestamps: true,
-    createdAt: 'Created_At',
-    updatedAt: 'Updated_At'
+    timestamps: false
   });
 
   User.associate = function(models) {
-    User.hasOne(models.UserSuscription, {
-      foreignKey: 'User_Id',
-      as: 'UserSuscription'
-    });
-    
     User.belongsTo(models.ComoNosConociste, {
       foreignKey: 'Como_Nos_Conociste_Id',
       as: 'ComoNosConociste'

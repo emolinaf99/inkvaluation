@@ -109,7 +109,7 @@
             <RouterLink to="/account"><div class="contItem"><i class="fa-solid fa-user"></i><p>{{ $t('Mi cuenta') }}</p></div></RouterLink>
             <RouterLink to="/accountBussiness"><div class="contItem"><i class="fa-solid fa-pen-nib"></i><p>{{ $t('Mi estudio') }}</p></div></RouterLink>
             <RouterLink to="/mailbox"><div class="contItem"><i class="fa-solid fa-inbox"></i><p>{{ $t('Buzón de sugerencias') }}</p></div></RouterLink>    
-            <div class="contItem" @click="handleLogout" style="cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i><p>{{ $t('Cerrar Sesión') }}</p></div> 
+            <RouterLink to="" @click.prevent="handleLogout"><div class="contItem" style="cursor: pointer;"><i class="fa-solid fa-right-from-bracket"></i><p>{{ $t('Cerrar Sesión') }}</p></div> </RouterLink>
         </div>
 
         

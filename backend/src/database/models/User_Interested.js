@@ -1,33 +1,37 @@
-export default function(sequelize, DataTypes){
-    let alias = "User_Interested";
-    let cols = {
-        Id:{
-            type: DataTypes.MEDIUMINT,
-            primaryKey: true,
-            autoincrement: true
-        },
-        Nombre: {
-            type:DataTypes.STRING(100),
-            allowNull: false
-        },
-        Correo: {
-            type:DataTypes.STRING(100),
-            allowNull: false
-        },
-        Fecha_Inscripcion: {
-            type:DataTypes.DATE,
-            allowNull: false
-        },
-        
-    };
+import { DataTypes } from 'sequelize';
 
-let config = {
-    timestamps: false,
-    tableName: 'user_interested'
+export default (sequelize) => {
+  const User_Interested = sequelize.define('User_Interested', {
+    Id: {
+      type: DataTypes.MEDIUMINT,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    Nombre: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [1, 100]
+      }
+    },
+    Correo: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      validate: {
+        isEmail: true,
+        notEmpty: true
+      }
+    },
+    Fecha_Inscripcion: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    tableName: 'user_interested',
+    timestamps: false
+  });
+
+  return User_Interested;
 };
-const User_Interested = sequelize.define(alias, cols, config);
-
-return User_Interested;
-
-}
-

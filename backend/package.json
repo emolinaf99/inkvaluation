@@ -1,7 +1,7 @@
 {
-  "name": "inkvaluation-user-service",
+  "name": "inkvaluation-auth-user-microservice",
   "version": "1.0.0",
-  "description": "Microservicio de gestión de usuarios y sesiones para InkValuation",
+  "description": "Microservicio de autenticación y gestión de usuarios para InkValuation",
   "main": "app.js",
   "type": "module",
   "scripts": {

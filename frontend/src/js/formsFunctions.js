@@ -1039,13 +1039,17 @@ function opcionSeleccionada(contenedorOpcion) {
     let jumpOption = contenedorOpcion.querySelector('.jumps')
     let imagenAdjuntada = contenedorOpcion.querySelector('.contImgOption')
 
-    if(!imagenAdjuntada) {
+    if(!imagenAdjuntada && addImgOption) {
         addImgOption.classList.add('flex')
     }
-    jumpOption.classList.add('flex')
+    if(jumpOption) {
+        jumpOption.classList.add('flex')
+    }
     
-    inputOption.select() // señala el contenio del input
-    inputOption.classList.add('borderBottomInputActive')
+    if(inputOption) {
+        inputOption.select() // señala el contenio del input
+        inputOption.classList.add('borderBottomInputActive')
+    }
 }
 
 function retirarSeleccionOpcion(contenedorOpcion) {

@@ -139,8 +139,8 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some(record => record.meta.requiresGuest)) {
     if (isAuthenticated) {
       // Usuario autenticado intentando acceder a ruta pública
-      console.log('Redirigiendo a account - usuario ya autenticado');
-      next({ name: 'Account' });
+      console.log('Redirigiendo a requests - usuario ya autenticado');
+      next({ name: 'Request' });
       return;
     }
   }

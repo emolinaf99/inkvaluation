@@ -4,13 +4,14 @@
     background-color: #f5f5f5;
     box-shadow: 0px 5px 10px rgba(0, 0, 0, .16);
     width: 250px;
-    min-height: 100vh;
+    height: 100vh;
     
-    overflow-y:scroll;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: fixed;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: flex-start;
     margin-bottom: 0;
     order: 1;
@@ -19,8 +20,7 @@
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
     padding: 5rem 0;
     z-index: 9999;
-    overflow-x: hidden;
-    gap: 5rem;
+    gap: 2rem;
     opacity: 0;
 }
 
@@ -40,33 +40,45 @@
     transform: translateY(0);
 }
 
+.site-home {
+    scrollbar-width: thin;
+    scrollbar-color: #d5d5d5 #f1f2f3;
+}
+
 .site-home::-webkit-scrollbar {
+    width: 8px;
     -webkit-appearance: none;
 }
 
 .site-home::-webkit-scrollbar:vertical {
-    width:10px;
+    width: 8px;
 }
 
-.site-home::-webkit-scrollbar-button:increment,.contenedor::-webkit-scrollbar-button {
+.site-home::-webkit-scrollbar-button:increment,.site-home::-webkit-scrollbar-button {
     display: none;
 } 
 
 .site-home::-webkit-scrollbar:horizontal {
-    height: 10px;
+    height: 8px;
 }
 
 .site-home::-webkit-scrollbar-thumb {
     background-color: #d5d5d5;
-    border-radius: 20px;
-    border: 2px solid #f1f2f3;
+    border-radius: 4px;
+    border: 1px solid #f1f2f3;
+    min-height: 20px;
+}
+
+.site-home::-webkit-scrollbar-thumb:hover {
+    background-color: #bbb;
 }
 
 .site-home::-webkit-scrollbar-track {
-    border-radius: 10px;  
+    background-color: #f1f2f3;
+    border-radius: 4px;
 }
 
-.site-home a {
+.site-home a, .site-home .logout-item  {
     color: #313131;
     display: block;
     font-size: 14px;
@@ -166,15 +178,29 @@
 
 
 
-.site-home a:hover, .site-home a:focus {
+.site-home a:hover, .site-home a:focus, .site-home .logout-item:hover, .site-home .logout-item:focus {
         background-color:#e0e0e0;
     }
     
-.site-home a:hover , .site-home a:focus  {
+.site-home a:hover , .site-home a:focus, .site-home .logout-item:hover, .site-home .logout-item:focus  {
     color: #313131
 }
 
-.site-home a {
+.site-home a, .site-home .logout-item {
     color: #313131;
     width: 250px;
+}
+
+/* Estilos específicos para el contenido interno del logout */
+.site-home .logout-item {
+    /* Sobrescribir display para que sea flex como los contItem */
+    display: flex !important;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.site-home .logout-item i {
+    font-size: 25px;
 }

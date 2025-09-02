@@ -388,7 +388,7 @@ body.register-page {
 
 .passwordText {
     font-weight: 500;
-    color: #959595;
+    color: white;
 }
 
 .containerServiceForms {
@@ -421,7 +421,7 @@ body.register-page {
 @media (min-width: 1280px) {
     .sectionLoginAndRegister {
         flex-direction: row;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: stretch;
         height: 100vh;
     }
@@ -452,7 +452,7 @@ body.register-page {
 
     .contenedorImagenRegister {
         display: flex;
-        width: 60%;
+        width: 100%;
         position: fixed;
         top: 0;
         right: 0;
@@ -545,7 +545,7 @@ body.register-page {
     }
 
     #alreadyExistLogin {
-        left: 3rem;
+        left: 20%;
     }
 
     .btnLogin {

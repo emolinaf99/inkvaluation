@@ -1,9 +1,9 @@
-import { Router } from 'express';
-import controller from '../controllers/indexController.js';
+import express from 'express';
+import indexController from '../controllers/indexController.js';
 
-const router = Router();
+const router = express.Router();
 
-// APIs
-router.post("/api/userInterested", controller.inscripcionUsuarioInteresado);
+// Ruta para inscripción de usuarios interesados (landing page)
+router.post('/inscripcion', indexController.inscripcionUsuarioInteresado);
 
 export default router;
