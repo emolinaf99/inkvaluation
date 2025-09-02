@@ -139,5 +139,55 @@ export default {
   'Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.': 'Make your quotes easily and quickly with InkValuation, our platform designed especially for you. Save time and optimize your processes with our 24/7 virtual assistant.',
   'Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento': 'Leave us your email to stay updated on the launch',
   'Su correo electrónico': 'Your email',
-  'Inscribirse': 'Sign Up'
+  'Inscribirse': 'Sign Up',
+
+  // Account page
+  'Mi cuenta': 'My Account',
+  'Datos Personales': 'Personal Information',
+  'Subir imagen': 'Upload image',
+  'Eliminar': 'Delete',
+  'Apellido': 'Last name',
+  'País de residencia': 'Country of residence',
+  'Selecciona un país': 'Select a country',
+  'Telefono': 'Phone',
+  'Actualizando...': 'Updating...',
+  'Actualizar': 'Update',
+  'Servicios': 'Services',
+  'Cargando servicios...': 'Loading services...',
+  'Suscripción de plan': 'Plan Subscription',
+  'Nombre del plan': 'Plan name',
+  'Cargando...': 'Loading...',
+  'Vigencia hasta': 'Valid until',
+  'Renovación automatica': 'Automatic renewal',
+  'Actualizar suscripción': 'Update subscription',
+
+  // Password form
+  'Actualizar contraseña': 'Update password',
+  'Restablecer contraseña': 'Reset password',
+  'Crea una contraseña nueva de ocho caracteres como mínimo. Una contraseña segura tiene una combinación de letras, números y caracteres especiales.': 'Create a new password with a minimum of eight characters. A secure password has a combination of letters, numbers and special characters.',
+  'Contraseña anterior': 'Previous password',
+  'Nueva contraseña': 'New password',
+  'Confirmar contraseña': 'Confirm password',
+  'Fortaleza': 'Strength',
+  'Débil': 'Weak',
+  'Medio': 'Medium',
+  'Fuerte': 'Strong',
+  'Procesando...': 'Processing...',
+  'Restablecer': 'Reset',
+  'La contraseña anterior es requerida': 'Previous password is required',
+  'Contraseña actualizada con éxito': 'Password updated successfully',
+
+  'Crea una contraseña segura con mayúsculas, minúsculas, números y símbolos': 'Create a secure password with uppercase, lowercase, numbers and symbols',
+
+  // Opciones Como nos conociste
+  'Búsqueda en Google': 'Google Search',
+  'Redes sociales (Facebook, Instagram, TikTok)': 'Social Media (Facebook, Instagram, TikTok)',
+  'Recomendación de un amigo': 'Friend Recommendation',
+  'YouTube': 'YouTube',
+  'Publicidad online': 'Online Advertising',
+  'Ferias o eventos de tatuajes': 'Tattoo Fairs or Events',
+  'Otro estudio de tatuajes': 'Other Tattoo Studio',
+  'Blog o artículo': 'Blog or Article',
+  'Publicidad tradicional (radio, TV, periódico)': 'Traditional Advertising (radio, TV, newspaper)',
+  'Otro': 'Other'
 }

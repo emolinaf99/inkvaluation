@@ -139,5 +139,55 @@ export default {
   'Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.': 'Réalisez vos devis de manière facile et rapide avec InkValuation, notre plateforme conçue spécialement pour vous. Économisez du temps et optimisez vos processus avec notre assistant virtuel 24/7.',
   'Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento': 'Laissez-nous votre email pour rester informé du lancement',
   'Su correo electrónico': 'Votre email',
-  'Inscribirse': 'S\'inscrire'
+  'Inscribirse': 'S\'inscrire',
+
+  // Account page
+  'Mi cuenta': 'Mon Compte',
+  'Datos Personales': 'Informations Personnelles',
+  'Subir imagen': 'Télécharger image',
+  'Eliminar': 'Supprimer',
+  'Apellido': 'Nom de famille',
+  'País de residencia': 'Pays de résidence',
+  'Selecciona un país': 'Sélectionnez un pays',
+  'Telefono': 'Téléphone',
+  'Actualizando...': 'Mise à jour...',
+  'Actualizar': 'Mettre à jour',
+  'Servicios': 'Services',
+  'Cargando servicios...': 'Chargement des services...',
+  'Suscripción de plan': 'Abonnement',
+  'Nombre del plan': 'Nom du plan',
+  'Cargando...': 'Chargement...',
+  'Vigencia hasta': 'Valide jusqu\'au',
+  'Renovación automatica': 'Renouvellement automatique',
+  'Actualizar suscripción': 'Mettre à jour l\'abonnement',
+
+  // Password form
+  'Actualizar contraseña': 'Mettre à jour le mot de passe',
+  'Restablecer contraseña': 'Réinitialiser le mot de passe',
+  'Crea una contraseña nueva de ocho caracteres como mínimo. Una contraseña segura tiene una combinación de letras, números y caracteres especiales.': 'Créez un nouveau mot de passe d\'au moins huit caractères. Un mot de passe sécurisé contient une combinaison de lettres, chiffres et caractères spéciaux.',
+  'Contraseña anterior': 'Mot de passe précédent',
+  'Nueva contraseña': 'Nouveau mot de passe',
+  'Confirmar contraseña': 'Confirmer le mot de passe',
+  'Fortaleza': 'Force',
+  'Débil': 'Faible',
+  'Medio': 'Moyen',
+  'Fuerte': 'Fort',
+  'Procesando...': 'Traitement...',
+  'Restablecer': 'Réinitialiser',
+  'La contraseña anterior es requerida': 'Le mot de passe précédent est requis',
+  'Contraseña actualizada con éxito': 'Mot de passe mis à jour avec succès',
+
+  'Crea una contraseña segura con mayúsculas, minúsculas, números y símbolos': 'Créez un mot de passe sécurisé avec majuscules, minuscules, chiffres et symboles',
+
+  // Opciones Como nos conociste
+  'Búsqueda en Google': 'Recherche Google',
+  'Redes sociales (Facebook, Instagram, TikTok)': 'Réseaux sociaux (Facebook, Instagram, TikTok)',
+  'Recomendación de un amigo': 'Recommandation d\'un ami',
+  'YouTube': 'YouTube',
+  'Publicidad online': 'Publicité en ligne',
+  'Ferias o eventos de tatuajes': 'Salons ou événements de tatouage',
+  'Otro estudio de tatuajes': 'Autre studio de tatouage',
+  'Blog o artículo': 'Blog ou article',
+  'Publicidad tradicional (radio, TV, periódico)': 'Publicité traditionnelle (radio, TV, journal)',
+  'Otro': 'Autre'
 }

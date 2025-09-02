@@ -11,7 +11,7 @@ export function useSecurityPassword() {
 
   // Reglas de validación de contraseña segura
   const passwordRules = {
-    minLength: 8,
+    minLength: 6,
     maxLength: 128,
     requireUppercase: true,
     requireLowercase: true,
@@ -70,62 +70,50 @@ export function useSecurityPassword() {
     return password.value === confirmPassword.value && password.value.length > 0
   })
 
-  // Calcular fortaleza de la contraseña (0-100)
+  // Calcular fortaleza de la contraseña (0-3 niveles)
   const passwordStrength = computed(() => {
-    let score = 0
     const pwd = password.value
 
     if (pwd.length === 0) return 0
 
-    // Longitud base (0-30 puntos)
-    score += Math.min(pwd.length * 2, 30)
+    let criteriaCount = 0
+    
+    // Contar criterios cumplidos
+    if (hasValidLength.value) criteriaCount++
+    if (hasUppercase.value) criteriaCount++
+    if (hasLowercase.value) criteriaCount++
+    if (hasNumbers.value) criteriaCount++
+    if (hasSpecialChars.value) criteriaCount++
 
-    // Diversidad de caracteres (0-40 puntos)
-    if (hasUppercase.value) score += 10
-    if (hasLowercase.value) score += 10
-    if (hasNumbers.value) score += 10
-    if (hasSpecialChars.value) score += 10
+    // Penalizar si tiene patrones o palabras prohibidas
+    if (!hasNoForbiddenPatterns.value || !hasNoForbiddenWords.value) {
+      criteriaCount = Math.max(0, criteriaCount - 1)
+    }
 
-    // Bonus por longitud extra (0-20 puntos)
-    if (pwd.length >= 12) score += 10
-    if (pwd.length >= 16) score += 10
-
-    // Penalizaciones (-30 puntos)
-    if (!hasNoForbiddenPatterns.value) score -= 15
-    if (!hasNoForbiddenWords.value) score -= 15
-
-    return Math.max(0, Math.min(100, score))
+    return criteriaCount
   })
 
   // Nivel de fortaleza textual
   const strengthLevel = computed(() => {
     const strength = passwordStrength.value
-    if (strength < 30) return 'Muy débil'
-    if (strength < 50) return 'Débil'
-    if (strength < 70) return 'Moderada'
-    if (strength < 90) return 'Fuerte'
-    return 'Muy fuerte'
+    if (strength <= 2) return 'Débil'
+    if (strength <= 4) return 'Medio' 
+    if (strength === 5) return 'Fuerte'
+    return 'Débil'
   })
 
   // Color para mostrar la fortaleza
   const strengthColor = computed(() => {
     const strength = passwordStrength.value
-    if (strength < 30) return '#ef4444' // Rojo
-    if (strength < 50) return '#f97316' // Naranja
-    if (strength < 70) return '#eab308' // Amarillo
-    if (strength < 90) return '#22c55e' // Verde
-    return '#16a34a' // Verde oscuro
+    if (strength <= 2) return '#ef4444' // Rojo
+    if (strength <= 4) return '#eab308' // Amarillo
+    if (strength === 5) return '#22c55e' // Verde
+    return '#ef4444' // Rojo por defecto
   })
 
-  // Validación completa de la contraseña
+  // Validación completa de la contraseña (requiere los 5 criterios)
   const isPasswordValid = computed(() => {
-    return hasValidLength.value &&
-           hasUppercase.value &&
-           hasLowercase.value &&
-           hasNumbers.value &&
-           hasSpecialChars.value &&
-           hasNoForbiddenPatterns.value &&
-           hasNoForbiddenWords.value
+    return passwordStrength.value === 5
   })
 
   // Obtener errores de validación

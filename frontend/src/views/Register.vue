@@ -493,13 +493,13 @@
                             <div 
                                 class="strength-fill" 
                                 :style="{ 
-                                    width: passwordValidation.strength + '%', 
+                                    width: (passwordValidation.strength / 5) * 100 + '%', 
                                     backgroundColor: passwordValidation.strengthColor 
                                 }"
                             ></div>
                         </div>
                         <div class="strength-text" :style="{ color: passwordValidation.strengthColor }">
-                            {{ $t('Fortaleza') }}: {{ passwordValidation.strengthLevel }} ({{ passwordValidation.strength }}%)
+                            {{ $t('Fortaleza') }}: {{ $t(passwordValidation.strengthLevel) }}
                         </div>
                     </div>
                     
@@ -529,7 +529,7 @@
                                 :key="opcion.Id" 
                                 :value="opcion.Id"
                             >
-                                {{ opcion.Descripcion }}
+                                {{ $t(opcion.Descripcion) }}
                             </option>
                         </select>
                     </div>
@@ -585,7 +585,7 @@
 
 .passwordText {
     font-size: 12px;
-    color: #6b7280;
+    color: white;
     margin-top: 4px;
 }
 </style>

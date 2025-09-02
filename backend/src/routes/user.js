@@ -1,7 +1,7 @@
 import express from 'express';
 import { body } from 'express-validator';
 import { verifyToken } from '../middleware/auth.js';
-import { validateRequest } from '../middleware/security.js';
+import { validateRequest } from '../middleware/validation.js';
 import bcrypt from 'bcryptjs';
 import db from '../database/models/index.js';
 

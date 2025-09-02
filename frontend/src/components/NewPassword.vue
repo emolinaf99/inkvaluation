@@ -6,10 +6,12 @@
     import {mostrarNotificacion} from '/src/js/mensajeNotificacionFront.js'
     import { useRoute } from 'vue-router';
     import { useSecurityPassword } from '/src/js/useSecurityPassword.js';
+    import { useI18n } from 'vue-i18n'
 
     // Recibir el tipo de formulario como prop o desde la ruta
     const route = useRoute();
     const formType = route.name === 'Account' ? 'Account' : 'ResetPassword';
+    const { t } = useI18n();
 
     // Usar el composable de seguridad de contraseñas
     const { 
@@ -53,7 +55,7 @@
 
         // Validar contraseña anterior si es necesaria
         if (formType === 'Account' && !formPassword.lastPassword) {
-            errorsPassword.value.lastPassword = 'La contraseña anterior es requerida';
+            errorsPassword.value.lastPassword = t('La contraseña anterior es requerida');
         }
 
         // Validar nueva contraseña con useSecurityPassword
@@ -104,7 +106,7 @@
                         mostrarNotificacion(error.value.message || 'Error cambiando contraseña', 0);
                     }
                 } else if (data.value?.success) {
-                    mostrarNotificacion("Contraseña actualizada con éxito", 1);
+                    mostrarNotificacion(t("Contraseña actualizada con éxito"), 1);
                     
                     // Resetear el formulario
                     formPassword.lastPassword = '';
@@ -126,12 +128,12 @@
 
 <template>
     <form class="accountBlock" @submit.prevent="submitFormPassword()">
-        <h4>{{ formType === 'Account' ? 'Actualizar contraseña' : 'Restablecer contraseña' }}</h4>
-        <p>Crea una contraseña nueva de ocho caracteres como mínimo. Una contraseña segura tiene una combinación de letras, números y caracteres especiales.</p>
+        <h4>{{ formType === 'Account' ? $t('Actualizar contraseña') : $t('Restablecer contraseña') }}</h4>
+        <p>{{ $t('Crea una contraseña nueva de ocho caracteres como mínimo. Una contraseña segura tiene una combinación de letras, números y caracteres especiales.') }}</p>
 
         <!-- Mostrar el campo "Contraseña Anterior" solo si es 'Account' -->
         <div v-if="formType === 'Account'" class="divInput">
-            <label>Contraseña anterior</label>
+            <label>{{ $t('Contraseña anterior') }}</label>
             <div class="inputIcon">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" class="inputSelectWoBorderOLeft" v-model="formPassword.lastPassword">
@@ -141,7 +143,7 @@
         </div>
 
         <div class="divInput">
-            <label>Nueva contraseña</label>
+            <label>{{ $t('Nueva contraseña') }}</label>
             <div class="inputIcon">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" class="inputSelectWoBorderOLeft" v-model="formPassword.newPassword">
@@ -154,13 +156,13 @@
                     <div 
                         class="strength-fill" 
                         :style="{ 
-                            width: passwordValidation.strength + '%', 
+                            width: (passwordValidation.strength / 5) * 100 + '%', 
                             backgroundColor: passwordValidation.strengthColor 
                         }"
                     ></div>
                 </div>
                 <div class="strength-text" :style="{ color: passwordValidation.strengthColor }">
-                    Fortaleza: {{ passwordValidation.strengthLevel }} ({{ passwordValidation.strength }}%)
+                    {{ $t('Fortaleza') }}: {{ $t(passwordValidation.strengthLevel) }}
                 </div>
             </div>
             
@@ -168,7 +170,7 @@
         </div>
 
         <div class="divInput">
-            <label>Confirmar contraseña</label>
+            <label>{{ $t('Confirmar contraseña') }}</label>
             <div class="inputIcon">
                 <i class="fa-solid fa-lock"></i>
                 <input type="password" class="inputSelectWoBorderOLeft" v-model="formPassword.confirmPassword">
@@ -178,7 +180,7 @@
         </div>
 
         <button class="btnAccountBlock BGYellow" type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Procesando...' : (formType === 'Account' ? 'Actualizar' : 'Restablecer') }}
+            {{ isSubmitting ? $t('Procesando...') : (formType === 'Account' ? $t('Actualizar') : $t('Restablecer')) }}
         </button>
     </form>
 </template>

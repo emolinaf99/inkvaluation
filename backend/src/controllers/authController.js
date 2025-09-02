@@ -17,7 +17,6 @@ export const registerValidation = [
     .withMessage('El apellido debe tener entre 1 y 50 caracteres'),
   body('email')
     .isEmail()
-    .normalizeEmail()
     .withMessage('Email inválido'),
   body('password')
     .isLength({ min: 6 })
@@ -40,7 +39,6 @@ export const registerValidation = [
 export const loginValidation = [
   body('email')
     .isEmail()
-    .normalizeEmail()
     .withMessage('Email inválido'),
   body('password')
     .notEmpty()

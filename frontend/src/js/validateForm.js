@@ -47,6 +47,14 @@ export function validateForm(formValues, validationRules) {
             errors[field] = 'Este campo debe ser un número.';
         }
 
+        // Validar formato de teléfono (solo números, puede incluir espacios, guiones y paréntesis)
+        if (rules.phone && value) {
+            const cleanPhone = value.replace(/[\s\-\(\)]/g, '');
+            if (!/^\d{7,15}$/.test(cleanPhone)) {
+                errors[field] = 'Ingrese un número de teléfono válido (solo números, 7-15 dígitos).';
+            }
+        }
+
         // Validar si debe coincidir con otro campo (ej. confirmación de contraseña)
         if (rules.match && value !== formValues[rules.match]) {
             errors[field] = 'Los valores no coinciden.';

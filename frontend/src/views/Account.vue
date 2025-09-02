@@ -22,14 +22,18 @@
     import {validateForm} from '/src/js/validateForm.js'
     import AccountSkeleton from '../components/skeletons/AccountSkeleton.vue'
     import { useSkeleton } from '../js/useSkeleton.js'
+    import { useI18n } from 'vue-i18n'
 
     const { isLoading, isFading, startLoading, finishLoading } = useSkeleton()
+    const { t } = useI18n()
 
     const countries = ref(null) // valor de paises inicialmente
+    const selectedCountryForPhone = ref(null) // país seleccionado para prefijo telefónico
 
     const isAutomaticRenewalEnabled = computed(() => {
         return userLogged.value?.UserSuscription?.Automatic_Renovation === 1 || userLogged.value?.UserSuscription?.Automatic_Renovation === true;
     });
+
 
     const imgPreview = ref(null); // Referencia a la imagen
 
@@ -93,10 +97,55 @@
             formPersonalData.nombre = newUser.Nombre || '';
             formPersonalData.apellido = newUser.Apellido || '';
             formPersonalData.paisResidencia = newUser.Pais_Residencia || '';
-            formPersonalData.telefono = newUser.Telefono || '';
+            
+            // Procesar teléfono para separar prefijo del número
+            if (newUser.Telefono) {
+                // Si el teléfono ya tiene prefijo, separarlo
+                if (newUser.Telefono.startsWith('+') && countries.value) {
+                    // Buscar el país que coincida con el prefijo
+                    let phoneNumber = newUser.Telefono;
+                    for (const country of countries.value) {
+                        if (newUser.Telefono.startsWith(country.phoneCode)) {
+                            phoneNumber = newUser.Telefono.substring(country.phoneCode.length);
+                            break;
+                        }
+                    }
+                    formPersonalData.telefono = phoneNumber;
+                } else {
+                    formPersonalData.telefono = newUser.Telefono;
+                }
+            }
+            
             formPersonalData.correo = newUser.Email || '';
         }
     }, { immediate: true })
+
+    // Watch para actualizar prefijo telefónico cuando cambie el país
+    watch(() => formPersonalData.paisResidencia, (newCountryCode) => {
+        if (newCountryCode && countries.value) {
+            const country = countries.value.find(c => c.cca2 === newCountryCode);
+            if (country) {
+                selectedCountryForPhone.value = country;
+            }
+        }
+    })
+
+    // Watch para procesar teléfono cuando se carguen los países
+    watch(() => countries.value, (newCountries) => {
+        if (newCountries && userLogged.value?.Telefono) {
+            // Reprocessar el teléfono para separar prefijo
+            if (userLogged.value.Telefono.startsWith('+')) {
+                let phoneNumber = userLogged.value.Telefono;
+                for (const country of newCountries) {
+                    if (userLogged.value.Telefono.startsWith(country.phoneCode)) {
+                        phoneNumber = userLogged.value.Telefono.substring(country.phoneCode.length);
+                        break;
+                    }
+                }
+                formPersonalData.telefono = phoneNumber;
+            }
+        }
+    })
 
     // Errores del formulario actualizar datos personales
     const errorsPersonalData= ref({});
@@ -112,11 +161,10 @@
             // Definir las reglas de validación frontend
             const validationRules = {
                 imgPerfil: { required: false }, // Opcional en actualización
-                nombre: { required: true, maxLength: 50 },
-                apellido: { required: true, maxLength: 50 },
+                nombre: { required: true, maxLength: 50, minLength: 2 },
+                apellido: { required: true, maxLength: 50, minLength: 2 },
                 paisResidencia: { required: false, maxLength: 10 },
-                telefono: { required: false, maxLength: 20, numeric: true },
-                correo: { required: true, email: true }
+                telefono: { required: false, maxLength: 20, phone: true }
             };
 
             // Validar el formulario frontend
@@ -132,11 +180,20 @@
             isSubmittingPersonalData.value = true;
 
             try {
+                // Preparar teléfono completo con prefijo
+                let telefonoCompleto = formPersonalData.telefono;
+                if (selectedCountryForPhone.value && formPersonalData.telefono) {
+                    // Si el teléfono no empieza con +, agregar el prefijo del país
+                    if (!formPersonalData.telefono.startsWith('+')) {
+                        telefonoCompleto = selectedCountryForPhone.value.phoneCode + formPersonalData.telefono;
+                    }
+                }
+
                 // Preparar datos para backend
                 const updateData = {
                     Nombre: formPersonalData.nombre,
                     Apellido: formPersonalData.apellido,
-                    Telefono: formPersonalData.telefono,
+                    Telefono: telefonoCompleto,
                     Pais_Residencia: formPersonalData.paisResidencia
                 };
 
@@ -183,31 +240,75 @@
     };
 
     onMounted(() => {
-        async function obtenerPaises(){ // para el select pais residencia
+        async function obtenerPaises(){ // para el select pais residencia y prefijos telefónicos
             try {
-                const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all?fields=name,ccn3,cca2', 'GET');
+                const { data, error, loading } = await useApi('https://restcountries.com/v3.1/all?fields=name,ccn3,cca2,idd', 'GET');
                 
                 // Esperar hasta que los datos estén listos
                 if (!error.value && data.value) { 
-                    countries.value = data.value; // Asigna los datos a countries
+                    // Procesar países con códigos telefónicos
+                    const processedCountries = data.value
+                        .filter(country => 
+                            country.idd?.root && 
+                            country.idd?.suffixes && 
+                            country.name?.common
+                        )
+                        .map(country => {
+                            return {
+                                ...country,
+                                phoneCode: country.idd.root + (country.idd.suffixes[0] || '')
+                            };
+                        });
+                    
+                    countries.value = processedCountries; // Asigna los datos procesados
+                    
+                    // Buscar país actual del usuario para mostrar el prefijo telefónico
+                    if (userLogged.value?.Pais_Residencia) {
+                        const userCountry = processedCountries.find(country => 
+                            country.cca2 === userLogged.value.Pais_Residencia
+                        );
+                        if (userCountry) {
+                            selectedCountryForPhone.value = userCountry;
+                        }
+                    }
                     
                 } else {
                     console.error('Error al cargar los datos de países:', error.value);
                     // Usar países mock en caso de error
                     countries.value = [
-                        { name: { common: 'Colombia' }, ccn3: '170', cca2: 'CO' },
-                        { name: { common: 'México' }, ccn3: '484', cca2: 'MX' },
-                        { name: { common: 'España' }, ccn3: '724', cca2: 'ES' }
+                        { name: { common: 'Colombia' }, ccn3: '170', cca2: 'CO', phoneCode: '+57' },
+                        { name: { common: 'México' }, ccn3: '484', cca2: 'MX', phoneCode: '+52' },
+                        { name: { common: 'España' }, ccn3: '724', cca2: 'ES', phoneCode: '+34' }
                     ];
+                    
+                    // También buscar país del usuario en países mock
+                    if (userLogged.value?.Pais_Residencia) {
+                        const userCountry = countries.value.find(country => 
+                            country.cca2 === userLogged.value.Pais_Residencia
+                        );
+                        if (userCountry) {
+                            selectedCountryForPhone.value = userCountry;
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Error al cargar los datos de países en el componente:', error);
                 // Usar países mock en caso de error
                 countries.value = [
-                    { name: { common: 'Colombia' }, ccn3: '170', cca2: 'CO' },
-                    { name: { common: 'México' }, ccn3: '484', cca2: 'MX' },
-                    { name: { common: 'España' }, ccn3: '724', cca2: 'ES' }
+                    { name: { common: 'Colombia' }, ccn3: '170', cca2: 'CO', phoneCode: '+57' },
+                    { name: { common: 'México' }, ccn3: '484', cca2: 'MX', phoneCode: '+52' },
+                    { name: { common: 'España' }, ccn3: '724', cca2: 'ES', phoneCode: '+34' }
                 ];
+                
+                // También buscar país del usuario en países mock
+                if (userLogged.value?.Pais_Residencia) {
+                    const userCountry = countries.value.find(country => 
+                        country.cca2 === userLogged.value.Pais_Residencia
+                    );
+                    if (userCountry) {
+                        selectedCountryForPhone.value = userCountry;
+                    }
+                }
             }
         }
 
@@ -221,26 +322,26 @@
 <template>
     <!-- Contenido Real -->
     <section class="sectionAccount ux-container">
-        <h1 class="ux-header">Mi cuenta</h1>
+        <h1 class="ux-header">{{ $t('Mi cuenta') }}</h1>
         <div class="containerAccount ux-content">
             
             <div class="blocksContainer ux-slide-in-left">
                 
                 <form class="accountBlock ux-card ux-stagger-1" @submit.prevent="submitForm('personalData')" >
-                    <h4>Datos Personales</h4>
+                    <h4>{{ $t('Datos Personales') }}</h4>
                     <div class="rowSpaceBetween">
                         <img ref="imgPreview" :src="formPersonalData.imgPerfil" alt="">
                         <div class="btnsImgPerfil">
                             <input hidden type="file" @change="handleImageChange" id="imgPerfil">
-                            <label class="BGDarkGray" for="imgPerfil">Subir imagen</label>
-                            <button>Eliminar</button>
+                            <label class="BGDarkGray" for="imgPerfil">{{ $t('Subir imagen') }}</label>
+                            <button>{{ $t('Eliminar') }}</button>
                         </div>
                     </div>
                     <div class="error" v-if="errorsPersonalData.imgPerfil">{{ errorsPersonalData.imgPerfil }}</div>
             
                     
                     <div class="divInput">
-                        <label for="">Nombre</label>
+                        <label for="">{{ $t('Nombre') }}</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-user"></i>
                             <input type="text" class="inputSelectWoBorderOLeft" v-model="formPersonalData.nombre">
@@ -248,7 +349,7 @@
                         <div class="error" v-if="errorsPersonalData.nombre">{{ errorsPersonalData.nombre }}</div>
                     </div>
                     <div class="divInput">
-                        <label for="">Apellido</label>
+                        <label for="">{{ $t('Apellido') }}</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-user"></i>
                             <input type="text" class="inputSelectWoBorderOLeft" v-model="formPersonalData.apellido">
@@ -256,11 +357,11 @@
                         <div class="error" v-if="errorsPersonalData.apellido">{{ errorsPersonalData.apellido }}</div>
                     </div>
                     <div class="divInput">
-                        <label for="">País de residencia</label>
+                        <label for="">{{ $t('País de residencia') }}</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-globe"></i>
                             <select v-model="formPersonalData.paisResidencia" class="inputSelectWoBorderOLeft" style="padding: 0; padding-left: 0.5rem;" >
-                                <option value="" disabled>Selecciona un país</option>
+                                <option value="" disabled>{{ $t('Selecciona un país') }}</option>
                                 <option 
                                     v-for="country in countries"
                                     :key="country.ccn3" 
@@ -275,27 +376,35 @@
                     </div>
                     
                     <div class="divInput">
-                        <label for="">Telefono</label>
-                        <div class="inputIcon">
+                        <label for="">{{ $t('Telefono') }}</label>
+                        <div class="inputIcon" style="position: relative;">
                             <i class="fa-solid fa-phone"></i>
-                            <input type="text" class="inputSelectWoBorderOLeft" name="" v-model="formPersonalData.telefono">
+                            <div v-if="selectedCountryForPhone" class="phone-prefix">{{ selectedCountryForPhone.phoneCode }}</div>
+                            <input 
+                                type="tel" 
+                                class="inputSelectWoBorderOLeft" 
+                                name="" 
+                                v-model="formPersonalData.telefono"
+                                :placeholder="selectedCountryForPhone ? 'Ej: 3001234567' : 'Teléfono'"
+                                :style="selectedCountryForPhone ? 'padding-left: 70px;' : ''"
+                            >
                         </div>
                         <div class="error" v-if="errorsPersonalData.telefono">{{ errorsPersonalData.telefono }}</div>
                     </div>
                     <div class="divInput">
-                        <label for="">Correo</label>
+                        <label for="">{{ $t('Correo') }}</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-envelope"></i>
-                            <input type="text" class="inputSelectWoBorderOLeft" v-model="formPersonalData.correo">
+                            <input type="text" class="inputSelectWoBorderOLeft" v-model="formPersonalData.correo" readonly disabled>
                         </div>
                         <div class="error" v-if="errorsPersonalData.correo">{{ errorsPersonalData.correo }}</div>
                     </div>
                     <button class="btnAccountBlock BGYellow" type="submit" :disabled="isSubmittingPersonalData">
-                        {{ isSubmittingPersonalData ? 'Actualizando...' : 'Actualizar' }}
+                        {{ isSubmittingPersonalData ? $t('Actualizando...') : $t('Actualizar') }}
                     </button>
                 </form>
                 <div class="accountBlock ux-card ux-stagger-2">
-                    <h4>Servicios</h4>
+                    <h4>{{ $t('Servicios') }}</h4>
                     <!-- <p class="parOptForm">Activa los servicios para los que tu cliente puede solicitar presupuesto y selecciona cómo quieres recibir las solicitudes.</p>
                     <p class="parOptForm bold">Lista de servicios</p> -->
                     <div class="contOpts">
@@ -319,7 +428,7 @@
                             
                         </div>
                         
-                        <p v-if="loadingUserServices" class="text-center">Cargando servicios...</p>
+                        <p v-if="loadingUserServices" class="text-center">{{ $t('Cargando servicios...') }}</p>
                         
                     </div>
                 </div>
@@ -327,24 +436,24 @@
 
             <div class="blocksContainer ux-slide-in-right">
                 <div class="accountBlock ux-card ux-stagger-3">
-                    <h4>Suscripción de plan </h4>
+                    <h4>{{ $t('Suscripción de plan') }} </h4>
                     <div class="divInput">
-                        <label for="">Nombre del plan</label>
+                        <label for="">{{ $t('Nombre del plan') }}</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-user-tag"></i>
-                            <input type="text" disabled name="" class="inputSelectWoBorderOLeft" :value="userLogged?.UserSuscription?.SuscriptionPlan?.Plan_Name || 'Cargando...'">
+                            <input type="text" disabled name="" class="inputSelectWoBorderOLeft" :value="userLogged?.UserSuscription?.SuscriptionPlan?.Plan_Name || $t('Cargando...')">
                         </div>
                     </div>
                     <div class="divInput">
-                        <label for="">Vigencia hasta</label>
+                        <label for="">{{ $t('Vigencia hasta') }}</label>
                         <div class="inputIcon">
                             <i class="fa-solid fa-hourglass-end"></i>
-                            <input type="text" disabled class="inputSelectWoBorderOLeft" name="" :value="userLogged?.UserSuscription?.End_Date || 'Cargando...'">
+                            <input type="text" disabled class="inputSelectWoBorderOLeft" name="" :value="userLogged?.UserSuscription?.End_Date || $t('Cargando...')">
                         </div>
                     </div>
                     <div class="btnDescInfo">
                         <div class="btnYDesc">
-                            <p>Renovación automatica</p>
+                            <p>{{ $t('Renovación automatica') }}</p>
                             <div 
                                 class="simBtnWithAnimation" 
                                 @click="checkOptAssistant($event.currentTarget)"
@@ -356,7 +465,7 @@
                         </div>
                         
                     </div>
-                    <RouterLink to="/updateSubscription"><button class="btnAccountBlock BGBlue" type="button">Actualizar suscripción</button></RouterLink>
+                    <RouterLink to="/updateSubscription"><button class="btnAccountBlock BGBlue" type="button">{{ $t('Actualizar suscripción') }}</button></RouterLink>
                     
                 </div>
 

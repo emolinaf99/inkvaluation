@@ -140,5 +140,55 @@ export default {
   'Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.': 'Realiza tus cotizaciones de manera fácil y rápida con InkValuation, nuestra plataforma diseñada especialmente para ti. Ahorra tiempo y optimiza tus procesos con nuestro asistente virtual 24/7.',
   'Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento': 'Déjanos tu correo electrónico para mantenerte actualizado sobre el lanzamiento',
   'Su correo electrónico': 'Su correo electrónico',
-  'Inscribirse': 'Inscribirse'
+  'Inscribirse': 'Inscribirse',
+
+  // Account page
+  'Mi cuenta': 'Mi cuenta',
+  'Datos Personales': 'Datos Personales',
+  'Subir imagen': 'Subir imagen',
+  'Eliminar': 'Eliminar',
+  'Apellido': 'Apellido',
+  'País de residencia': 'País de residencia',
+  'Selecciona un país': 'Selecciona un país',
+  'Telefono': 'Telefono',
+  'Actualizando...': 'Actualizando...',
+  'Actualizar': 'Actualizar',
+  'Servicios': 'Servicios',
+  'Cargando servicios...': 'Cargando servicios...',
+  'Suscripción de plan': 'Suscripción de plan',
+  'Nombre del plan': 'Nombre del plan',
+  'Cargando...': 'Cargando...',
+  'Vigencia hasta': 'Vigencia hasta',
+  'Renovación automatica': 'Renovación automatica',
+  'Actualizar suscripción': 'Actualizar suscripción',
+
+  // Password form
+  'Actualizar contraseña': 'Actualizar contraseña',
+  'Restablecer contraseña': 'Restablecer contraseña',
+  'Crea una contraseña nueva de ocho caracteres como mínimo. Una contraseña segura tiene una combinación de letras, números y caracteres especiales.': 'Crea una contraseña nueva de ocho caracteres como mínimo. Una contraseña segura tiene una combinación de letras, números y caracteres especiales.',
+  'Contraseña anterior': 'Contraseña anterior',
+  'Nueva contraseña': 'Nueva contraseña',
+  'Confirmar contraseña': 'Confirmar contraseña',
+  'Fortaleza': 'Fortaleza',
+  'Débil': 'Débil',
+  'Medio': 'Medio', 
+  'Fuerte': 'Fuerte',
+  'Procesando...': 'Procesando...',
+  'Restablecer': 'Restablecer',
+  'La contraseña anterior es requerida': 'La contraseña anterior es requerida',
+  'Contraseña actualizada con éxito': 'Contraseña actualizada con éxito',
+
+  'Crea una contraseña segura con mayúsculas, minúsculas, números y símbolos': 'Crea una contraseña segura con mayúsculas, minúsculas, números y símbolos',
+
+  // Opciones Como nos conociste
+  'Búsqueda en Google': 'Búsqueda en Google',
+  'Redes sociales (Facebook, Instagram, TikTok)': 'Redes sociales (Facebook, Instagram, TikTok)',
+  'Recomendación de un amigo': 'Recomendación de un amigo',
+  'YouTube': 'YouTube',
+  'Publicidad online': 'Publicidad online',
+  'Ferias o eventos de tatuajes': 'Ferias o eventos de tatuajes',
+  'Otro estudio de tatuajes': 'Otro estudio de tatuajes',
+  'Blog o artículo': 'Blog o artículo',
+  'Publicidad tradicional (radio, TV, periódico)': 'Publicidad tradicional (radio, TV, periódico)',
+  'Otro': 'Otro'
 }
