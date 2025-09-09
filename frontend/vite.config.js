@@ -39,6 +39,13 @@ export default defineConfig({
         changeOrigin: true,
         secure: false
       },
+
+      // Rutas de imágenes de perfil al backend local
+      '^/uploads/profile-images/.*': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false
+      },
        
       // Inscripción al backend local
       '^/inscripcion': {

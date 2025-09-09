@@ -161,6 +161,7 @@ export default {
   'Vigencia hasta': 'Vigencia hasta',
   'Renovación automatica': 'Renovación automatica',
   'Actualizar suscripción': 'Actualizar suscripción',
+  'Actualizar a este plan': 'Actualizar a este plan',
 
   // Password form
   'Actualizar contraseña': 'Actualizar contraseña',
@@ -190,5 +191,24 @@ export default {
   'Otro estudio de tatuajes': 'Otro estudio de tatuajes',
   'Blog o artículo': 'Blog o artículo',
   'Publicidad tradicional (radio, TV, periódico)': 'Publicidad tradicional (radio, TV, periódico)',
-  'Otro': 'Otro'
+  'Otro': 'Otro',
+
+  // ConfigAssistant
+  'Configuración de asistente personal': 'Configuración de asistente personal',
+  'Previsualiza': 'Previsualiza',
+  'Link de tu asistente:': 'Link de tu asistente:',
+  'Compartelo': 'Compártelo',
+  'Tu asistente está listo para compartir': 'Tu asistente está listo para compartir',
+  'Por defecto preguntará al cliente:': 'Por defecto preguntará al cliente:',
+  'Servicio deseado': 'Servicio deseado',
+  'Perfil': 'Perfil',
+  'Nombre del asistente': 'Nombre del asistente',
+  'Mensaje de bienvenida': 'Mensaje de bienvenida',
+  'Vamos a comenzar a recopilar la información para realizar tu cotización del servicio.': 'Vamos a comenzar a recopilar la información para realizar tu cotización del servicio.',
+  'Servicios disponibles': 'Servicios disponibles',
+  'Activa los servicios que ofreces para que aparezcan en tu asistente personal.': 'Activa los servicios que ofreces para que aparezcan en tu asistente personal.',
+  'Formularios de servicios': 'Formularios de servicios',
+  'Para cada servicio se debe elegir un formulario que el cliente debe responder al elegir el servicio deseado': 'Para cada servicio se debe elegir un formulario que el cliente debe responder al elegir el servicio deseado',
+  'Servicio:': 'Servicio:',
+  'Formulario:': 'Formulario:'
 }

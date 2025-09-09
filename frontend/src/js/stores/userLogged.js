@@ -11,5 +11,10 @@ export const useUserStore = defineStore('userLogged', {
         clearUser() {
             this.userLogged = null; // Limpia los datos del usuario al cerrar sesión
         },
+        updateUserProfilePicture(imagePath) {
+            if (this.userLogged) {
+                this.userLogged.Profile_Picture = imagePath;
+            }
+        },
     },
 });

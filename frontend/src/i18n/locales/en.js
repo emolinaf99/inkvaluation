@@ -160,6 +160,7 @@ export default {
   'Vigencia hasta': 'Valid until',
   'Renovación automatica': 'Automatic renewal',
   'Actualizar suscripción': 'Update subscription',
+  'Actualizar a este plan': 'Update to this plan',
 
   // Password form
   'Actualizar contraseña': 'Update password',
@@ -189,5 +190,24 @@ export default {
   'Otro estudio de tatuajes': 'Other Tattoo Studio',
   'Blog o artículo': 'Blog or Article',
   'Publicidad tradicional (radio, TV, periódico)': 'Traditional Advertising (radio, TV, newspaper)',
-  'Otro': 'Other'
+  'Otro': 'Other',
+
+  // ConfigAssistant
+  'Configuración de asistente personal': 'Personal Assistant Configuration',
+  'Previsualiza': 'Preview',
+  'Link de tu asistente:': 'Your assistant link:',
+  'Compartelo': 'Share it',
+  'Tu asistente está listo para compartir': 'Your assistant is ready to share',
+  'Por defecto preguntará al cliente:': 'By default it will ask the client:',
+  'Servicio deseado': 'Desired service',
+  'Perfil': 'Profile',
+  'Nombre del asistente': 'Assistant name',
+  'Mensaje de bienvenida': 'Welcome message',
+  'Vamos a comenzar a recopilar la información para realizar tu cotización del servicio.': 'Let\'s start collecting information to make your service quote.',
+  'Servicios disponibles': 'Available services',
+  'Activa los servicios que ofreces para que aparezcan en tu asistente personal.': 'Activate the services you offer so they appear in your personal assistant.',
+  'Formularios de servicios': 'Service forms',
+  'Para cada servicio se debe elegir un formulario que el cliente debe responder al elegir el servicio deseado': 'For each service, a form must be chosen that the client must answer when choosing the desired service',
+  'Servicio:': 'Service:',
+  'Formulario:': 'Form:'
 }

@@ -160,6 +160,7 @@ export default {
   'Vigencia hasta': 'Valide jusqu\'au',
   'Renovación automatica': 'Renouvellement automatique',
   'Actualizar suscripción': 'Mettre à jour l\'abonnement',
+  'Actualizar a este plan': 'Passer à ce plan',
 
   // Password form
   'Actualizar contraseña': 'Mettre à jour le mot de passe',
@@ -189,5 +190,24 @@ export default {
   'Otro estudio de tatuajes': 'Autre studio de tatouage',
   'Blog o artículo': 'Blog ou article',
   'Publicidad tradicional (radio, TV, periódico)': 'Publicité traditionnelle (radio, TV, journal)',
-  'Otro': 'Autre'
+  'Otro': 'Autre',
+
+  // ConfigAssistant
+  'Configuración de asistente personal': 'Configuration de l\'assistant personnel',
+  'Previsualiza': 'Prévisualiser',
+  'Link de tu asistente:': 'Lien de votre assistant:',
+  'Compartelo': 'Partagez-le',
+  'Tu asistente está listo para compartir': 'Votre assistant est prêt à être partagé',
+  'Por defecto preguntará al cliente:': 'Par défaut, il demandera au client:',
+  'Servicio deseado': 'Service désiré',
+  'Perfil': 'Profil',
+  'Nombre del asistente': 'Nom de l\'assistant',
+  'Mensaje de bienvenida': 'Message de bienvenue',
+  'Vamos a comenzar a recopilar la información para realizar tu cotización del servicio.': 'Nous allons commencer à recueillir les informations pour faire votre devis de service.',
+  'Servicios disponibles': 'Services disponibles',
+  'Activa los servicios que ofreces para que aparezcan en tu asistente personal.': 'Activez les services que vous offrez pour qu\'ils apparaissent dans votre assistant personnel.',
+  'Formularios de servicios': 'Formulaires de services',
+  'Para cada servicio se debe elegir un formulario que el cliente debe responder al elegir el servicio deseado': 'Pour chaque service, un formulaire doit être choisi que le client doit remplir lors de la sélection du service désiré',
+  'Servicio:': 'Service:',
+  'Formulario:': 'Formulaire:'
 }

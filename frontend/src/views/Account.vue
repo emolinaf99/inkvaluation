@@ -37,17 +37,59 @@
 
     const imgPreview = ref(null); // Referencia a la imagen
 
+    // Computed property para la URL de la imagen
+    const imageUrl = computed(() => {
+        if (!formPersonalData.imgPerfil) {
+            // Si no hay imagen, mostrar por defecto
+            return '/img/perfilSinImagen.png';
+        }
+        
+        if (formPersonalData.imgPerfil instanceof File) {
+            // Si es un archivo seleccionado, crear URL temporal
+            return URL.createObjectURL(formPersonalData.imgPerfil);
+        } 
+        
+        if (typeof formPersonalData.imgPerfil === 'string' && formPersonalData.imgPerfil.length > 0) {
+            // Si es una string (URL del servidor)
+            return formPersonalData.imgPerfil.startsWith('http') 
+                ? formPersonalData.imgPerfil 
+                : `${formPersonalData.imgPerfil}`;
+        }
+        
+        // Fallback por defecto
+        return '/img/perfilSinImagen.png';
+    });
+
     // Cambiar imagen de perfil inmediatamente se suba al input
     const handleImageChange = (event) => {
         const file = event.target.files[0]; // Obtiene el archivo seleccionado
         if (file) {
             formPersonalData.imgPerfil = file; // Almacena el archivo en el estado
             console.log("Archivo seleccionado:", file);
-            
-            // Si quieres mostrar la imagen en una vista previa
-            if (imgPreview.value) {
-                mostrarFileEnImgPreview(event, imgPreview.value);
+            // El computed property imageUrl se encargará de mostrar la vista previa automáticamente
+        }
+    };
+
+    // Función para eliminar imagen de perfil
+    const removeProfileImage = async () => {
+        if (formPersonalData.imgPerfil && typeof formPersonalData.imgPerfil === 'string') {
+            // Si hay una imagen en el servidor, eliminarla
+            try {
+                const { data, error } = await useApi('/api/user/upload-profile-image', 'DELETE');
+                if (data.value?.success) {
+                    formPersonalData.imgPerfil = '';
+                    userStore.updateUserProfilePicture('');
+                    mostrarNotificacion('Imagen de perfil eliminada', 1);
+                } else if (error.value) {
+                    mostrarNotificacion(error.value.message || 'Error eliminando imagen', 0);
+                }
+            } catch (error) {
+                mostrarNotificacion('Error eliminando imagen', 0);
             }
+        } else {
+            // Si es solo una imagen temporal (File) o está vacía, simplemente limpiarla
+            formPersonalData.imgPerfil = '';
+            // El computed property imageUrl se encargará de mostrar la imagen por defecto automáticamente
         }
     };
 
@@ -158,17 +200,24 @@
         if(formType === 'personalData') { // formulario datos personales
             if (isSubmittingPersonalData.value) return;
 
-            // Definir las reglas de validación frontend
+            // Definir las reglas de validación frontend (excluir imagen)
             const validationRules = {
-                imgPerfil: { required: false }, // Opcional en actualización
                 nombre: { required: true, maxLength: 50, minLength: 2 },
                 apellido: { required: true, maxLength: 50, minLength: 2 },
                 paisResidencia: { required: false, maxLength: 10 },
                 telefono: { required: false, maxLength: 20, phone: true }
             };
 
+            // Crear objeto de datos sin la imagen para validación
+            const dataToValidate = {
+                nombre: formPersonalData.nombre,
+                apellido: formPersonalData.apellido,
+                paisResidencia: formPersonalData.paisResidencia,
+                telefono: formPersonalData.telefono
+            };
+
             // Validar el formulario frontend
-            const frontendErrors = validateForm(formPersonalData, validationRules);
+            const frontendErrors = validateForm(dataToValidate, validationRules);
             errorsPersonalData.value = frontendErrors;
 
             // Si hay errores, detener el envío
@@ -189,6 +238,29 @@
                     }
                 }
 
+                // Si hay una nueva imagen, subirla primero
+                if (formPersonalData.imgPerfil instanceof File) {
+                    const formData = new FormData();
+                    formData.append('profileImage', formPersonalData.imgPerfil);
+
+                    const { data: imageData, error: imageError } = await useApi('/api/user/upload-profile-image', 'POST', formData, {
+                        'Content-Type': 'multipart/form-data'
+                    });
+
+                    if (imageError.value) {
+                        mostrarNotificacion(imageError.value.message || 'Error al subir la imagen', 0);
+                        return;
+                    }
+
+                    if (imageData.value?.success) {
+                        // Actualizar store con nueva imagen
+                        userStore.updateUserProfilePicture(imageData.value.imagePath);
+                        // Actualizar también el formulario para mostrar la imagen del servidor
+                        formPersonalData.imgPerfil = imageData.value.imagePath;
+                        mostrarNotificacion('Imagen de perfil actualizada exitosamente', 1);
+                    }
+                }
+
                 // Preparar datos para backend
                 const updateData = {
                     Nombre: formPersonalData.nombre,
@@ -197,10 +269,6 @@
                     Pais_Residencia: formPersonalData.paisResidencia
                 };
 
-                // Si hay imagen nueva, incluirla
-                if (formPersonalData.imgPerfil instanceof File) {
-                    updateData.Profile_Picture = formPersonalData.imgPerfil;
-                }
 
                 const { data, error } = await useApi('/api/user/profile', 'PUT', updateData);
 
@@ -330,11 +398,11 @@
                 <form class="accountBlock ux-card ux-stagger-1" @submit.prevent="submitForm('personalData')" >
                     <h4>{{ $t('Datos Personales') }}</h4>
                     <div class="rowSpaceBetween">
-                        <img ref="imgPreview" :src="formPersonalData.imgPerfil" alt="">
+                        <img ref="imgPreview" :src="imageUrl" alt="">
                         <div class="btnsImgPerfil">
-                            <input hidden type="file" @change="handleImageChange" id="imgPerfil">
+                            <input hidden type="file" @change="handleImageChange" id="imgPerfil" accept="image/*">
                             <label class="BGDarkGray" for="imgPerfil">{{ $t('Subir imagen') }}</label>
-                            <button>{{ $t('Eliminar') }}</button>
+                            <button @click="removeProfileImage">{{ $t('Eliminar') }}</button>
                         </div>
                     </div>
                     <div class="error" v-if="errorsPersonalData.imgPerfil">{{ errorsPersonalData.imgPerfil }}</div>

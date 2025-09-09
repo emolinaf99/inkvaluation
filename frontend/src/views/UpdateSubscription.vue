@@ -60,7 +60,7 @@
     <section class="sectionPrices">
         <div class="containerOnePrices">
             <div class="textPrices">
-                <h1>Actualizar suscripción</h1>
+                <h1>{{ $t('Actualizar suscripción') }}</h1>
                 <p>{{ $t('Elije el plan adecuado para ti.') }}</p>
             </div>
             <div class="selectPlan">
@@ -78,7 +78,7 @@
                         <li class="planBenefit">{{ $t('5 Cotizaciones') }}</li>
                         <li class="planBenefit">{{ $t('Sin personalización visual de tu asistente') }}</li>
                     </ul>
-                    <button class="botonElegirPlan">Actualizar a este plan</button>
+                    <button class="botonElegirPlan">{{ $t('Actualizar a este plan') }}</button>
                 </div>
                 
             </div>
@@ -91,7 +91,7 @@
                         <li class="planBenefit">{{ $t('60 Cotizaciones') }}</li>
                         <li class="planBenefit">{{ $t('Personalización visual de tu asistente') }}</li>
                     </ul>
-                    <button class="botonElegirPlan">Actualizar a este plan</button>
+                    <button class="botonElegirPlan">{{ $t('Actualizar a este plan') }}</button>
                 </div>
                 
             </div>
@@ -104,7 +104,7 @@
                         <li class="planBenefit">{{ $t('Cotizaciones ilimitadas') }}</li>
                         <li class="planBenefit">{{ $t('Personalización visual de tu asistente') }}</li>
                     </ul>
-                    <button class="botonElegirPlan">Actualizar a este plan</button>
+                    <button class="botonElegirPlan">{{ $t('Actualizar a este plan') }}</button>
                 </div>
                 
             </div>

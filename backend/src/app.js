@@ -37,6 +37,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(sanitizeInput);
 
+// Servir archivos estáticos (imágenes de perfil)
+app.use('/uploads', express.static('uploads'));
+
 // Rutas del microservicio de autenticación y usuarios
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);

@@ -2,8 +2,11 @@ import express from 'express';
 import { body } from 'express-validator';
 import { verifyToken } from '../middleware/auth.js';
 import { validateRequest } from '../middleware/validation.js';
+import upload from '../middleware/upload.js';
 import bcrypt from 'bcryptjs';
 import db from '../database/models/index.js';
+import path from 'path';
+import fs from 'fs';
 
 const { User, ComoNosConociste } = db;
 const router = express.Router();
@@ -44,14 +47,13 @@ const changePasswordValidation = [
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { Nombre, Apellido, Telefono, Pais_Residencia, Profile_Picture } = req.body;
+    const { Nombre, Apellido, Telefono, Pais_Residencia } = req.body;
 
     const updateData = {};
     if (Nombre !== undefined) updateData.Nombre = Nombre;
     if (Apellido !== undefined) updateData.Apellido = Apellido;
     if (Telefono !== undefined) updateData.Telefono = Telefono;
     if (Pais_Residencia !== undefined) updateData.Pais_Residencia = Pais_Residencia;
-    if (Profile_Picture !== undefined) updateData.Profile_Picture = Profile_Picture;
 
     await User.update(updateData, {
       where: { User_Id: userId }
@@ -125,6 +127,54 @@ export const changePassword = async (req, res) => {
   }
 };
 
+// Subir imagen de perfil
+export const uploadProfileImage = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No se ha seleccionado ninguna imagen'
+      });
+    }
+
+    // Obtener el usuario actual para eliminar la imagen anterior si existe
+    const currentUser = await User.findOne({ where: { User_Id: userId } });
+    if (currentUser && currentUser.Profile_Picture) {
+      const oldImagePath = path.join(process.cwd(), currentUser.Profile_Picture);
+      if (fs.existsSync(oldImagePath)) {
+        try {
+          fs.unlinkSync(oldImagePath);
+        } catch (error) {
+          console.log('Error eliminando imagen anterior:', error.message);
+        }
+      }
+    }
+
+    // Actualizar la ruta de la imagen en la base de datos
+    const imagePath = `uploads/profile-images/${req.file.filename}`;
+    
+    await User.update(
+      { Profile_Picture: imagePath },
+      { where: { User_Id: userId } }
+    );
+
+    res.json({
+      success: true,
+      message: 'Imagen de perfil actualizada exitosamente',
+      imagePath: imagePath
+    });
+
+  } catch (error) {
+    console.error('Error subiendo imagen de perfil:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
 // Obtener opciones de "Cómo nos conociste"
 export const getComoNosConociste = async (req, res) => {
   try {
@@ -161,6 +211,12 @@ router.put('/change-password',
   changePasswordValidation,
   validateRequest,
   changePassword
+);
+
+router.post('/upload-profile-image',
+  verifyToken,
+  upload.single('profileImage'),
+  uploadProfileImage
 );
 
 router.get('/como-nos-conociste',
